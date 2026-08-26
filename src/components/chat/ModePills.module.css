@@ -39,7 +39,12 @@
 
 .on {
   color: var(--navy);
-  border-color: oklch(0.315 0.125 264 / .38);
+  /* Fix (review round 1, Important 3): the client's .mode.on border is
+     byte-identical to var(--navy) at 38% alpha (--navy is exactly
+     oklch(0.315 0.125 264)), so it is derived from the token rather
+     than a hand-written oklch literal, which the design brief names a
+     defect regardless of how faithfully the literal matched source. */
+  border-color: color-mix(in oklch, var(--navy) 38%, transparent);
   background: var(--tint);
 }
 

@@ -172,4 +172,54 @@ describe('chat', () => {
     expect(screen.queryByText('Dividend yield, listed banks')).toBeNull()
     expect(screen.getAllByTestId('suggested')).toHaveLength(6)
   }, ASK_TIMEOUT + 2000)
+
+  // Review round 1, Important 1: ActivityFeed's elapsed-time interval
+  // was only cleared on unmount, not on completion. A resolved,
+  // collapsed turn stays mounted for the rest of the thread's life, so
+  // every answered turn leaked a live 100ms interval. vi.getTimerCount()
+  // after a turn fully resolves is the direct check: zero means nothing
+  // is still ticking underneath the collapsed feed.
+  it('leaves no interval running once a turn has resolved', async () => {
+    render(<DemoShell />)
+    await ask(/highest dividend yield/i)
+    await waitFor(
+      () => expect(screen.getByText('Dividend yield, listed banks')).toBeDefined(),
+      { timeout: ASK_TIMEOUT },
+    )
+    expect(vi.getTimerCount()).toBe(0)
+  }, ASK_TIMEOUT + 2000)
+
+  // Review round 1, Important 2: the composer's <input> had
+  // outline:none with no :focus-visible replacement, so a keyboard
+  // user tabbing into the demo's primary control got no visible focus
+  // indication at all. jsdom does not reliably evaluate :focus-visible
+  // against getComputedStyle, so this reads the actual compiled CSS
+  // rule for the input's own class out of the injected stylesheets,
+  // the same way the browser will, rather than asserting on a pseudo-
+  // class match jsdom cannot be trusted to compute.
+  it('gives the composer input a visible :focus-visible style', () => {
+    render(<DemoShell />)
+    const box = screen.getByPlaceholderText(/ask about any stock/i) as HTMLInputElement
+    const inputClass = box.className.split(' ')[0]
+
+    const matchingRules: string[] = []
+    for (const sheet of Array.from(document.styleSheets)) {
+      let cssRules
+      try {
+        cssRules = sheet.cssRules
+      } catch {
+        continue
+      }
+      for (const rule of Array.from(cssRules)) {
+        const r = rule as CSSStyleRule
+        if (typeof r.selectorText === 'string' && r.selectorText.includes(inputClass)) {
+          matchingRules.push(r.cssText)
+        }
+      }
+    }
+
+    const focusRule = matchingRules.find((r) => r.includes(':focus-visible'))
+    expect(focusRule).toBeDefined()
+    expect(focusRule).toMatch(/outline/i)
+  })
 })

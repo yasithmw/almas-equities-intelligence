@@ -37,6 +37,16 @@
   color: var(--muted);
 }
 
+/* Fix (review round 1, Important 2): every other interactive control
+   in this task has a :focus-visible ring; the composer's own input,
+   the primary control of the whole demo, had outline:none with no
+   replacement. Same treatment as .send just below it, matching the
+   document's own global :focus-visible recipe. */
+.input:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
 .send {
   width: 31px;
   height: 31px;

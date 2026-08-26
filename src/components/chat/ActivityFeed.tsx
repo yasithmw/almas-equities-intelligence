@@ -50,6 +50,19 @@ export default function ActivityFeed({ steps, collapsed, onToggleCollapsed, onCo
   // instance), so the reveal schedule and the tick are set up exactly
   // once and never depend on props that could change mid-sequence.
   useEffect(() => {
+    // Reduced motion still keeps the sequence and the timer counting
+    // (design brief); only the pulse and the enter transition drop out,
+    // both handled in CSS, so this effect does not branch on it at all.
+    // Declared before the reveal timeouts below so their closures can
+    // clear it the moment the feed completes (fix, review round 1,
+    // Important 1): a resolved turn's feed stays mounted, collapsed,
+    // for the rest of the thread's life, so leaving this running only
+    // until unmount left a live 100ms interval ticking indefinitely on
+    // every answered turn.
+    const tick = setInterval(() => {
+      setElapsedMs((ms) => Math.min(ms + TICK_MS, total))
+    }, TICK_MS)
+
     const timeouts: ReturnType<typeof setTimeout>[] = []
     let cumulative = 0
     steps.forEach((step, i) => {
@@ -59,6 +72,7 @@ export default function ActivityFeed({ steps, collapsed, onToggleCollapsed, onCo
           setRevealed(i + 1)
           if (i === steps.length - 1) {
             setElapsedMs(total)
+            clearInterval(tick)
             if (!firedRef.current) {
               firedRef.current = true
               onComplete()
@@ -67,13 +81,6 @@ export default function ActivityFeed({ steps, collapsed, onToggleCollapsed, onCo
         }, cumulative),
       )
     })
-
-    // Reduced motion still keeps the sequence and the timer counting
-    // (design brief); only the pulse and the enter transition drop out,
-    // both handled in CSS, so this effect does not branch on it at all.
-    const tick = setInterval(() => {
-      setElapsedMs((ms) => Math.min(ms + TICK_MS, total))
-    }, TICK_MS)
 
     return () => {
       timeouts.forEach(clearTimeout)
