@@ -43,6 +43,7 @@ export interface BarsViz {
   kind: 'bars'
   title: string
   rows: { label: string; value: number; display: string }[]
+  source: string
   caption: string
 }
 
@@ -51,6 +52,7 @@ export interface PairedBarsViz {
   title: string
   series: [string, string]
   rows: { label: string; a: number; b: number; aDisplay: string; bDisplay: string }[]
+  source: string
   caption: string
 }
 
@@ -58,6 +60,7 @@ export interface SignedBarsViz {
   kind: 'signedBars'
   title: string
   rows: { label: string; value: number; display: string }[]
+  source: string
   caption: string
 }
 
@@ -66,6 +69,7 @@ export interface LineViz {
   title: string
   xLabels: string[]
   series: { name: string; points: number[]; accent: string }[]
+  source: string
   caption: string
 }
 
@@ -74,6 +78,7 @@ export interface TableViz {
   title: string
   columns: string[]
   rows: string[][]
+  source: string
   caption: string
 }
 

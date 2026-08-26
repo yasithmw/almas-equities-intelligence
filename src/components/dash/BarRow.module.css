@@ -1,0 +1,35 @@
+/* Ported from the client brief's .brow / .bn / .bt / .bv (Exhibit B, the
+   dividend-yield bars in the chat card). */
+.row {
+  display: grid;
+  grid-template-columns: 74px 1fr 52px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+.name {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+.track {
+  height: 10px;
+  background: var(--panel-2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.track i {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+  border-radius: 5px;
+  transition: width .5s var(--ease);
+}
+.value {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  color: var(--ink);
+}

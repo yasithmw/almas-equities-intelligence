@@ -1,0 +1,62 @@
+/* No single class in the client brief draws a centre-baseline diverging
+   bar, so this is composed from two real, named patterns rather than one
+   direct port: the row rhythm and track proportions come from the sector
+   bar, .sbar (gap 9px, margin-bottom 8px, track height 9px, radius 4px,
+   background var(--panel-2)); the label and up/down value colouring come
+   from the mover row, .mv .tk / .mv .g / .mv .r. The value column is
+   widened past .sbar's 36px because signed currency ("+Rs 96M") runs
+   longer than a sector's percentage. */
+.row {
+  display: grid;
+  grid-template-columns: 66px 1fr 60px;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+.name {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+.track {
+  position: relative;
+  height: 9px;
+  border-radius: 4px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.mid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--line);
+}
+.pos,
+.neg {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+  transition: width .5s var(--ease);
+}
+.pos {
+  background: var(--up);
+}
+.neg {
+  background: var(--down);
+}
+.valuePos,
+.valueNeg {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 12.5px;
+  text-align: right;
+}
+.valuePos {
+  color: var(--up);
+}
+.valueNeg {
+  color: var(--down);
+}
