@@ -7,6 +7,17 @@ function deltaClass(dir: KpiSpec['dir']) {
   return styles.delta
 }
 
+// Ruling R14: Exhibit C colours the Foreign net tile on the value itself
+// (`<div class="kv" style="color:var(--up)">`), not on the delta line
+// below it, so KpiSpec.valueDir drives the value's colour independently
+// of dir/delta. Reuses the same .up / .down tokens the delta already
+// uses, since the colour rule is identical either way.
+function valueClass(valueDir: KpiSpec['valueDir']) {
+  if (valueDir === 'up') return `${styles.value} ${styles.up}`
+  if (valueDir === 'down') return `${styles.value} ${styles.down}`
+  return styles.value
+}
+
 // The brief's own up example prefixes its delta with a filled triangle
 // (Exhibit C, "&#9650; 0.6% today"). KpiSpec keeps direction separate from
 // the delta text, so the tile supplies the glyph itself, and the down
@@ -22,7 +33,7 @@ export default function KpiTile({ spec }: { spec: KpiSpec }) {
   return (
     <div className={styles.kpi}>
       <div className={styles.label}>{spec.label}</div>
-      <div className={styles.value}>{spec.value}</div>
+      <div className={valueClass(spec.valueDir)}>{spec.value}</div>
       {spec.delta && (
         <div className={deltaClass(spec.dir)}>
           {arrow(spec.dir)}

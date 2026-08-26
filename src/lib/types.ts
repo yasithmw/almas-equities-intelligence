@@ -37,6 +37,7 @@ export interface KpiSpec {
   value: string
   delta?: string
   dir?: 'up' | 'down' | 'flat'
+  valueDir?: 'up' | 'down'
 }
 
 export interface BarsViz {
