@@ -21,6 +21,12 @@ describe('dataset shape', () => {
     }
   })
 
+  it('keeps Banks to exactly the four CSE-listed banks the brief names', () => {
+    const banks = TICKERS.filter((t) => t.sector === 'Banks')
+    expect(banks).toHaveLength(4)
+    expect(banks.map((t) => t.code)).toEqual(['COMB', 'HNB', 'SAMP', 'NTB'])
+  })
+
   it('carries thirty index sessions', () => {
     expect(INDEX_SERIES).toHaveLength(30)
     expect(INDEX_SERIES[0].session).toBe(1)

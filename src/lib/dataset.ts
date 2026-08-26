@@ -7,7 +7,6 @@ export const TICKERS: Ticker[] = [
   { code: 'HNB', name: 'Hatton National Bank', sector: 'Banks', price: 198.0, mtdPct: 2.6, dividend: 16.04, pe: 5.9, turnoverMn: 288, foreignNetMn: 61 },
   { code: 'SAMP', name: 'Sampath Bank', sector: 'Banks', price: 79.5, mtdPct: 1.7, dividend: 5.41, pe: 6.8, turnoverMn: 231, foreignNetMn: 34 },
   { code: 'NTB', name: 'Nations Trust Bank', sector: 'Banks', price: 142.0, mtdPct: 0.9, dividend: 7.81, pe: 5.2, turnoverMn: 118, foreignNetMn: -12 },
-  { code: 'SEYB', name: 'Seylan Bank', sector: 'Banks', price: 76.0, mtdPct: 1.1, dividend: 4.9, pe: 5.6, turnoverMn: 142, foreignNetMn: -8 },
   // Diversified
   { code: 'JKH', name: 'John Keells Holdings', sector: 'Diversified', price: 189.25, mtdPct: 3.2, dividend: 4.5, pe: 22.4, turnoverMn: 356, foreignNetMn: 142 },
   { code: 'HAYL', name: 'Hayleys', sector: 'Diversified', price: 98.0, mtdPct: -1.4, dividend: 3.0, pe: 9.1, turnoverMn: 64, foreignNetMn: -18 },
@@ -27,6 +26,7 @@ export const TICKERS: Ticker[] = [
   // Insurance
   { code: 'CINS', name: 'Ceylinco Insurance', sector: 'Insurance', price: 1180.0, mtdPct: 1.8, dividend: 30.0, pe: 5.1, turnoverMn: 42, foreignNetMn: 6 },
   { code: 'AAIC', name: 'Asian Alliance Insurance', sector: 'Insurance', price: 62.0, mtdPct: 0.6, dividend: 2.8, pe: 7.6, turnoverMn: 11, foreignNetMn: -1 },
+  { code: 'UAL', name: 'Union Assurance', sector: 'Insurance', price: 38.5, mtdPct: 1.3, dividend: 1.4, pe: 9.8, turnoverMn: 8, foreignNetMn: 2 },
 ]
 
 export const INDEX_SERIES: IndexPoint[] = Array.from({ length: 30 }, (_, i) => ({
