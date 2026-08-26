@@ -15,10 +15,11 @@ describe('answer library', () => {
     }
   })
 
-  it('gives quick no chart and auto a chart', () => {
+  it('gives quick no chart, and gives auto and deep a chart', () => {
     for (const a of Object.values(ANSWERS)) {
       expect(a.quick.viz).toBeNull()
       expect(a.auto.viz).not.toBeNull()
+      expect(a.deep.viz).not.toBeNull()
     }
   })
 

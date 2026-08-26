@@ -289,7 +289,7 @@ export const ANSWERS: Record<string, Answer> = {
     deep: {
       text: `Ranked by latest declared dividend over the current price. The reviewer caught NTB counted under Diversified rather than Banks, so it is now included: ${numberWord(clearFivePct)} listed banks clear 5 percent and ${numberWord(clearEightPct)} clear 8 percent.`,
       viz: bankYields(),
-      correction: 'Reviewer moved NTB from Diversified to Banks, which changed the count above 5 percent from three to four.',
+      correction: `Reviewer moved NTB from Diversified to Banks, which changed the count above 5 percent from ${numberWord(clearFivePct - 1)} to ${numberWord(clearFivePct)}.`,
     },
     redacted: null,
     denied: '',
