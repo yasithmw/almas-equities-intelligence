@@ -263,6 +263,14 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 .bl3 .bn{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--acc);margin-bottom:7px;}
 .bl3 b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-.008em;color:var(--ink);margin-bottom:5px;}
 .bl3 p{font-size:13px;line-height:1.55;color:var(--muted);}
+.dochead{display:grid;grid-template-columns:1fr 1.3fr;gap:52px;align-items:start;margin-top:60px;}
+.dochead .subh{margin-top:0;}
+.dochead p{font-size:16px;line-height:1.62;color:var(--muted);}
+@media(max-width:900px){.dochead{grid-template-columns:1fr;gap:14px;}}
+.docsrc{margin-top:34px;--acc:var(--blue-2);}
+.docsrc .bl3 .bn{font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px;}
+.docsrc .bl3 p{font-size:14px;}
+.docnote{margin-top:24px;padding-top:20px;border-top:1px solid var(--hair);font-size:14.5px;line-height:1.6;color:var(--muted);max-width:92ch;}
 .blf{margin-top:22px;font-size:13.5px;line-height:1.55;color:var(--aqua-ink);font-weight:500;}
 @media(max-width:760px){.bl3{grid-template-columns:1fr;}
   .bl3>div{padding:18px 0;border-bottom:1px solid var(--hair);}
@@ -323,8 +331,6 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 /* alternating feature split */
 .split{margin-top:64px;display:grid;grid-template-columns:1fr 1.08fr;gap:48px;align-items:start;}
 .split.rev{grid-template-columns:1.08fr 1fr;}
-.split.solo{grid-template-columns:1fr;}
-.split.solo p{max-width:74ch;}
 .split>*{min-width:0;}
 .split.rev .txt{order:2;}
 @media(max-width:920px){.split,.split.rev{grid-template-columns:1fr;gap:28px;}.split.rev .txt{order:0;}}
@@ -829,12 +835,12 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
   <div class="wrap">
     <div class="slab"><span>03</span><span class="r"></span>What your desks ask</div>
     <h2>One way to ask, whoever is asking</h2>
-    <p class="dek">Nobody has to learn a query language, and nobody has to wait for a report to be built. Each person asks in their own words, and every answer is scoped to what that person is cleared to see, so the same platform serves the whole firm.</p>
+    <p class="dek">A dealer, an analyst and the management team want very different things from the same data. All three get at it the same way, in plain language, and an answer comes back in seconds. What changes from seat to seat is the answer itself, always scoped to the book that person is cleared to see.</p>
 
     <div class="inset lead">
       <div>
         <div class="ineye">Management</div>
-        <h3>&ldquo;Show me firm-wide turnover and foreign flows this month, against last.&rdquo;</h3>
+        <h3>&ldquo;Show me firm-wide turnover this month against last, and where the change came from.&rdquo;</h3>
         <p>Oversight without commissioning a report and waiting a week for it. Management is the one seat that needs to see across every desk and every client book at once, which is exactly what a single graph over all of your data makes possible.</p>
       </div>
       <div class="side">
@@ -1117,17 +1123,17 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
       <div class="capn"><span>Layout, lenses and controls reflect the real admin portal</span><span>Node labels and counts are illustrative</span></div>
     </div>
 
-    <h3 class="subh">Upload the documents your desks already rely on</h3>
-    <div class="split solo" style="margin-top:20px">
-      <div class="txt">
-        <p>The data lens is built from your tables during the pilot. The knowledge lens is built from your documents, and it is the part your own team keeps adding to afterwards without coming back to us.</p>
-        <ul class="mini">
-          <li><span class="m">&rarr;</span>CSE circulars, listing rules and corporate-action notices.</li>
-          <li><span class="m">&rarr;</span>Your own research notes, sector reviews and committee packs.</li>
-          <li><span class="m">&rarr;</span>Custodian and vendor statements that explain a number your tables do not.</li>
-        </ul>
-        <p>House definitions are the one exception: how turnover is calculated, or what a dealer may see, is written once in the admin portal rather than uploaded, and reaches the graph as memory.</p>
+    <div class="dochead">
+      <h3 class="subh">Upload the documents your desks already rely on</h3>
+      <p>The data lens is built from your tables during the pilot. The knowledge lens is built from your documents, and it is the part your own team keeps adding to afterwards without coming back to us.</p>
+    </div>
+    <div class="docsrc">
+      <div class="bl3">
+        <div><span class="bn">The exchange</span><p>CSE circulars, listing rules and corporate-action notices, so a rule change reaches the graph the day it lands.</p></div>
+        <div><span class="bn">Your own desks</span><p>Research notes, sector reviews and committee packs, so an answer can cite the view your analysts already took.</p></div>
+        <div><span class="bn">Custodians and vendors</span><p>The statements that explain a number your tables do not, and the reconciliations behind them.</p></div>
       </div>
+      <p class="docnote">House definitions are the one exception: how turnover is calculated, or what a dealer may see, is written once in the admin portal rather than uploaded, and reaches the graph as memory.</p>
     </div>
   </div>
 </section>
