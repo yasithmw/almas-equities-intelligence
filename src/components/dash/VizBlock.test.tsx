@@ -14,6 +14,17 @@ const bars: Viz = {
   caption: 'Illustrative values',
 }
 
+const zeroBars: Viz = {
+  kind: 'bars',
+  title: 'Dividend yield, listed banks',
+  rows: [
+    { label: 'COMB', value: 0, display: '0.0%' },
+    { label: 'HNB', value: 0, display: '0.0%' },
+  ],
+  source: 'Source: your market data',
+  caption: 'Illustrative values',
+}
+
 const signed: Viz = {
   kind: 'signedBars',
   title: 'Foreign net, this week',
@@ -70,6 +81,17 @@ describe('VizBlock', () => {
     const { container } = render(<VizBlock viz={bars} />)
     const fills = container.querySelectorAll('[data-fill]')
     expect(fills[0].getAttribute('style')).toContain('100%')
+  })
+
+  it('guards an all-zero bars set: fills are empty, not NaN%', () => {
+    const { container } = render(<VizBlock viz={zeroBars} />)
+    const fills = container.querySelectorAll('[data-fill]')
+    expect(fills.length).toBe(2)
+    for (const fill of fills) {
+      const style = fill.getAttribute('style') ?? ''
+      expect(style).not.toContain('NaN')
+      expect(style).toContain('0%')
+    }
   })
 
   it('marks negative signed bars so they can be styled apart', () => {

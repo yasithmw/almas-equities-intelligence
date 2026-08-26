@@ -7,6 +7,9 @@ import DataTable from './DataTable'
 import styles from './VizBlock.module.css'
 
 export default function VizBlock({ viz }: { viz: Viz }) {
+  const maxBarValue =
+    viz.kind === 'bars' ? Math.max(...viz.rows.map((x) => x.value)) || 1 : 1
+
   return (
     <div className={styles.card}>
       <div className={styles.title}>{viz.title}</div>
@@ -17,7 +20,7 @@ export default function VizBlock({ viz }: { viz: Viz }) {
               key={r.label}
               label={r.label}
               display={r.display}
-              pct={(r.value / Math.max(...viz.rows.map((x) => x.value))) * 100}
+              pct={(r.value / maxBarValue) * 100}
             />
           ))}
         </div>
