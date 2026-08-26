@@ -329,14 +329,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 .frame-q{border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--lift-sm);}
 
 /* alternating feature split */
-.split{margin-top:64px;display:grid;grid-template-columns:1fr 1.08fr;gap:48px;align-items:start;}
-.split.rev{grid-template-columns:1.08fr 1fr;}
-.split>*{min-width:0;}
-.split.rev .txt{order:2;}
-@media(max-width:920px){.split,.split.rev{grid-template-columns:1fr;gap:28px;}.split.rev .txt{order:0;}}
-.split h3{font-family:var(--serif);font-weight:500;font-size:26px;line-height:1.2;letter-spacing:-.01em;}
 .stag{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue-2);margin-bottom:11px;}
-.split p{font-size:15px;color:var(--muted);line-height:1.62;margin-top:12px;max-width:58ch;}
 .mini{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;}
 .mini li{font-size:14.5px;color:var(--ink-2);display:flex;gap:11px;align-items:baseline;line-height:1.45;}
 .mini li .m{font-family:var(--mono);color:var(--navy);font-size:12px;flex:none;position:relative;top:1px;}
@@ -427,23 +420,6 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 .mv .g{color:var(--up);font-family:var(--mono);font-weight:500;font-size:12.5px;}
 .mv .r{color:var(--down);font-family:var(--mono);font-weight:500;font-size:12.5px;}
 
-/* clustering consensus */
-.models{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.mod{border:1px solid var(--line);border-radius:12px;padding:13px 13px 11px;background:var(--surface);box-shadow:var(--lift-sm);}
-.mod .mh{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;text-align:center;}
-.mod svg{width:100%;height:auto;display:block;}
-.conv{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 0 12px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);}
-.conv .ln{height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--line) 22%,var(--line) 78%,transparent);}
-.cons{border:1px solid oklch(0.315 0.125 264 / .28);border-radius:12px;padding:15px 16px 13px;background:var(--tint);}
-.cons .ch{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);margin-bottom:10px;flex-wrap:wrap;}
-.cons svg{width:100%;max-width:280px;height:auto;display:block;margin:0 auto;}
-.segs{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
-.seg{display:grid;grid-template-columns:12px 1fr auto auto;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px 15px;background:var(--surface);}
-.seg .sw{width:11px;height:11px;border-radius:3px;}
-.seg .snm{font-size:14px;font-weight:500;}
-.seg .sd{font-size:12.5px;color:var(--muted);margin-top:3px;}
-.seg .sc{font-family:var(--mono);font-size:13px;font-weight:500;}
-.seg .spc{font-family:var(--mono);font-size:11.5px;color:var(--muted);width:38px;text-align:right;}
 
 /* data-quality gate flow */
 .gate{display:flex;align-items:flex-start;gap:0;margin-top:4px;flex-wrap:wrap;}
@@ -666,7 +642,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
   .bpan,.bstg,.bl3>div{break-inside:avoid;}
   .bfh,.bfd,.blh{break-after:avoid;}
   .bpan{box-shadow:none;}
-  .frame,.tl,.meas,.dqt{box-shadow:none;break-inside:avoid;}
+  .frame,.tl,.meas,.dqt,.frame-q{box-shadow:none;break-inside:avoid;}
   h2,h3{break-after:avoid;}
 }
 </style>
@@ -865,7 +841,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
   <div class="wrap">
     <div class="slab"><span>04</span><span class="r"></span>Beyond the tools you already have</div>
     <h2>Why this is not another BI dashboard</h2>
-    <p class="dek">A fair question: Almas can buy Power BI, and Microsoft Fabric now ships its own Copilot. Our honest answer is that <b>those are the foundation, not the competition</b>. We run on top of them. What they do not do is the part that actually costs your analysts their week.</p>
+    <p class="dek">It answers questions nobody built a view for, follows how your data actually connects, and keeps every answer inside the access of the person who asked.</p>
     <div class="gapgrid">
       <div class="gap">
         <div class="gt">The new question</div>
@@ -878,7 +854,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
         <div class="gt">The context</div>
         <div class="gb2">
           <h3>A query assistant does not know how your world connects</h3>
-          <p>Copilot writes a query against a model someone has already defined for it. It has no view of how an index, a sector, a company and a client account relate to each other. The knowledge graph holds those relationships, so &ldquo;peers in the same index&rdquo; or &ldquo;this client&rsquo;s sector exposure&rdquo; resolves correctly instead of matching on a name.</p>
+          <p>A query assistant writes against a model someone has already defined for it, and has no view of how an index, a sector, a company and a client account relate to each other. The knowledge graph holds those relationships, so &ldquo;peers in the same index&rdquo; or &ldquo;this client&rsquo;s sector exposure&rdquo; resolves correctly instead of matching on a name.</p>
         </div>
       </div>
       <div class="gap">
@@ -895,9 +871,6 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
           <p>Metric definitions, data-quality rules, the knowledge graph, agent behaviour and access scoping are all configured in one admin portal, with two-person approval on every change and a full audit trail. In a typical BI estate that logic is scattered across reports, spreadsheets and people.</p>
         </div>
       </div>
-    </div>
-    <div class="close">
-      <p>Put simply: <b>Fabric and Power BI store and show your data. This platform is the layer above that does the analyst&rsquo;s work</b>, and it is governed tightly enough to be trusted with a client&rsquo;s book.</p>
     </div>
   </div>
 </section>
@@ -1145,85 +1118,42 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
       <div><div class="cnum">Capability 03</div><h3>Client segmentation</h3></div>
       <p class="crole">Who is in your book, by behaviour</p>
     </div>
-    <p class="clede">A segmentation engine that groups the accounts in your book by how they actually behave, not by how they were tagged when they opened. Three independent models cluster the same accounts, and only the groupings all of them agree on become a segment.</p>
+    <p class="clede">Every account in your book still carries the category it was given the day it opened. This groups them by how they actually trade instead, describes each group in words a desk can use rather than handing over a number, and keeps every run, so you can see which accounts moved between them.</p>
     <div class="subs">
       <div class="sub">
         <div class="sk"><i>01</i><b>Behaviour, not the tag on the account</b></div>
-        <p>Accounts are grouped by how they actually trade, using activity, holding period, ticket size and instrument mix, rather than the category they were given when they opened.</p>
+        <p>Accounts are grouped on how often they trade, how long they hold, the size of their tickets and the instruments they favour. The platform also proposes measures you do not already store, worked out from the same records.</p>
         <div class="uc"><span class="ul">At Almas</span><span class="uv">An account opened as ordinary retail in 2019 that now turns over daily shows up where it belongs, not where it was filed.</span></div>
       </div>
       <div class="sub">
-        <div class="sk"><i>02</i><b>Three models, one consensus</b></div>
-        <p>Ward hierarchical clustering, k-modes and a Gaussian mixture each cluster the same accounts. Only the groupings all three agree on become a segment; the rest stay unassigned for a human to look at.</p>
-        <div class="uc"><span class="ul">At Almas</span><span class="uv">No relationship manager is handed a call list that rests on a single model&rsquo;s guess about a borderline account.</span></div>
+        <div class="sk"><i>02</i><b>Grouped three ways, then cross-checked</b></div>
+        <p>The same accounts are grouped three separate ways, using different reasoning each time. Where at least two of the three put an account in the same group it is firmly placed, and where they disagree it goes to the closest fit and is marked as such.</p>
+        <div class="uc"><span class="ul">At Almas</span><span class="uv">A relationship manager can see which part of a call list is solid and which part is a judgement call, before picking up the phone.</span></div>
       </div>
       <div class="sub">
-        <div class="sk"><i>03</i><b>Segments your team names</b></div>
-        <p>An agent proposes a name and a description for each cluster from its actual characteristics. Your team accepts, renames or rejects it, and every run is kept as a version.</p>
-        <div class="uc"><span class="ul">At Almas</span><span class="uv">&ldquo;Dividend income&rdquo; and &ldquo;Dormant&rdquo; become the words the desk uses, because your desk chose them.</span></div>
+        <div class="sk"><i>03</i><b>Named and explained in plain words</b></div>
+        <p>Each group arrives already named and written up, built strictly from the handful of features that define it and the figures that separate it from the rest of the book. Your team can keep the name or change it.</p>
+        <div class="uc"><span class="ul">At Almas</span><span class="uv">The group that holds for months and buys around declaration dates is handed over described that way, not as a number for someone to work out.</span></div>
       </div>
       <div class="sub">
         <div class="sk"><i>04</i><b>Movement between segments</b></div>
-        <p>Because runs are versioned, an account&rsquo;s path from one segment to another over time is visible instead of being overwritten.</p>
+        <p>Every published run is kept, and each account carries its own history, so a move from one segment to another is recorded rather than written over.</p>
         <div class="uc"><span class="ul">At Almas</span><span class="uv">See which active clients drifted towards dormant this quarter, and whose book each of them sits in.</span></div>
       </div>
     </div>
-    <div class="split rev" style="margin-top:44px">
-      <div class="txt">
+    <div class="dochead" style="margin-top:56px">
+      <div>
         <div class="stag">What the desks do with it</div>
-        <h3>A segment is only useful if someone can act on it</h3>
-        <p>Each segment becomes a list your relationship managers and research desk can work from, scoped to what that person is allowed to see.</p>
-        <ul class="mini">
-          <li><span class="m">&rarr;</span>Pull the dividend-income clients before a rights issue is announced.</li>
-          <li><span class="m">&rarr;</span>Give each manager the dormant accounts in their own book, with the last trade date.</li>
-          <li><span class="m">&rarr;</span>Ask which segment is carrying the concentration risk in one sector.</li>
-        </ul>
-        <div class="note"><div class="lbl">Where it stands</div><p>The engine is production-built and runs today on another client&rsquo;s dataset. The clustering itself is deterministic mathematics, and an agent only proposes the segment names. Pointing it at Almas&rsquo;s accounts is a data-mapping exercise inside the pilot, not new engineering.</p></div>
+        <h3 class="subh">The segments become something anyone can ask about</h3>
+        <div class="note"><div class="lbl">Where it stands</div><p>The engine is built and runs today on another client&rsquo;s data. The grouping itself is fixed and repeatable, and an agent only proposes the names. Pointing it at Almas&rsquo;s accounts is a data-mapping exercise inside the pilot, not new engineering.</p></div>
       </div>
       <div>
-    <div class="ex-cap"><span class="tag">Exhibit E</span><span class="t">Ward, k-modes and Gaussian over the same twelve accounts</span></div>
-    <div class="frame-q" style="padding:18px 18px 16px">
-      <div class="models">
-        <div class="mod"><div class="mh">Ward</div>
-          <svg viewBox="0 0 134 92" aria-hidden="true">
-            <circle cx="22" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="52" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="82" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="112" cy="22" r="7" fill="oklch(0.575 0.115 155)"/>
-            <circle cx="22" cy="48" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="52" cy="48" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="82" cy="48" r="7" fill="oklch(0.315 0.125 264)"/><circle cx="112" cy="48" r="7" fill="oklch(0.315 0.125 264)"/>
-            <circle cx="22" cy="74" r="7" fill="oklch(0.315 0.125 264)"/><circle cx="52" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="82" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="112" cy="74" r="7" fill="oklch(0.655 0.115 75)"/>
-          </svg>
-        </div>
-        <div class="mod"><div class="mh">k-modes</div>
-          <svg viewBox="0 0 134 92" aria-hidden="true">
-            <circle cx="22" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="52" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="82" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="112" cy="22" r="7" fill="oklch(0.575 0.115 155)"/>
-            <circle cx="22" cy="48" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="52" cy="48" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="82" cy="48" r="7" fill="oklch(0.315 0.125 264)"/><circle cx="112" cy="48" r="7" fill="oklch(0.315 0.125 264)"/>
-            <circle cx="22" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="52" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="82" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="112" cy="74" r="7" fill="oklch(0.655 0.115 75)"/>
-          </svg>
-        </div>
-        <div class="mod"><div class="mh">Gaussian</div>
-          <svg viewBox="0 0 134 92" aria-hidden="true">
-            <circle cx="22" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="52" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="82" cy="22" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="112" cy="22" r="7" fill="oklch(0.575 0.115 155)"/>
-            <circle cx="22" cy="48" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="52" cy="48" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="82" cy="48" r="7" fill="oklch(0.315 0.125 264)"/><circle cx="112" cy="48" r="7" fill="oklch(0.315 0.125 264)"/>
-            <circle cx="22" cy="74" r="7" fill="oklch(0.315 0.125 264)"/><circle cx="52" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="82" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="112" cy="74" r="7" fill="oklch(0.655 0.115 75)"/>
-          </svg>
-        </div>
-      </div>
-      <div class="conv"><span class="ln"></span>Keep only what they agree on<span class="ln"></span></div>
-      <div class="cons">
-        <div class="ch"><span>Consensus</span><span>10 of 12 agreed</span></div>
-        <svg viewBox="0 0 134 92" aria-hidden="true" style="max-width:200px">
-          <circle cx="22" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="52" cy="22" r="7" fill="oklch(0.555 0.15 256)"/><circle cx="82" cy="22" r="6" fill="none" stroke="var(--faint)" stroke-width="1.6" stroke-dasharray="3 3"/><circle cx="112" cy="22" r="7" fill="oklch(0.575 0.115 155)"/>
-          <circle cx="22" cy="48" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="52" cy="48" r="7" fill="oklch(0.575 0.115 155)"/><circle cx="82" cy="48" r="7" fill="oklch(0.315 0.125 264)"/><circle cx="112" cy="48" r="7" fill="oklch(0.315 0.125 264)"/>
-          <circle cx="22" cy="74" r="6" fill="none" stroke="var(--faint)" stroke-width="1.6" stroke-dasharray="3 3"/><circle cx="52" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="82" cy="74" r="7" fill="oklch(0.655 0.115 75)"/><circle cx="112" cy="74" r="7" fill="oklch(0.655 0.115 75)"/>
-        </svg>
-        <div class="capn" style="justify-content:center;margin-top:10px"><span>Two accounts the models disagreed on stay unassigned for review</span></div>
-      </div>
-      <div class="segs">
-        <div class="seg"><span class="sw" style="background:oklch(0.555 0.15 256)"></span><div><div class="snm">Active momentum</div><div class="sd">High turnover, holds measured in days</div></div><span class="sc">1,180</span><span class="spc">17%</span></div>
-        <div class="seg"><span class="sw" style="background:oklch(0.575 0.115 155)"></span><div><div class="snm">Dividend income</div><div class="sd">Long holds, buys around declaration dates</div></div><span class="sc">1,640</span><span class="spc">24%</span></div>
-        <div class="seg"><span class="sw" style="background:oklch(0.315 0.125 264)"></span><div><div class="snm">Occasional retail</div><div class="sd">Low activity, small ticket sizes</div></div><span class="sc">2,720</span><span class="spc">40%</span></div>
-        <div class="seg"><span class="sw" style="background:oklch(0.655 0.115 75)"></span><div><div class="snm">Dormant</div><div class="sd">No trades in six months, re-activation target</div></div><span class="sc">1,300</span><span class="spc">19%</span></div>
-      </div>
-      <div class="capn" style="padding:0 2px"><span>Segment names proposed by an agent, confirmed by you</span><span>Illustrative</span></div>
-    </div>
+        <p>Once a run is published, the segments sit in your data like any other field. Your desks can ask about them in plain language, put them on a dashboard, or work them as a call list, and each person only ever sees the accounts in their own book.</p>
+        <ul class="mini">
+          <li><span class="m">&rarr;</span>A relationship manager asks for the dormant accounts in their own book, with the date each one last traded.</li>
+          <li><span class="m">&rarr;</span>Research pulls the dividend-income clients before a rights issue is announced.</li>
+          <li><span class="m">&rarr;</span>Management asks which segment is carrying the concentration in a single sector.</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -1264,7 +1194,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
       </div>
     </div>
     <div class="ex">
-    <div class="ex-cap"><span class="tag">Exhibit F</span><span class="t">Where the gate sits, and the review queue</span></div>
+    <div class="ex-cap"><span class="tag">Exhibit E</span><span class="t">Where the gate sits, and the review queue</span></div>
     <div class="frame-q" style="padding:18px">
       <div class="gate">
         <div class="gstep"><div class="gb">Bronze</div><div class="gl">Raw, as received</div></div>
@@ -1335,7 +1265,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
       <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Admin portal</b></div><p>Connectors, definitions, agent configuration, change review and audit, already shipping.</p></div>
       <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Knowledge graph</b></div><p>Graph build and traversal, with relationships resolved under the asking user&rsquo;s identity.</p></div>
       <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Data quality service</b></div><p>Scheduled checks, quarantine, and the review queue, running against a live medallion pipeline.</p></div>
-      <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Clustering engine</b></div><p>Three-model consensus segmentation with versioning, running today on another client&rsquo;s data.</p></div>
+      <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Client segmentation</b></div><p>Accounts grouped by behaviour three separate ways and cross-checked, versioned per run, running today on another client&rsquo;s data.</p></div>
     </div>
 
     <div class="ex">

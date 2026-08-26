@@ -42,19 +42,22 @@ function DashboardsIcon() {
 // asked from the chat pane's own suggestions. The list is wrapped in
 // data-testid="rail-history" for Task 7 to assert against.
 export default function SideRail() {
-  const { view, setView, history } = useDemo()
+  const { view, setView, history, newChat } = useDemo()
 
   return (
     <nav className={styles.side} aria-label="Demo navigation">
       {/* aria-label rather than relying on the child span's text: below
           820px that text is display:none (icon-only), and the icon is
           aria-hidden, which would otherwise leave this button with no
-          accessible name at all on a real mobile screen reader. */}
+          accessible name at all on a real mobile screen reader.
+          Ruling R20: calls newChat(), not just setView('chat'), so a
+          control labelled "New chat" actually starts a new one instead
+          of just switching to a view that may already hold a thread. */}
       <button
         type="button"
         aria-label="New chat"
         className={`${styles.mi} ${styles.dk}`}
-        onClick={() => setView('chat')}
+        onClick={() => newChat()}
       >
         <NewChatIcon />
         <span className={styles.text} aria-hidden="true">New chat</span>

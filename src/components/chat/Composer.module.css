@@ -1,0 +1,75 @@
+/* Ported verbatim from the client brief's .comp / .compbar / .send
+   (grep-verified). The static mock's placeholder <span> and &uarr;
+   glyph become a real input and a real icon button. */
+.comp {
+  padding: 13px 26px 16px;
+  border-top: 1px solid var(--line);
+  flex: none;
+}
+
+.compbar {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 11px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.input::placeholder {
+  color: var(--faint);
+}
+
+.input:disabled {
+  color: var(--muted);
+}
+
+.send {
+  width: 31px;
+  height: 31px;
+  border-radius: 8px;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border: none;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s var(--ease), opacity .15s var(--ease);
+}
+
+.send:hover:not(:disabled) {
+  background: var(--navy-2);
+}
+
+.send:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.send:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .send {
+    transition: none;
+  }
+}

@@ -1,0 +1,136 @@
+/* Free surface (design brief). The empty state ports the document's
+   own .ledger / .led hairline-grid (grep-verified against the live
+   file, which corrected two figures the design brief's own transcript
+   had drifted on): two-up, gap 0, border-top var(--line), each cell
+   border-bottom var(--line), odd cells padding-right 38px plus a
+   var(--line) right border (the design brief says --hair; the actual
+   declaration at .led:nth-child(odd) is --line, and .ledger.qa never
+   overrides it), even cells padding-left 38px, collapsing to one
+   column under 860px with the odd/even padding and border zeroed.
+   .ledger.qa itself (the document's own "desk name above a quoted
+   question" pattern, used twice for Research and Dealing-and-
+   relationship testimonials) is the direct real-world precedent for
+   pairing a mono desk eyebrow with a question, confirming this is the
+   right device to reuse rather than a card grid. The eyebrow recipe
+   itself reuses .mgrp, already established in SideRail.module.css. */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.cell {
+  border-bottom: 1px solid var(--line);
+}
+
+.cell:nth-child(odd) {
+  padding-right: 38px;
+  border-right: 1px solid var(--line);
+}
+
+.cell:nth-child(even) {
+  padding-left: 38px;
+}
+
+.cellBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 18px 4px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: background .15s var(--ease);
+}
+
+.cellBtn:hover {
+  background: var(--panel);
+}
+
+.cellBtn:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.cellBtn:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.qtext {
+  font-size: 14.5px;
+  line-height: 1.42;
+  color: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .cell:nth-child(odd) {
+    padding-right: 0;
+    border-right: none;
+  }
+  .cell:nth-child(even) {
+    padding-left: 0;
+  }
+}
+
+/* The slim row shown above the composer once the thread is no longer
+   empty, filtered by ChatPane to the questions not yet asked. No class
+   in the brief covers this (it only ever shows one frozen turn), so
+   the chip shape borrows the .mode pill's own real declaration instead
+   of inventing new numbers. */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0 26px 11px;
+}
+
+.chip {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 11px;
+  cursor: pointer;
+  transition: background .15s var(--ease), border-color .15s var(--ease);
+}
+
+.chip:hover {
+  background: var(--panel);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.chip:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cellBtn,
+  .chip {
+    transition: none;
+  }
+}

@@ -1,0 +1,187 @@
+/* Ported verbatim from the client brief's .feed / .fh / .steps (grep-
+   verified against the live document, anchored by class rather than
+   the brief's line numbers, which had already drifted once): panel
+   border var(--line), radius 11px, padding 11px 15px, margin-bottom
+   13px, background var(--paper); header flex row gap 9px margin-bottom
+   9px with a mono 10px uppercase .14em label, a 6px var(--up) dot, and
+   a mono 11.5px var(--up) timer pushed right by margin-left:auto; each
+   step a 13px var(--ink-2) label preceded by the document's own 5px
+   dot (width/height 5px, radius 50%, ::before).
+
+   One deliberate departure: the mock's .steps is a flex-wrap chip row,
+   because it only ever shows four finished labels side by side. That
+   layout cannot express "inset behind a left hairline", and nothing in
+   the document renders a running, multi-step deep-mode loop for there
+   to be a real declaration to port, so this is the one area the design
+   brief names as a justified risk. The dot recipe, font and colour are
+   kept exactly as ported; only the list direction changes, to a
+   vertical one-step-per-line spine the inset can hang off. */
+
+.feed {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 11px 15px;
+  margin-bottom: 13px;
+  background: var(--paper);
+}
+
+.fh {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 9px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+
+button.fh {
+  cursor: pointer;
+}
+
+button.fh:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--up);
+  flex: none;
+}
+
+.pulsing {
+  animation: feedPulse 1.6s var(--ease) infinite;
+}
+
+.timer {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--up);
+  margin-left: auto;
+  font-weight: 500;
+}
+
+/* Vertical spine: see the file header for why this departs from the
+   mock's flex-wrap chip row. */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.step::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex: none;
+  transition: background-color .2s var(--ease);
+}
+
+.landed::before {
+  background: var(--up);
+}
+
+.current::before {
+  background: var(--blue);
+  animation: feedPulse 1.1s var(--ease) infinite;
+}
+
+/* The deep-mode loop, design brief: steps between "Reviewer challenged
+   the result" and "Reviewer confirmed" sit inset 14px behind a 1px
+   var(--down) left hairline, so the review round-trip reads as
+   structure rather than as extra lines in the list. */
+.inset {
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1px solid var(--down);
+}
+
+.enter {
+  animation: stepIn 220ms var(--ease) both;
+}
+
+/* Collapsed representation (Ruling R21): every turn except the one
+   just asked collapses to this one line once its feed completes. */
+.summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 11px;
+  margin-bottom: 13px;
+  cursor: pointer;
+  transition: background .15s var(--ease), color .15s var(--ease);
+}
+
+.summary:hover {
+  background: var(--panel);
+  color: var(--ink-2);
+}
+
+.summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+@keyframes feedPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .35; }
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Reduced motion (design brief): drop the pulse and the enter
+   transition, but keep the sequence, the inset and the timer, all of
+   which are driven by the component's own timers, not by CSS. */
+@media (prefers-reduced-motion: reduce) {
+  .pulsing,
+  .current::before {
+    animation: none;
+  }
+  .enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .step::before {
+    transition: none;
+  }
+  .summary {
+    transition: none;
+  }
+}
