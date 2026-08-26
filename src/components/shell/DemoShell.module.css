@@ -1,0 +1,27 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* The rail becomes a horizontal bar on top of the main pane rather than
+   beside it, once it stops being a side rail (SideRail.module.css). */
+@media (max-width: 820px) {
+  .body {
+    flex-direction: column;
+  }
+}

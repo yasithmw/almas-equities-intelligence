@@ -1,0 +1,20 @@
+/* Free surface. aqua-tint ground, aqua-ink text, one line hairline,
+   mono 10.5px uppercase at .14em tracking, roughly 28px tall, full
+   width, directly under the top bar. No icon: an icon would make this
+   read as an alert rather than chrome. */
+.band {
+  background: var(--aqua-tint);
+  color: var(--aqua-ink);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 20px;
+  text-align: center;
+  flex: none;
+}
