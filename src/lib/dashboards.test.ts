@@ -15,6 +15,20 @@ describe('dashboards', () => {
     ])
   })
 
+  // Fix round 2: Client Book and Firm Performance accepted a filters
+  // argument but never varied their panels by it, so Sector/Period
+  // rendered as live, clickable controls that did nothing on either.
+  // Each dashboard now declares for itself whether Sector/Period can
+  // change what it shows, which DashboardHeader reads to decide
+  // whether to render FilterBar at all.
+  it('declares filters only for Market Overview, not Client Book or Firm Performance', () => {
+    expect(DASHBOARDS.map((d) => ({ id: d.id, usesFilters: d.usesFilters }))).toEqual([
+      { id: 'market', usesFilters: true },
+      { id: 'clients', usesFilters: false },
+      { id: 'firm', usesFilters: false },
+    ])
+  })
+
   it('opens every dashboard with a KPI row first', () => {
     for (const d of DASHBOARDS) {
       const panels = d.panels('management', DEFAULT_FILTERS)
@@ -126,6 +140,17 @@ describe('matchDashboardSpec', () => {
     const panels = dashboard.panels('management', DEFAULT_FILTERS)
     expect(panels).toHaveLength(4)
     expect(panels[0].body.kind).toBe('kpis')
+  })
+
+  // Fix round 2, extended beyond the two dashboards it named: none of
+  // the three specs' panels() read a Filters argument either (they
+  // take none), so a built dashboard declaring usesFilters would show
+  // the same dead Sector/Period controls the fix removed from Client
+  // Book and Firm Performance, just on a path the brief didn't name.
+  it('declares no filters on a built dashboard either, since no spec varies by them', () => {
+    for (const spec of DASHBOARD_SPECS) {
+      expect(buildDashboard(spec, spec.text).usesFilters).toBe(false)
+    }
   })
 
   it('gives each spec a KPI row plus three panels, same shape as the pre-built three', () => {

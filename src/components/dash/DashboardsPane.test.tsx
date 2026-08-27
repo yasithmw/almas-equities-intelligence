@@ -48,6 +48,27 @@ describe('dashboards pane', () => {
       expect(screen.getByTestId('panel-movers').textContent).not.toBe(before))
   })
 
+  // Fix round 2: Client Book and Firm Performance accepted a filters
+  // argument but never varied their panels by it, so Sector/Period
+  // rendered as live, clickable controls a client could click within
+  // ten seconds of opening either and see nothing happen. Removed
+  // rather than faked: neither renders a <select> at all now, while
+  // Market Overview (which genuinely recomputes on Sector/Period,
+  // proven above) still does.
+  it('shows no filter controls on Client Book or Firm Performance, but keeps them on Market Overview', async () => {
+    render(<DemoShell />)
+    const user = await openDashboards()
+
+    await user.click(screen.getByRole('button', { name: /client book/i }))
+    expect(document.querySelectorAll('select').length).toBe(0)
+
+    await user.click(screen.getByRole('button', { name: /firm performance/i }))
+    expect(document.querySelectorAll('select').length).toBe(0)
+
+    await user.click(screen.getByRole('button', { name: /market overview/i }))
+    expect(document.querySelectorAll('select').length).toBe(2)
+  })
+
   it('builds a fourth dashboard from a described request', async () => {
     render(<DemoShell />)
     const user = await openDashboards()

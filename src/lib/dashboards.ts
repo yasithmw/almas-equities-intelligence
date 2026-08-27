@@ -53,6 +53,13 @@ export interface Dashboard {
   title: string
   badge: string
   description: string
+  // Fix round 2: Client Book and Firm Performance accepted a filters
+  // argument but never varied their panels by it, so FilterBar rendered
+  // live, clickable Sector/Period controls that did nothing on either.
+  // Each dashboard now declares for itself whether Sector/Period can
+  // change what it shows; DashboardHeader renders FilterBar only when
+  // this is true, instead of unconditionally for every dashboard.
+  usesFilters: boolean
   panels: (desk: DeskId, filters: Filters) => DashPanel[]
 }
 
@@ -399,6 +406,9 @@ const MARKET: Dashboard = {
   title: 'Market Overview',
   badge: 'Pre-built',
   description: 'Index levels, sector performance and the biggest movers, market-wide.',
+  // Sector narrows Turnover/Foreign net/sector performance/movers;
+  // Period windows the index line. Both genuinely change what renders.
+  usesFilters: true,
   panels: marketPanels,
 }
 const CLIENTS: Dashboard = {
@@ -406,6 +416,11 @@ const CLIENTS: Dashboard = {
   title: 'Client Book',
   badge: 'Pre-built',
   description: 'Holdings, concentration and unrealised gain across your visible accounts.',
+  // clientsPanels ignores filters entirely (Judgment call 5, main
+  // report): holdings, concentration and gain/loss have no sector or
+  // period dimension in this dataset. Showing Sector/Period here would
+  // be a live control that does nothing when touched.
+  usesFilters: false,
   panels: clientsPanels,
 }
 const FIRM: Dashboard = {
@@ -413,6 +428,10 @@ const FIRM: Dashboard = {
   title: 'Firm Performance',
   badge: 'Pre-built',
   description: 'Brokerage revenue against turnover, by desk, and its concentration.',
+  // Same reasoning as Client Book: firmPanels ignores filters, and
+  // Period specifically would need per-period revenue this dataset
+  // does not carry (task-8 fix-round-2 brief).
+  usesFilters: false,
   panels: firmPanels,
 }
 
@@ -763,6 +782,15 @@ export function buildDashboard(spec: DashboardSpec, query: string): Dashboard {
     title: spec.title,
     badge: 'Custom',
     description: query,
+    // None of the three specs' panels() functions read a Filters
+    // argument at all (they take none), so a built dashboard showing
+    // Sector/Period controls would be exactly the dead-control defect
+    // this fix round removed from Client Book and Firm Performance,
+    // just one path over. Extending the same declaration here, beyond
+    // the two dashboards the fix named, rather than leaving the
+    // identical bug on the one path that happens not to have been
+    // named.
+    usesFilters: false,
     panels: spec.panels,
   }
 }

@@ -6,6 +6,12 @@ import styles from './DashboardHeader.module.css'
 interface Props {
   title: string
   badge: string
+  // Fix round 2: Client Book and Firm Performance accept a filters
+  // argument but never vary their panels by it, so FilterBar used to
+  // render here unconditionally, as a live, clickable Sector/Period
+  // control that did nothing on either. Each Dashboard now declares
+  // usesFilters for itself; FilterBar renders only when it is true.
+  usesFilters: boolean
   filters: Filters
   onFiltersChange: (next: Filters) => void
 }
@@ -28,14 +34,18 @@ interface Props {
 // it was one more badge in a header that did not need it, this app's
 // own instance of decoration competing with the things that actually
 // carry information.
-export default function DashboardHeader({ title, badge, filters, onFiltersChange }: Props) {
+export default function DashboardHeader({
+  title, badge, usesFilters, filters, onFiltersChange,
+}: Props) {
   return (
     <div className={styles.dhead}>
       <h2 className={styles.dt}>{title}</h2>
       <StatusPill tone={badge === 'Pre-built' ? 'ok' : 'ac'}>{badge}</StatusPill>
-      <div className={styles.filters}>
-        <FilterBar filters={filters} onChange={onFiltersChange} />
-      </div>
+      {usesFilters && (
+        <div className={styles.filters}>
+          <FilterBar filters={filters} onChange={onFiltersChange} />
+        </div>
+      )}
     </div>
   )
 }

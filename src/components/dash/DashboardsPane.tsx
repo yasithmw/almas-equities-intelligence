@@ -132,6 +132,7 @@ export default function DashboardsPane() {
         <DashboardHeader
           title={openDashboard.title}
           badge={openDashboard.badge}
+          usesFilters={openDashboard.usesFilters}
           filters={filters}
           onFiltersChange={setFilters}
         />
