@@ -1,0 +1,37 @@
+# A .vercelignore replaces .gitignore for CLI deploys (Vercel does not merge the
+# two), so this repeats every exclusion this repo's .gitignore relies on for a
+# Next.js + npm project, plus Vercel's own local artifacts. Nothing here excludes
+# anything the build needs: public/brief.html stays, since it is what the root
+# and /brief rewrites (next.config.ts) serve; all app source, CSS Modules,
+# tokens.css and scripts/sync-brief.mjs (the prebuild step that produces it) stay.
+
+# dependencies: Vercel installs its own from package-lock.json
+/node_modules
+
+# build output and caches: regenerated fresh on every Vercel build
+/.next/
+/out/
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel's own local project-link metadata, and git history: neither is needed
+# by `next build`, and both can be large
+/.vercel
+/.git
+
+# secrets and env files: real values come from Vercel's own env var settings,
+# never from an uploaded file
+.env*
+*.pem
+
+# test coverage output, if ever generated locally
+/coverage
+
+# OS and package-manager noise
+.DS_Store
+npm-debug.log*
+
+# No SDD/superpowers workspace artifacts (docs/superpowers/sdd/...) are
+# reachable from inside this directory: checked for a docs/ folder and for
+# symlinks pointing outside the project and found neither, so there is nothing
+# from that source to exclude here.
