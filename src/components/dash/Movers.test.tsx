@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Movers from './Movers'
-import styles from './Movers.module.css'
 import type { MoversViz } from '@/lib/types'
 
 const viz: MoversViz = {
@@ -37,8 +36,8 @@ describe('Movers', () => {
 
   it('colours a gain up and a loss down', () => {
     render(<Movers viz={viz} />)
-    expect(screen.getByText('+6.2%').className).toContain(styles.g)
-    expect(screen.getByText('−3.1%').className).toContain(styles.r)
+    expect(screen.getByText('+6.2%').className).toContain('text-success')
+    expect(screen.getByText('\u22123.1%').className).toContain('text-danger')
   })
 
   it('renders a second, optional line for a name', () => {
@@ -48,11 +47,13 @@ describe('Movers', () => {
 
   it('mutes a withheld name so a masked row still reads normally, just quieter', () => {
     render(<Movers viz={ledgerViz} />)
-    expect(screen.getByText('Name withheld').className).toContain(styles.muted)
+    expect(screen.getByText('Name withheld').className).toContain('italic')
   })
 
-  it('omits the second line entirely when no name is given', () => {
-    const { container } = render(<Movers viz={viz} />)
-    expect(container.querySelectorAll(`.${styles.name}`).length).toBe(0)
+  it('omits the name line entirely when no name is given', () => {
+    const { rerender } = render(<Movers viz={viz} />)
+    expect(screen.queryAllByTestId('mover-name')).toHaveLength(0)
+    rerender(<Movers viz={ledgerViz} />)
+    expect(screen.queryAllByTestId('mover-name')).toHaveLength(2)
   })
 })

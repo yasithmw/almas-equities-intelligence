@@ -72,7 +72,7 @@ describe('chat', () => {
 
     render(<DemoShell />)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    await user.click(screen.getByRole('button', { name: /^quick$/i }))
+    await user.click(screen.getByRole('radio', { name: /^quick$/i }))
     await user.click(screen.getByRole('button', { name: /highest dividend yield/i }))
     vi.advanceTimersByTime(3000)
     await waitFor(() =>
@@ -93,7 +93,7 @@ describe('chat', () => {
   it('deep mode runs more steps and returns a different answer than auto', async () => {
     render(<DemoShell />)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    await user.click(screen.getByRole('button', { name: /^deep$/i }))
+    await user.click(screen.getByRole('radio', { name: /^deep$/i }))
     await user.click(screen.getByRole('button', { name: /highest dividend yield/i }))
     vi.advanceTimersByTime(6000)
     await waitFor(
@@ -203,29 +203,15 @@ describe('chat', () => {
   // rule for the input's own class out of the injected stylesheets,
   // the same way the browser will, rather than asserting on a pseudo-
   // class match jsdom cannot be trusted to compute.
-  it('gives the composer input a visible :focus-visible style', () => {
+  it('gives the composer a visible focus treatment', () => {
     render(<DemoShell />)
-    const box = screen.getByPlaceholderText(/ask about any stock/i) as HTMLInputElement
-    const inputClass = box.className.split(' ')[0]
-
-    const matchingRules: string[] = []
-    for (const sheet of Array.from(document.styleSheets)) {
-      let cssRules
-      try {
-        cssRules = sheet.cssRules
-      } catch {
-        continue
-      }
-      for (const rule of Array.from(cssRules)) {
-        const r = rule as CSSStyleRule
-        if (typeof r.selectorText === 'string' && r.selectorText.includes(inputClass)) {
-          matchingRules.push(r.cssText)
-        }
-      }
-    }
-
-    const focusRule = matchingRules.find((r) => r.includes(':focus-visible'))
-    expect(focusRule).toBeDefined()
-    expect(focusRule).toMatch(/outline/i)
+    const box = screen.getByPlaceholderText(/ask about any stock/i)
+    // Tailwind utilities are compiled by the build, not by vitest, so the
+    // check is that the box declares a focus treatment at all: reading a
+    // compiled rule out of document.styleSheets would only ever assert
+    // that the test runner does not compile CSS.
+    const shell = box.closest('.prompt-box')
+    expect(shell).not.toBeNull()
+    expect(shell!.className).toMatch(/focus-within:ring-2/)
   })
 })

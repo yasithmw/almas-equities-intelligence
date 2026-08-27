@@ -12,7 +12,6 @@ import SuggestedQuestions from './SuggestedQuestions'
 import Composer from './Composer'
 import AnswerBlock from './AnswerBlock'
 import NoMatchPanel from './NoMatchPanel'
-import styles from './ChatPane.module.css'
 
 // A deliberate beat between "finished typing" and "actually sending",
 // for a suggested question: the typewriter fills the composer, holds
@@ -164,51 +163,105 @@ export default function ChatPane() {
   // yet, so it steps aside for that one turn rather than doubling up.
   const showSlimRow = thread.length > 0 && lastTurn?.kind !== 'nomatch'
 
-  return (
-    <div className={styles.pane}>
-      <div className={showEmptyGrid ? `${styles.thread} ${styles.threadEmpty}` : styles.thread}>
-        {showEmptyGrid && (
-          <SuggestedQuestions
-            questions={QUESTIONS}
-            variant="grid"
-            onPick={askSuggested}
-            disabled={busy}
-          />
-        )}
-        {thread.map((turn) => {
-          const collapsed = turn.kind === 'matched' && Boolean(turn.resolved) && (
-            turn.expandedOverride === undefined
-              ? turn.turnId !== lastMatchedId
-              : !turn.expandedOverride
-          )
-          return (
-            <Fragment key={turn.turnId}>
-              <div className={styles.qbub}>{turn.text}</div>
-              {turn.kind === 'nomatch' ? (
-                <NoMatchPanel onPick={askSuggested} disabled={busy} />
-              ) : (
-                <AnswerBlock
-                  steps={turn.steps}
-                  collapsed={collapsed}
-                  onToggleCollapsed={() => toggleExpand(turn.turnId)}
-                  onFeedComplete={() => handleFeedComplete(turn.turnId)}
-                  resolved={turn.resolved}
-                />
-              )}
-            </Fragment>
-          )
-        })}
+  // The platform's message list keeps the newest turn in view; without
+  // it a Deep answer lands below the fold and the client watches an
+  // empty pane while the interesting part happens off screen.
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [thread])
+
+  const composer = (
+    <Composer value={value} onChange={setValue} onSend={askTyped} disabled={busy} />
+  )
+
+  // Empty state, ported from the platform's own: a centred column with
+  // the composer IN the middle of the pane rather than pinned to the
+  // bottom of an empty one, the starter tiles under it, and the heading
+  // above. The composer moves down to the footer the moment there is a
+  // thread to sit under.
+  if (showEmptyGrid) {
+    return (
+      <div className="flex h-full min-h-0 flex-col overflow-auto">
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-10 duration-300 animate-in fade-in">
+          <div className="text-center">
+            <h2 className="font-serif text-2xl font-bold tracking-[-0.01em] text-foreground">
+              Ask anything.{' '}
+              <span className="font-semibold italic text-foreground/85">See everything.</span>
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Ask about the market, your client book or the firm&apos;s own books. The agent
+              queries it, checks the answer, then draws it.
+            </p>
+          </div>
+
+          <div className="flex w-full max-w-3xl flex-col gap-4">
+            {composer}
+            <div className="flex flex-col gap-2">
+              <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground/50">
+                Try asking
+              </p>
+              <SuggestedQuestions
+                questions={QUESTIONS}
+                variant="grid"
+                onPick={askSuggested}
+                disabled={busy}
+              />
+            </div>
+          </div>
+        </div>
       </div>
-      <div className={styles.bottom}>
-        {showSlimRow && (
-          <SuggestedQuestions
-            questions={remaining}
-            variant="row"
-            onPick={askSuggested}
-            disabled={busy}
-          />
-        )}
-        <Composer value={value} onChange={setValue} onSend={askTyped} disabled={busy} />
+    )
+  }
+
+  return (
+    <div className="relative flex h-full min-h-0 flex-col">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 px-6 py-6">
+          {thread.map((turn) => {
+            const collapsed = turn.kind === 'matched' && Boolean(turn.resolved) && (
+              turn.expandedOverride === undefined
+                ? turn.turnId !== lastMatchedId
+                : !turn.expandedOverride
+            )
+            return (
+              <Fragment key={turn.turnId}>
+                <div
+                  className="max-w-[min(100%,32rem)] self-end rounded-2xl rounded-tr-lg bg-user-bubble px-4 py-3 text-sm leading-relaxed shadow-surface-sm [font-weight:380] [letter-spacing:-0.005em]"
+                  style={{ color: 'hsl(var(--user-bubble-foreground))' }}
+                >
+                  {turn.text}
+                </div>
+                {turn.kind === 'nomatch' ? (
+                  <NoMatchPanel onPick={askSuggested} disabled={busy} />
+                ) : (
+                  <AnswerBlock
+                    steps={turn.steps}
+                    collapsed={collapsed}
+                    onToggleCollapsed={() => toggleExpand(turn.turnId)}
+                    onFeedComplete={() => handleFeedComplete(turn.turnId)}
+                    resolved={turn.resolved}
+                  />
+                )}
+              </Fragment>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="shrink-0 border-t border-border/60 bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto w-full max-w-4xl px-6 pt-3 pb-3">
+          {showSlimRow && (
+            <SuggestedQuestions
+              questions={remaining}
+              variant="row"
+              onPick={askSuggested}
+              disabled={busy}
+            />
+          )}
+          {composer}
+        </div>
       </div>
     </div>
   )

@@ -2,36 +2,42 @@
 
 import ChatPane from '@/components/chat/ChatPane'
 import DashboardsPane from '@/components/dash/DashboardsPane'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { DemoProvider, useDemo } from './DemoContext'
-import TopBar from './TopBar'
+import Topbar from './Topbar'
 import DemoBand from './DemoBand'
-import SideRail from './SideRail'
-import styles from './DemoShell.module.css'
+import AppSidebar from './AppSidebar'
 
+// The frame is the platform's own: a full-width 64px header, then the
+// sidebar opening BELOW it and sharing the remaining height with the
+// content column to its right. Ported from the real workspace layout
+// (gf-app-dashboard src/app/(workspace)/layout.tsx) so the demo sits in
+// the same chrome the client already uses, rather than in a lookalike.
 function ShellBody() {
   const { view } = useDemo()
 
   return (
-    <div className={styles.shell}>
-      <TopBar />
+    <div className="fleet-page relative flex h-screen flex-col overflow-hidden bg-background">
+      <Topbar />
       <DemoBand />
-      <div className={styles.body}>
-        <SideRail />
-        <main className={styles.main}>
-          {view === 'chat' ? <ChatPane /> : <DashboardsPane />}
-        </main>
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
+        <AppSidebar />
+        <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <main className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+            {view === 'chat' ? <ChatPane /> : <DashboardsPane />}
+          </main>
+        </div>
       </div>
     </div>
   )
 }
 
-// Composes the bar, the band, the rail and the routed pane, and is the
-// one place the desk/mode/view/history state (DemoContext) actually
-// lives, per the Interfaces contract Tasks 7 and 8 were written against.
 export default function DemoShell() {
   return (
     <DemoProvider>
-      <ShellBody />
+      <TooltipProvider delayDuration={250}>
+        <ShellBody />
+      </TooltipProvider>
     </DemoProvider>
   )
 }

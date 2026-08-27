@@ -29,7 +29,10 @@ describe('shell', () => {
     const user = userEvent.setup()
     render(<DemoShell />)
     await user.click(screen.getByRole('button', { name: /dealing/i }))
-    expect(screen.getByTestId('active-desk').textContent).toContain('R. Fernando')
+    expect(screen.getByTestId('active-desk').textContent).toContain('Dealing')
+    // The header prints the person beside the switcher, the way the
+    // platform's own header prints the signed-in user.
+    expect(screen.getByText('R. Fernando')).toBeDefined()
   })
 
   it('routes between chat and dashboards from the rail', async () => {

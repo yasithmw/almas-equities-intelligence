@@ -1,13 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import SideRail from './SideRail'
+import AppSidebar from './AppSidebar'
 import { DemoProvider, useDemo } from './DemoContext'
 
-// A test-only harness: Task 6 has no UI of its own that calls
-// pushHistory (that arrives with Task 7's real ChatPane), so this
-// stands in for "a question got asked" to exercise the rail's history
-// rendering in isolation.
+// A test-only harness standing in for "a question got asked", so the
+// sidebar's history rendering can be exercised without mounting the
+// whole chat surface.
 function AskHarness({ question }: { question: string }) {
   const { pushHistory } = useDemo()
   return (
@@ -17,15 +16,15 @@ function AskHarness({ question }: { question: string }) {
   )
 }
 
-describe('SideRail history (Ruling R3)', () => {
-  it('shows no Today group or rail-history list before anything has been asked', () => {
+describe('AppSidebar history (Ruling R3)', () => {
+  it('shows a placeholder, not a history list, before anything has been asked', () => {
     render(
       <DemoProvider>
-        <SideRail />
+        <AppSidebar />
       </DemoProvider>,
     )
     expect(screen.queryByTestId('rail-history')).toBeNull()
-    expect(screen.queryByText('Today')).toBeNull()
+    expect(screen.getByText(/questions you ask appear here/i)).toBeDefined()
   })
 
   it('renders an asked question inside data-testid="rail-history" as a non-button row', async () => {
@@ -34,7 +33,7 @@ describe('SideRail history (Ruling R3)', () => {
     render(
       <DemoProvider>
         <AskHarness question={question} />
-        <SideRail />
+        <AppSidebar />
       </DemoProvider>,
     )
 
@@ -56,7 +55,7 @@ describe('SideRail history (Ruling R3)', () => {
     render(
       <DemoProvider>
         <AskHarness question={question} />
-        <SideRail />
+        <AppSidebar />
       </DemoProvider>,
     )
 

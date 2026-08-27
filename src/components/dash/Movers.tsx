@@ -1,42 +1,52 @@
+import { TrendingDown, TrendingUp } from 'lucide-react'
 import type { MoversViz } from '@/lib/types'
-import styles from './Movers.module.css'
+import { cn } from '@/lib/utils'
 
-// Solves the movers gap (task brief, "a gap carried from Task 4, now
-// yours to solve"): no existing primitive renders "label plus signed
-// coloured value, with no bar", which is exactly Exhibit C's .mv row
-// (.tk the ticker, .g the gain, .r the loss). Ported directly, not
-// invented: grep-verified against the live document.
+// Label plus a signed value, no bar: a movers list is read as a ranking,
+// and a bar per row would claim a magnitude comparison the eye does not
+// need here.
 //
-// One row shape serves two panels that are the same underlying idea:
-// Market Overview's top movers (code only) and Client Book's unrealised
-// gain and loss (code plus a maskable second line, the holder's name).
-// The second line has no class of its own to port, since no mover row
-// in the document carries one; it reuses the app's own faint/ink-2 text
-// ramp rather than inventing a colour.
+// A row with a name stacks it UNDER the code rather than beside it. Three
+// columns in a one-third-width tile squeezed the name to about fifty
+// pixels, which truncated the withheld-name marker to "Name ..." on the
+// research desk, turning the clearest compliance signal in the demo into
+// an ellipsis. Stacking gives the name the full width of the row.
 export default function Movers({ viz }: { viz: MoversViz }) {
   return (
-    <div>
-      {viz.rows.map((r, i) => {
-        const sign = r.value < 0 ? 'neg' : 'pos'
+    <ul className="divide-y divide-border/60">
+      {viz.rows.map((r) => {
+        const up = r.value >= 0
+        const Icon = up ? TrendingUp : TrendingDown
         return (
-          <div className={styles.mv} key={`${r.code}-${i}`}>
-            <span className={styles.label}>
-              <span className={styles.tk}>{r.code}</span>
+          <li key={r.code} className="flex items-center gap-3 py-2.5">
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-mono text-[11.5px] font-medium tracking-[0.04em] text-foreground">
+                {r.code}
+              </span>
               {r.name && (
-                <span className={r.nameMuted ? `${styles.name} ${styles.muted}` : styles.name}>
+                <span
+                  data-testid="mover-name"
+                  className={cn(
+                    'mt-0.5 block truncate text-[11.5px]',
+                    r.nameMuted ? 'italic text-muted-foreground/55' : 'text-muted-foreground',
+                  )}
+                >
                   {r.name}
                 </span>
               )}
             </span>
             <span
-              data-sign={sign}
-              className={sign === 'pos' ? styles.g : styles.r}
+              className={cn(
+                'flex shrink-0 items-center gap-1.5 text-[12.5px] font-semibold tabular-nums',
+                up ? 'text-success' : 'text-danger',
+              )}
             >
+              <Icon className="h-3 w-3" strokeWidth={2.4} />
               {r.display}
             </span>
-          </div>
+          </li>
         )
       })}
-    </div>
+    </ul>
   )
 }

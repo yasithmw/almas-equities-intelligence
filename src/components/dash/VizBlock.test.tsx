@@ -81,34 +81,35 @@ const movers: Viz = {
 }
 
 describe('VizBlock', () => {
-  it('renders bar rows with their labels and values', () => {
+  // Figures are drawn by Recharts, which measures its box through a
+  // ResizeObserver and so draws no geometry under jsdom. Each figure
+  // therefore also renders an off-screen table of the same numbers, both
+  // so a screen reader can read a chart and so these assertions have
+  // something stable to read. Geometry itself is Recharts' business, not
+  // this suite's.
+  it('mounts a chart surface for a figure kind', () => {
+    const { container } = render(<VizBlock viz={bars} />)
+    expect(container.querySelector('.recharts-responsive-container')).not.toBeNull()
+  })
+
+  it('renders every bar row in the figure\'s own data table', () => {
     render(<VizBlock viz={bars} />)
     expect(screen.getByText('Dividend yield, listed banks')).toBeDefined()
-    expect(screen.getByText('COMB')).toBeDefined()
+    expect(screen.getByRole('rowheader', { name: 'COMB' })).toBeDefined()
     expect(screen.getByText('9.4%')).toBeDefined()
+    expect(screen.getByText('8.1%')).toBeDefined()
   })
 
-  it('scales the longest bar to full width', () => {
-    const { container } = render(<VizBlock viz={bars} />)
-    const fills = container.querySelectorAll('[data-fill]')
-    expect(fills[0].getAttribute('style')).toContain('100%')
-  })
-
-  it('guards an all-zero bars set: fills are empty, not NaN%', () => {
+  it('renders an all-zero bars set without emitting NaN anywhere', () => {
     const { container } = render(<VizBlock viz={zeroBars} />)
-    const fills = container.querySelectorAll('[data-fill]')
-    expect(fills.length).toBe(2)
-    for (const fill of fills) {
-      const style = fill.getAttribute('style') ?? ''
-      expect(style).not.toContain('NaN')
-      expect(style).toContain('0%')
-    }
+    expect(container.innerHTML).not.toContain('NaN')
+    expect(screen.getAllByText('0.0%')).toHaveLength(2)
   })
 
-  it('marks negative signed bars so they can be styled apart', () => {
-    const { container } = render(<VizBlock viz={signed} />)
-    expect(container.querySelectorAll('[data-sign="neg"]').length).toBe(1)
-    expect(container.querySelectorAll('[data-sign="pos"]').length).toBe(1)
+  it('keeps the sign on every signed bar value', () => {
+    render(<VizBlock viz={signed} />)
+    expect(screen.getByText('+Rs 96M')).toBeDefined()
+    expect(screen.getByText('\u2212Rs 12M')).toBeDefined()
   })
 
   it('renders both series names and their value columns, for paired bars', () => {
@@ -119,29 +120,12 @@ describe('VizBlock', () => {
     expect(screen.getByText('Rs 366M')).toBeDefined()
   })
 
-  it('draws one polyline per line series', () => {
-    const { container } = render(<VizBlock viz={line} />)
-    expect(container.querySelectorAll('polyline').length).toBe(2)
-  })
-
-  it('normalises each line series to its own range, so a smaller-scale series is not flattened', () => {
-    const { container } = render(<VizBlock viz={line} />)
-    const polylines = container.querySelectorAll('polyline')
-    // series[1] (market turnover, ~2.4 to 2.7) sits on a wholly different
-    // scale from series[0] (brokerage revenue, ~61 to 66). Under a single
-    // shared min/max the turnover polyline would collapse to a near-flat
-    // line at the bottom of the chart; independent normalisation keeps it
-    // spread across the same vertical range as the revenue line.
-    const ysOf = (el: Element) =>
-      el
-        .getAttribute('points')!
-        .split(' ')
-        .map((pt) => parseFloat(pt.split(',')[1]))
-    const spread = (ys: number[]) => Math.max(...ys) - Math.min(...ys)
-    const revenueSpread = spread(ysOf(polylines[0]))
-    const turnoverSpread = spread(ysOf(polylines[1]))
-    expect(turnoverSpread).toBeGreaterThan(20)
-    expect(Math.abs(turnoverSpread - revenueSpread)).toBeLessThan(5)
+  it('gives a line figure one data column per series and one row per point', () => {
+    render(<VizBlock viz={line} />)
+    expect(screen.getByRole('columnheader', { name: 'Brokerage revenue' })).toBeDefined()
+    expect(screen.getByRole('columnheader', { name: 'Market turnover' })).toBeDefined()
+    // One header row plus one row per x label.
+    expect(screen.getAllByRole('row')).toHaveLength(1 + line.xLabels.length)
   })
 
   it('renders a table with its columns', () => {

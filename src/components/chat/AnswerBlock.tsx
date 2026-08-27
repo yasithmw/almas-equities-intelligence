@@ -1,8 +1,9 @@
+import { AlertTriangle, Check, Lock } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import type { Resolved } from '@/lib/answers'
 import type { Step } from '@/lib/types'
 import VizBlock from '../dash/VizBlock'
 import ActivityFeed from './ActivityFeed'
-import styles from './AnswerBlock.module.css'
 
 interface Props {
   steps: Step[]
@@ -12,62 +13,68 @@ interface Props {
   resolved: Resolved | null
 }
 
-function LockIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor"
-      strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3.4" y="7.2" width="9.2" height="6.4" rx="1.4" />
-      <path d="M5.4 7.2V5.4a2.6 2.6 0 0 1 5.2 0v1.8" />
-    </svg>
-  )
-}
-
-// Ports the client brief's .ans / .ava / .c (grep-verified) as one
-// component, since the document nests the feed, the badges, the answer
-// text and the chart card together inside a single avatar-led column,
-// and that shape does not belong split across two files. Handles every
-// shape resolveAnswer can hand back: still running (resolved === null,
-// only the feed shows), answered, redacted, or denied.
+// The assistant side of a turn, in the platform's message-list shape:
+// the activity feed, then the answer on a surface-1 glass bubble with
+// the top-left corner tightened (rounded-2xl rounded-tl-lg), then the
+// figure. No avatar letter: the real list identifies the assistant by
+// the feed above the answer, not by a monogram beside it.
+//
+// Handles every shape resolveAnswer can hand back: still running
+// (resolved === null, only the feed shows), answered, redacted, denied.
 export default function AnswerBlock({
   steps, collapsed, onToggleCollapsed, onFeedComplete, resolved,
 }: Props) {
   return (
-    <div className={styles.ans}>
-      <div className={styles.ava} aria-hidden="true">A</div>
-      <div className={styles.c}>
-        <ActivityFeed
-          steps={steps}
-          collapsed={collapsed}
-          onToggleCollapsed={onToggleCollapsed}
-          onComplete={onFeedComplete}
-        />
+    <div className="flex flex-col items-start gap-2.5">
+      <ActivityFeed
+        steps={steps}
+        collapsed={collapsed}
+        onToggleCollapsed={onToggleCollapsed}
+        onComplete={onFeedComplete}
+      />
 
-        {resolved && (resolved.state === 'answered' || resolved.state === 'redacted') && (
-          <>
-            <div className={styles.badges}>
-              <span className={`${styles.pill} ${styles.ok}`}>
-                <span aria-hidden="true">&#10003;</span> Checked
-              </span>
-              <span className={`${styles.pill} ${styles.sc}`}>Your access only</span>
-            </div>
-            <div className={styles.atext}>{resolved.variant.text}</div>
-            {resolved.state === 'answered' && resolved.correction && (
-              <div className={styles.correction}>{resolved.correction}</div>
-            )}
-            {resolved.state === 'redacted' && (
-              <div className={styles.redactedTag}>Redacted</div>
-            )}
-            {resolved.variant.viz && <VizBlock viz={resolved.variant.viz} />}
-          </>
-        )}
-
-        {resolved && resolved.state === 'denied' && (
-          <div className={styles.denied}>
-            <LockIcon />
-            <span>{resolved.message}</span>
+      {resolved && (resolved.state === 'answered' || resolved.state === 'redacted') && (
+        <div className="flex w-full flex-col items-start gap-2.5">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Badge variant="success">
+              <Check className="h-3 w-3" strokeWidth={3} />
+              Checked
+            </Badge>
+            <Badge variant="secondary">Your access only</Badge>
+            {resolved.state === 'redacted' && <Badge variant="outline">Redacted</Badge>}
           </div>
-        )}
-      </div>
+
+          <div className="surface-1 max-w-[68ch] rounded-2xl rounded-tl-lg px-4 py-3 text-sm leading-relaxed text-foreground">
+            {resolved.variant.text}
+          </div>
+
+          {resolved.state === 'answered' && resolved.correction && (
+            <div className="fleet-alert fleet-alert-warning max-w-[68ch]">
+              <AlertTriangle className="fleet-alert-icon h-4 w-4" strokeWidth={2} />
+              <div>
+                <div className="fleet-alert-title">The reviewer changed this</div>
+                <div className="fleet-alert-desc">{resolved.correction}</div>
+              </div>
+            </div>
+          )}
+
+          {/* The figure takes the same measure as the answer above it, so
+              the turn reads as one column rather than a paragraph with a
+              narrow card hanging off its left edge. */}
+          {resolved.variant.viz && (
+            <div className="w-full max-w-[68ch]">
+              <VizBlock viz={resolved.variant.viz} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {resolved && resolved.state === 'denied' && (
+        <div className="fleet-alert fleet-alert-info max-w-[68ch]">
+          <Lock className="fleet-alert-icon h-4 w-4" strokeWidth={2} />
+          <div className="fleet-alert-desc">{resolved.message}</div>
+        </div>
+      )}
     </div>
   )
 }

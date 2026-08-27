@@ -1,0 +1,3334 @@
+/* Ported verbatim from gf-app-dashboard/src/app/globals.css (branch:
+   development). The two react-grid-layout imports are dropped: the demo has
+   no draggable canvas. Everything else is the real product stylesheet, so
+   the demo renders in the same design system the client already uses. */
+@import "tailwindcss";
+
+/* Tailwind v4: the design tokens (HSL color palette, chart colors, custom
+   shadows/keyframes/animations) and the tailwindcss-animate plugin still
+   live in the JS config, loaded here via @config. */
+@config "../../tailwind.config.ts";
+
+@layer base {
+  :root {
+    /* Fleet ink-on-paper defaults. ThemeProvider re-applies these from
+       useThemeStore at hydration, so SSR/CSR match without flash. */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
+    --primary: 0 0% 4%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 225 11% 95%;
+    --secondary-foreground: 225 22% 15%;
+    --muted: 225 11% 95%;
+    --muted-foreground: 220 7% 57%;
+    --accent: 225 11% 95%;
+    --accent-foreground: 225 22% 15%;
+    --destructive: 0 73% 41%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 0 0% 4%;
+    --radius: 0.75rem; /* 12px — base token used by all UI elements */
+
+    /* Typography — one UI face across the dashboard shell. */
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+      "Segoe UI", "Inter", system-ui, sans-serif;
+    --font-serif: var(--font-sans);
+    --font-mono: "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+
+    --sidebar: 0 0% 100%;
+    --user-bubble: 0 0% 4%;
+    --assistant-bubble: 225 11% 95%;
+    /* The platform sets this at runtime from the theme store
+       (theme-provider.tsx pickForeground). The demo has no theme store,
+       so it is pinned here to the value that store would compute for a
+       4%-lightness bubble: white. */
+    --user-bubble-foreground: 0 0% 100%;
+
+    --surface-elevated: 0 0% 100%;
+    --surface-overlay: 225 11% 95%;
+
+    /* Existing rotating multi-color halo — kept for chat input/legacy
+       AI surfaces. Distinct from the editorial fleet-ask-glow below. */
+    --ai-glow-1: 265 80% 60%;
+    --ai-glow-2: 217 91% 56%;
+    --ai-glow-3: 330 70% 58%;
+    --ai-glow-4: 25 90% 58%;
+
+    /* Fleet design-system AI halo: a single sky-blue ambient glow used
+       only on "ask the agent" entry points. Stored as rgba() raw —
+       these are never theme-shifted. */
+    --color-ai-halo-a: rgba(147,197,253,0.18);
+    --color-ai-halo-b: rgba(96,165,250,0.20);
+    --color-ai-halo-a-strong: rgba(147,197,253,0.32);
+    --color-ai-halo-b-strong: rgba(96,165,250,0.30);
+
+    --chart-1: 0 0% 4%;
+    --chart-2: 220 9% 46%;
+    --chart-3: 158 94% 24%;
+    --chart-4: 27 89% 37%;
+    --chart-5: 0 73% 41%;
+    --chart-6: 217 91% 60%;
+    --chart-7: 220 7% 57%;
+    --chart-8: 225 22% 15%;
+    --chart-9: 152 69% 41%;
+    --chart-10: 199 89% 48%;
+
+    --success: 158 94% 24%;
+    --success-foreground: 0 0% 100%;
+    --warning: 27 89% 37%;
+    --warning-foreground: 0 0% 100%;
+    --danger: 0 73% 41%;
+    --danger-foreground: 0 0% 100%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Match the admin portal's base type rhythm: 15px / 1.55 on the
+       Apple system sans. */
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  /* Top-level page headings inherit the body sans (Apple system stack)
+     for consistency with the rest of the UI. Tight tracking keeps a
+     crisp display feel without departing from the sans system. */
+  h1, h2 {
+    letter-spacing: -0.018em;
+  }
+}
+
+/* ================================================================== */
+/* Fleet design-system — ask-the-agent halo                            */
+/*                                                                     */
+/* Reserved exclusively for "Ask the fleet" / agent entry points. The  */
+/* glow uses a soft sky-blue rgba — never a fill, only as outer        */
+/* box-shadow that pulses on a 2.8s cadence. Tightens to 2s on hover.  */
+/* ================================================================== */
+@keyframes fleet-ask-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px var(--color-ai-halo-a),
+      0 0 10px -2px var(--color-ai-halo-b),
+      0 4px 14px -8px rgba(15,23,42,0.14);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px var(--color-ai-halo-a-strong),
+      0 0 16px 0 var(--color-ai-halo-b-strong),
+      0 6px 18px -8px rgba(15,23,42,0.18);
+  }
+}
+.fleet-ask-glow {
+  animation: fleet-ask-glow 2800ms ease-in-out infinite;
+}
+.fleet-ask-glow:hover {
+  animation-duration: 2000ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fleet-ask-glow {
+    animation: none;
+    box-shadow:
+      0 0 0 1px var(--color-ai-halo-a),
+      0 0 10px -2px var(--color-ai-halo-b);
+  }
+}
+
+/* ================================================================== */
+/* Dashboard polish — premium card chrome + typography                 */
+/*                                                                     */
+/* Scoped to /dashboards and /system-dashboards routes via the         */
+/* layout.tsx wrappers (``display: contents`` — never breaks scroll).  */
+/* Brand sky blue (--primary, --ring, --chart-N) intentionally NOT     */
+/* overridden — only chrome is touched.                                */
+/* ================================================================== */
+
+.dashboard-theme {
+  /* Tabular figures so columns of numbers align column-perfect across
+     tiles. Stylistic alternates ss01/cv11 give Geist its rounded forms. */
+  font-feature-settings: "tnum" 1, "ss01" 1, "cv11" 1;
+
+  /* Page background + section boxes stay WHITE (same token as the cards).
+     The separation between a card and the surface comes entirely from the
+     card's own hairline border + soft shadow (see article.rounded-2xl),
+     not from a background tint. */
+  --dashboard-canvas: hsl(var(--card));
+}
+
+/* --- Refined headings ---------------------------------------------- */
+.dashboard-theme h1,
+.dashboard-theme h2,
+.dashboard-theme h3 {
+  letter-spacing: -0.012em;
+}
+.dashboard-theme h1 {
+  font-weight: 600;
+}
+
+/* --- Premium widget card ------------------------------------------- */
+/* The WidgetRenderer wraps each tile in
+   <article class="…rounded-2xl border border-border bg-card shadow-card…">.
+   We lift it from "flat with a faint shadow" to a layered, depth-aware
+   surface with a sky-blue accent line on hover. */
+
+.dashboard-theme article.rounded-2xl {
+  /* Pure white card on the slightly tinted page — creates the lift. */
+  background-image: none;
+  background-color: hsl(var(--card));
+  /* No `position: relative` and no ::before pseudo-elements — html2canvas
+     mis-measures the bounding box when those are present, which clipped
+     the widget title at the top of exported PNGs. */
+  position: static;
+  /* Full hairline border on all four sides, following the 20px radius so the
+     corners are cleanly rounded. Kept as a real `border` (not a faint ring)
+     so every edge reads clearly. */
+  border: 1px solid hsl(var(--border));
+  border-radius: 20px;
+  /* Small, soft lift so a white card separates from the white surface without
+     any background tint. The blur layer carries a NEGATIVE spread (-6px) so the
+     shadow tucks straight under the card instead of wrapping the rounded
+     corners (which read as grey corner blobs). The border does the crisp edge. */
+  box-shadow: 0 1px 1px hsl(var(--foreground) / 0.03), 0 4px 12px -6px hsl(var(--foreground) / 0.10);
+  transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-theme article.rounded-2xl:hover {
+  transform: none;
+  border-color: hsl(var(--primary) / 0.25);
+  box-shadow:
+    0 1px 2px hsl(var(--foreground) / 0.05),
+    0 10px 24px -10px hsl(var(--foreground) / 0.14);
+}
+
+/* Reset any pseudo-elements added by earlier rules so html2canvas sees
+   a clean rectangular box for capture. */
+.dashboard-theme article.rounded-2xl::before,
+.dashboard-theme article.rounded-2xl::after {
+  content: none !important;
+}
+
+/* Neutralise Tailwind's preset `shadow-card`. */
+.dashboard-theme .shadow-card {
+  box-shadow: inherit;
+}
+
+/* --- Widget header typography (clean, no accent bar) -------------- */
+.dashboard-theme article header {
+  position: static;
+  padding-left: 0;
+}
+.dashboard-theme article header::before {
+  display: none;
+}
+
+.dashboard-theme article h3.font-semibold {
+  font-size: 0.9375rem;        /* 15px */
+  line-height: 1.3;
+  letter-spacing: -0.018em;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  /* Drop the hover underline (no background-image trick). */
+  background-image: none;
+  display: block;
+}
+
+.dashboard-theme article header p {
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.25rem;
+  font-weight: 400;
+}
+
+/* --- Page header polish — flatter, tighter ----------------------- */
+.dashboard-theme .border-b.border-border\/40 {
+  background: hsl(var(--card));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom-color: hsl(var(--border));
+}
+
+/* --- Page title ---------------------------------------------------- */
+.dashboard-theme h1.text-sm {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* --- Dashboard list cards — drop the lift -------------------------- */
+.dashboard-theme article.group.rounded-2xl:hover {
+  transform: none;
+}
+
+/* --- Page canvas — soft muted surface ----------------------------- */
+/* The page canvas + section boxes use a gentle muted tint (--muted) so the
+   white widget tiles (--card) read as the raised, most-prominent surface and
+   pop off the background. Kept theme-driven (--muted follows the brand). */
+.dashboard-theme > div[class*="overflow-auto"],
+.dashboard-theme [class*="flex-1"][class*="overflow-auto"] {
+  background: var(--dashboard-canvas);
+}
+
+/* --- KPI hero typography — bigger, calmer ------------------------- */
+/* Match the InsurePulse reference: 11px uppercase muted label,
+   36px solid foreground value (drop the gradient text trick). */
+.dashboard-theme [class*="kpi"] p[class*="uppercase"] {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));   /* lighter, calmer */
+}
+
+.dashboard-theme [class*="kpi"] p.text-2xl,
+.dashboard-theme [class*="kpi"] p[class*="text-["][class*="rem"] {
+  font-family: var(--font-serif) !important;
+  font-size: 2.5rem !important;        /* 40px — bumped */
+  font-weight: 500 !important;
+  letter-spacing: -0.03em !important;
+  background: none !important;
+  background-image: none !important;
+  color: hsl(var(--foreground)) !important;
+  -webkit-text-fill-color: initial !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  margin-top: 0.5rem !important;       /* tighter spacing from label */
+  line-height: 1 !important;
+}
+
+/* --- Hide the inner KPI vertical accent bar ----------------------- */
+/* kpi-card.tsx renders <span ... className="absolute inset-y-3 left-0 w-[3px] ..." />
+   as a brand-coloured stripe down the left edge of the KPI box. The
+   user finds it noisy on the dashboard; hide it without touching the
+   component file. */
+.dashboard-theme [class*="kpi"] span[class*="absolute"][class*="left-0"][class*="w-\\[3px\\]"],
+.dashboard-theme [class*="kpi"] > span[class*="inset-y-"] {
+  display: none !important;
+}
+
+/* --- KPI inner card padding — match the calmer page rhythm -------- */
+.dashboard-theme article > div [class*="rounded-xl"][class*="ring-"] {
+  padding: 1.25rem 1.5rem !important;  /* px-6 py-5 — slightly more horizontal */
+  background: hsl(var(--card)) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  ring-color: hsl(var(--border)) !important;
+}
+
+/* --- Smaller, refined buttons + tighter typography ---------------- */
+/* The dashboard tile toolbars (Export / Save / Mail / Chat at the
+   bottom, Data / Refresh at the top) use Tailwind's default `size="sm"`
+   — visually a touch loud against the calmer card chrome. Trim them
+   to a more professional 11px / lighter weight scale. */
+
+/* --- Bottom toolbar — all buttons become small icon-only pills ---- */
+/* Convert Export / Save (originally text-with-icon outline buttons)
+   into clean icon-only ghost buttons matching the Mail / Chat ones,
+   so the whole row reads as a single tidy strip of icons. We hide the
+   button label text and tighten the chrome to 28px. */
+
+.dashboard-theme article > div[data-export-ignore="true"]:last-child button {
+  height: 1.75rem !important;          /* 28px */
+  width: 1.75rem !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 1px solid hsl(var(--border)) !important;
+  background: transparent !important;
+  border-radius: 9999px !important;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0 !important;             /* hide label text */
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: all 160ms ease;
+}
+
+/* Restore icon size + reset margin (text buttons had `mr-1` on the icon
+   to space the label — we don't need that now). */
+.dashboard-theme article > div[data-export-ignore="true"]:last-child button svg {
+  width: 14px !important;
+  height: 14px !important;
+  margin: 0 !important;
+}
+
+/* Hover: subtle sky-blue ring + tinted bg + primary icon — matches
+   the rest of the tile chrome. */
+.dashboard-theme article > div[data-export-ignore="true"]:last-child button:hover {
+  border-color: hsl(var(--primary) / 0.4) !important;
+  background: hsl(var(--primary) / 0.06) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+/* "Saved" / pinned variant keeps the primary tint at rest. */
+.dashboard-theme article > div[data-export-ignore="true"]:last-child button[class*="bg-primary"] {
+  border-color: hsl(var(--primary) / 0.35) !important;
+  background: hsl(var(--primary) / 0.08) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+/* Spacing between buttons in the toolbar row. */
+.dashboard-theme article > div[data-export-ignore="true"]:last-child > div[class*="border-t"] > div {
+  gap: 0.4rem !important;
+}
+
+/* Bottom toolbar — tighter top border + reduced padding */
+.dashboard-theme article > div[data-export-ignore="true"]:last-child {
+  padding-top: 0.5rem !important;
+  margin-top: 0.5rem !important;
+  border-top: 1px solid hsl(var(--border));
+}
+.dashboard-theme article > div[data-export-ignore="true"]:last-child > div[class*="border-t"] {
+  border-top: none !important;
+  padding-top: 0 !important;
+}
+
+/* --- Title — bold, in a muted gray (matches the KPI tiles' grey labels) --- */
+.dashboard-theme article h3.font-semibold {
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;      /* 15px */
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  font-weight: 700;
+  color: hsl(var(--muted-foreground));
+}
+
+.dashboard-theme article header p {
+  font-size: 0.7rem;         /* 11.2px — was 12px */
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+  margin-top: 0.2rem;
+  font-weight: 400;
+}
+
+/* --- Page header — smaller dashboard title ----------------------- */
+.dashboard-theme h1.text-sm {
+  font-size: 0.9375rem;       /* 15px — was 16px */
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  letter-spacing: -0.012em;
+}
+
+/* The widget-count + description line under the page title */
+.dashboard-theme div.flex p.text-xs {
+  font-size: 11px;
+  color: hsl(var(--muted-foreground));
+}
+
+/* --- Page header buttons (Refresh / Clone / Delete) -------------- */
+.dashboard-theme div.flex > button[class*="size-sm"] {
+  height: 1.75rem !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  padding: 0 0.65rem !important;
+}
+.dashboard-theme div.flex > button[class*="size-sm"] svg {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* --- Recharts polish — quieter axes, dashed gridlines, gentler bars --- */
+.dashboard-theme .recharts-cartesian-axis-tick-value {
+  font-size: 11px;
+  fill: hsl(var(--muted-foreground));
+}
+.dashboard-theme .recharts-cartesian-grid line {
+  stroke: hsl(var(--border));
+  stroke-dasharray: 3 3;
+}
+.dashboard-theme .recharts-cartesian-axis-line {
+  stroke: hsl(var(--border));
+}
+.dashboard-theme .recharts-bar-rectangle path {
+  filter: brightness(1.02);
+}
+.dashboard-theme .recharts-area-area {
+  fill-opacity: 0.18;
+}
+
+/* --- Editorial micro-label utility (opt-in) ----------------------- */
+.dashboard-theme .editorial-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+/* --- Table widget polish — editorial finance look ---------------- */
+/* Refined, restrained header. Instead of a solid colored fill, we use
+   an elevated near-white surface with: (1) bold uppercase
+   muted-foreground micro-text, (2) a 2px sky-blue underline accent
+   beneath the header that defines the data band's start, and (3) a
+   tiny ambient drop-shadow that "floats" the header above the body.
+   Body rows are hairline-divided with no zebra striping — Bloomberg
+   / FT vocabulary. Numeric columns get tabular figures + subtle
+   font-weight bump.                                                  */
+
+.dashboard-theme article.rounded-2xl table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* Header surface — flat, but OPAQUE (matches the white card) so the sticky
+   header cleanly covers the body rows while scrolling instead of letting them
+   bleed through a transparent header. */
+.dashboard-theme article.rounded-2xl table thead {
+  background: hsl(var(--card));
+}
+
+.dashboard-theme article.rounded-2xl table thead tr {
+  background: transparent;
+}
+
+.dashboard-theme article.rounded-2xl table thead th {
+  /* Editorial micro-label: smaller, bolder, wider tracking, muted. */
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  /* Single clean hairline rule under the header — no coloured accent. */
+  border-bottom: 1px solid hsl(var(--border));
+  /* Sticky per-CELL (not on <thead>, which is unreliable) so the header
+     stays fixed while the body scrolls. Opaque white so rows don't bleed
+     through, and z-index above the body. */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: hsl(var(--card));
+}
+
+/* A tiny shadow under the header lifts it above the body — used by
+   Stripe and Linear to suggest "this row is sticky chrome, the rest
+   is content". */
+.dashboard-theme article.rounded-2xl table thead::after {
+  /* Drop the under-header shadow for a flat, minimal header. */
+  content: none;
+}
+
+/* Sort icons follow the muted text colour for cohesion. */
+.dashboard-theme article.rounded-2xl table thead th svg {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.55;
+}
+.dashboard-theme article.rounded-2xl table thead th:hover svg {
+  opacity: 1;
+  color: hsl(var(--foreground));
+}
+
+/* Hover state on sortable headers — soft neutral tint, darker text. */
+.dashboard-theme article.rounded-2xl table thead th:hover {
+  background: hsl(var(--muted) / 0.5) !important;
+  color: hsl(var(--foreground)) !important;
+  cursor: pointer;
+}
+
+/* Body rows — pure white surface, very light dividers, gentle hover so the
+   table reads clean. */
+.dashboard-theme article.rounded-2xl table tbody tr {
+  background: hsl(var(--card));
+  transition: background-color 140ms ease;
+}
+/* Apply the divider on the cells themselves rather than the row,
+   because some browsers ignore borders on <tr> when the table uses
+   border-collapse: separate (which our header-radius rule requires). */
+.dashboard-theme article.rounded-2xl table tbody td {
+  border-bottom: 1px solid hsl(var(--border) / 0.4);
+}
+.dashboard-theme article.rounded-2xl table tbody tr:hover td {
+  background: hsl(var(--muted) / 0.3);
+}
+/* Drop the divider on the final row so it sits flush with the bottom
+   of the table border. */
+.dashboard-theme article.rounded-2xl table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Body cells — roomier vertical padding for a cleaner, more legible grid. */
+.dashboard-theme article.rounded-2xl table tbody td {
+  color: hsl(var(--foreground) / 0.88);
+  font-size: 13px;
+  font-weight: 400;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+/* Numeric columns — tabular figures, slightly stronger weight, full
+   foreground colour. Numbers should feel firm, text should feel calm. */
+.dashboard-theme article.rounded-2xl table tbody td.text-right,
+.dashboard-theme article.rounded-2xl table tbody td.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+  letter-spacing: -0.005em;
+}
+
+/* First column — a touch more presence, often the row "label". */
+.dashboard-theme article.rounded-2xl table tbody td:first-child {
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+/* Outer wrapper border — softer, less prominent. */
+.dashboard-theme article.rounded-2xl > div > div.rounded-md {
+  border-color: hsl(var(--border) / 0.6);
+}
+
+/* Rounded top corners hug the wrapper border. */
+.dashboard-theme article.rounded-2xl table thead th:first-child {
+  border-top-left-radius: calc(var(--radius) - 4px);
+  padding-left: 1rem;
+}
+.dashboard-theme article.rounded-2xl table thead th:last-child {
+  border-top-right-radius: calc(var(--radius) - 4px);
+  padding-right: 1rem;
+}
+.dashboard-theme article.rounded-2xl table tbody td:first-child {
+  padding-left: 1rem;
+}
+.dashboard-theme article.rounded-2xl table tbody td:last-child {
+  padding-right: 1rem;
+}
+
+/* --- Dashboard tile inner bg neutraliser --------------------------- */
+/* Some widget renderers pass `bg-card` again on inner wrappers — make
+   sure they sit transparently on top of the new gradient backdrop. */
+.dashboard-theme article.rounded-2xl > .min-h-0 {
+  background: transparent;
+}
+
+/* --- Constrain the chart body so tables / wide content can't bleed
+       behind the bottom toolbar -------------------------------------- */
+/* The chart container in WidgetRenderer is rendered as
+   <div class="min-h-0 flex-1">…<table>…</table>…</div> with no overflow
+   rule. Without ``overflow: hidden``, a 20-row table renders past the
+   article's bottom edge and visually overlaps the Export/Save toolbar.
+   We constrain it to its flex slot — the data-table component handles
+   its own internal scroll via max-h-96 + overflow-y-auto, so users
+   still see every row through pagination.
+
+   The PNG export pipeline neutralises this overflow rule via the
+   ``onclone`` hook in [src/lib/export-widget.ts](src/lib/export-widget.ts),
+   so capturing a tall expanded table still produces a single PNG
+   containing every row. */
+.dashboard-theme article.rounded-2xl > div.flex-1.min-h-0,
+.dashboard-theme article.rounded-2xl > div.min-h-0.flex-1 {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Tables specifically — let their internal scroll viewport take the
+   available height so the pagination footer stays pinned at the bottom
+   of the slot rather than disappearing behind the toolbar. */
+.dashboard-theme article.rounded-2xl table {
+  width: 100%;
+}
+.dashboard-theme article.rounded-2xl [class*="overflow"] {
+  /* don't double-scroll: keep whatever overflow rule the data-table
+     component already applies */
+}
+
+/* Add a subtle gap between the chart body and the bottom toolbar so
+   they never touch, even when a chart fills the slot fully. */
+.dashboard-theme article.rounded-2xl > [data-export-ignore="true"]:last-child {
+  margin-top: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+/* ================================================================== */
+/* Global scrollbar — ultra-thin, auto-hiding                          */
+/* ================================================================== */
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--foreground) / 0.08);
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--foreground) / 0.18);
+}
+
+/* Hide the scrollbar visually while keeping scroll behaviour intact. */
+.scrollbar-hide {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* old Edge / IE */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;                /* Chrome / Safari */
+}
+
+/* ================================================================== */
+/* Surface materials & glassmorphism                                   */
+/* ================================================================== */
+
+@layer utilities {
+  /* iOS-quality glass — light mode frosted glass */
+  .glass {
+    background:
+      radial-gradient(ellipse 110% 70% at 18% 0%, rgba(255,255,255,0.90) 0%, transparent 52%),
+      rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(40px) saturate(160%) brightness(1.02);
+    -webkit-backdrop-filter: blur(40px) saturate(160%) brightness(1.02);
+    border-top:    0.5px solid rgba(255,255,255,0.95);
+    border-left:   0.5px solid rgba(255,255,255,0.80);
+    border-right:  0.5px solid rgba(0,0,0,0.04);
+    border-bottom: 0.5px solid rgba(0,0,0,0.05);
+    box-shadow:
+      0 1.5px 0 rgba(255,255,255,0.95) inset,
+      0 0 0 0.5px rgba(255,255,255,0.60) inset,
+      0 4px 16px rgba(0,0,0,0.07),
+      0 1px  4px rgba(0,0,0,0.04),
+      0 8px 32px rgba(55,100,230,0.06);
+  }
+
+  .glass-subtle {
+    background:
+      radial-gradient(ellipse 100% 65% at 22% 0%, rgba(255,255,255,0.75) 0%, transparent 55%),
+      rgba(255, 255, 255, 0.60);
+    backdrop-filter: blur(28px) saturate(150%) brightness(1.01);
+    -webkit-backdrop-filter: blur(28px) saturate(150%) brightness(1.01);
+    border-top:    0.5px solid rgba(255,255,255,0.90);
+    border-left:   0.5px solid rgba(255,255,255,0.70);
+    border-right:  0.5px solid rgba(0,0,0,0.04);
+    border-bottom: 0.5px solid rgba(0,0,0,0.04);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.90) inset,
+      0 3px 12px rgba(0,0,0,0.06),
+      0 1px  4px rgba(0,0,0,0.04);
+  }
+
+  .surface-1 {
+    background:
+      radial-gradient(ellipse 110% 72% at 20% 0%, rgba(255,255,255,0.85) 0%, transparent 52%),
+      rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(32px) saturate(160%) brightness(1.01);
+    -webkit-backdrop-filter: blur(32px) saturate(160%) brightness(1.01);
+    border-top:    0.5px solid rgba(255,255,255,0.95);
+    border-left:   0.5px solid rgba(255,255,255,0.75);
+    border-right:  0.5px solid rgba(0,0,0,0.04);
+    border-bottom: 0.5px solid rgba(0,0,0,0.04);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.95) inset,
+      0 4px 16px rgba(0,0,0,0.06),
+      0 1px  6px rgba(0,0,0,0.04);
+  }
+
+  .surface-2 {
+    background:
+      radial-gradient(ellipse 120% 75% at 16% 0%, rgba(255,255,255,0.90) 0%, transparent 52%),
+      rgba(255, 255, 255, 0.80);
+    backdrop-filter: blur(44px) saturate(170%) brightness(1.02);
+    -webkit-backdrop-filter: blur(44px) saturate(170%) brightness(1.02);
+    border-top:    0.5px solid rgba(255,255,255,0.98);
+    border-left:   0.5px solid rgba(255,255,255,0.82);
+    border-right:  0.5px solid rgba(0,0,0,0.05);
+    border-bottom: 0.5px solid rgba(0,0,0,0.05);
+    box-shadow:
+      0 1.5px 0 rgba(255,255,255,0.98) inset,
+      0 6px 24px rgba(0,0,0,0.07),
+      0 2px  8px rgba(0,0,0,0.04),
+      0 8px 32px rgba(55,100,240,0.05);
+  }
+
+  .surface-3 {
+    background:
+      radial-gradient(ellipse 130% 80% at 14% 0%, rgba(255,255,255,0.95) 0%, transparent 52%),
+      radial-gradient(ellipse  85% 60% at 90% 0%, rgba(255,255,255,0.80) 0%, transparent 52%),
+      rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(56px) saturate(180%) brightness(1.02);
+    -webkit-backdrop-filter: blur(56px) saturate(180%) brightness(1.02);
+    border-top:    0.5px solid rgba(255,255,255,1);
+    border-left:   0.5px solid rgba(255,255,255,0.88);
+    border-right:  0.5px solid rgba(0,0,0,0.05);
+    border-bottom: 0.5px solid rgba(0,0,0,0.06);
+    box-shadow:
+      0 1.5px 0 rgba(255,255,255,1) inset,
+      1.5px 0 0 rgba(255,255,255,0.70) inset,
+      0 0 0 0.5px rgba(180,210,255,0.20) inset,
+      0 8px 32px rgba(55,100,240,0.07),
+      0 3px 10px rgba(0,0,0,0.06),
+      0 1px  3px rgba(0,0,0,0.04);
+  }
+
+  /* Dark-mode variants — the base .surface-* above are hardcoded white glass
+     (light theme). In dark mode they turned into a bright box with washed-out
+     text (chat responses / agent feed). These repaint them as a dark glassy
+     card built on --card, with a faint top-edge sheen instead of the white
+     highlight, so the light foreground text reads with proper contrast.
+     Set via [data-theme="dark"] on :root by the ThemeProvider. */
+  :root[data-theme="dark"] .surface-1 {
+    background:
+      radial-gradient(ellipse 110% 72% at 20% 0%, rgba(255,255,255,0.05) 0%, transparent 52%),
+      hsl(var(--card) / 0.72);
+    border-top:    0.5px solid rgba(255,255,255,0.08);
+    border-left:   0.5px solid rgba(255,255,255,0.05);
+    border-right:  0.5px solid rgba(0,0,0,0.25);
+    border-bottom: 0.5px solid rgba(0,0,0,0.3);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.05) inset,
+      0 4px 16px rgba(0,0,0,0.45),
+      0 1px  6px rgba(0,0,0,0.3);
+  }
+
+  :root[data-theme="dark"] .surface-2 {
+    background:
+      radial-gradient(ellipse 120% 75% at 16% 0%, rgba(255,255,255,0.06) 0%, transparent 52%),
+      hsl(var(--card) / 0.80);
+    border-top:    0.5px solid rgba(255,255,255,0.10);
+    border-left:   0.5px solid rgba(255,255,255,0.06);
+    border-right:  0.5px solid rgba(0,0,0,0.28);
+    border-bottom: 0.5px solid rgba(0,0,0,0.32);
+    box-shadow:
+      0 1.5px 0 rgba(255,255,255,0.06) inset,
+      0 6px 24px rgba(0,0,0,0.5),
+      0 2px  8px rgba(0,0,0,0.35);
+  }
+
+  :root[data-theme="dark"] .surface-3 {
+    background:
+      radial-gradient(ellipse 130% 80% at 14% 0%, rgba(255,255,255,0.07) 0%, transparent 52%),
+      hsl(var(--card) / 0.88);
+    border-top:    0.5px solid rgba(255,255,255,0.12);
+    border-left:   0.5px solid rgba(255,255,255,0.07);
+    border-right:  0.5px solid rgba(0,0,0,0.3);
+    border-bottom: 0.5px solid rgba(0,0,0,0.34);
+    box-shadow:
+      0 1.5px 0 rgba(255,255,255,0.07) inset,
+      0 8px 32px rgba(0,0,0,0.55),
+      0 3px 10px rgba(0,0,0,0.4);
+  }
+
+  .glow-primary {
+    box-shadow:
+      0 0 24px hsl(var(--primary) / 0.22),
+      0 0 72px hsl(var(--primary) / 0.08);
+  }
+
+  .glow-ring {
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.30),
+      0 0 16px hsl(var(--primary) / 0.10);
+  }
+}
+
+/* ================================================================== */
+/* Apple Intelligence aurora glow system                               */
+/* ================================================================== */
+
+@keyframes ai-glow-rotate {
+  0% { --ai-angle: 0deg; }
+  100% { --ai-angle: 360deg; }
+}
+
+@property --ai-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.ai-glow-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.ai-glow-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--ai-angle),
+    hsl(var(--ai-glow-1)),
+    hsl(var(--ai-glow-2)),
+    hsl(var(--ai-glow-3)),
+    hsl(var(--ai-glow-4)),
+    hsl(var(--ai-glow-1))
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ai-glow-rotate 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.ai-glow-border--visible::before,
+.ai-glow-border:focus-within::before {
+  opacity: 0.7;
+}
+
+.ai-glow-border--active::before {
+  opacity: 1;
+}
+
+.ai-glow-border::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--ai-angle),
+    hsl(var(--ai-glow-1) / 0.08),
+    hsl(var(--ai-glow-2) / 0.08),
+    hsl(var(--ai-glow-3) / 0.08),
+    hsl(var(--ai-glow-4) / 0.08),
+    hsl(var(--ai-glow-1) / 0.08)
+  );
+  filter: blur(12px);
+  animation: ai-glow-rotate 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: -2;
+}
+
+.ai-glow-border--visible::after,
+.ai-glow-border:focus-within::after {
+  opacity: 0.6;
+}
+
+.ai-glow-border--active::after {
+  opacity: 1;
+}
+
+.ai-glow-bg {
+  background: conic-gradient(
+    from var(--ai-angle, 0deg),
+    hsl(var(--ai-glow-1) / 0.15),
+    hsl(var(--ai-glow-2) / 0.15),
+    hsl(var(--ai-glow-3) / 0.15),
+    hsl(var(--ai-glow-4) / 0.15),
+    hsl(var(--ai-glow-1) / 0.15)
+  );
+  animation: ai-glow-rotate 6s linear infinite;
+}
+
+/* ================================================================== */
+/* Animations                                                          */
+/* ================================================================== */
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+/* ================================================================== */
+/* Chat markdown prose — scoped to assistant bubbles                   */
+/* ================================================================== */
+
+.chat-prose {
+  @apply text-sm leading-relaxed;
+  color: hsl(var(--foreground) / 0.82);
+  font-weight: 380;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.chat-prose > *:first-child {
+  margin-top: 0;
+}
+.chat-prose > *:last-child {
+  margin-bottom: 0;
+}
+
+.chat-prose p {
+  @apply my-1.5;
+}
+.chat-prose p:first-child {
+  @apply mt-0;
+}
+.chat-prose p:last-child {
+  @apply mb-0;
+}
+
+.chat-prose strong {
+  @apply font-semibold;
+  color: hsl(var(--foreground) / 0.92);
+  font-weight: 600;
+}
+
+.chat-prose em {
+  @apply italic;
+}
+
+.chat-prose h1, .chat-prose h2, .chat-prose h3,
+.chat-prose h4, .chat-prose h5, .chat-prose h6 {
+  @apply mt-3 mb-1.5 font-semibold leading-snug;
+}
+/* Keep prose headings on the same shared UI face. */
+.chat-prose h1, .chat-prose h2, .chat-prose h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+.chat-prose h1 { @apply text-base; }
+.chat-prose h2 { @apply text-[0.9375rem]; }
+.chat-prose h3, .chat-prose h4, .chat-prose h5, .chat-prose h6 {
+  @apply text-sm;
+}
+
+.chat-prose ul {
+  @apply my-1.5 ml-4 list-disc space-y-0.5;
+}
+.chat-prose ol {
+  @apply my-1.5 ml-4 list-decimal space-y-0.5;
+}
+.chat-prose li {
+  @apply pl-0.5;
+}
+.chat-prose li > p {
+  @apply my-0;
+}
+
+.chat-prose blockquote {
+  @apply my-2 border-l-2 border-muted-foreground/30 pl-3 italic text-muted-foreground;
+}
+
+.chat-prose code {
+  @apply rounded bg-foreground/[0.06] px-1 py-0.5 font-mono text-xs;
+}
+
+.chat-prose pre {
+  @apply my-2 overflow-x-auto rounded-lg bg-foreground/[0.04] p-3;
+}
+.chat-prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.chat-prose table {
+  @apply my-2 w-full border-collapse text-xs;
+}
+.chat-prose thead th {
+  @apply border-b border-border bg-foreground/[0.04] px-2.5 py-1.5 text-left font-semibold;
+}
+.chat-prose tbody td {
+  @apply border-b border-border/60 px-2.5 py-1.5;
+}
+.chat-prose tbody tr:last-child td {
+  @apply border-b-0;
+}
+
+.chat-prose hr {
+  @apply my-3 border-border/50;
+}
+
+.chat-prose a {
+  @apply font-medium text-primary underline underline-offset-2;
+}
+
+/* Denser variant for the phone message thread — the double class beats the
+   base `.chat-prose` font-size so agent bubbles read a touch smaller. */
+.chat-prose.chat-prose-mobile {
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.chat-prose.chat-prose-mobile p { @apply my-1; }
+
+/* ================================================================== */
+/* Agent Activity Feed                                                 */
+/* ================================================================== */
+
+.agent-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: hsl(var(--primary));
+  animation: agent-breathe-dot 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.agent-dot--done {
+  background-color: hsl(var(--success));
+  animation: none;
+}
+
+@keyframes agent-breathe-dot {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 0.2; transform: scale(0.8); }
+}
+
+.agent-feed {
+  /* Layout only — the visible surface (background/border/shadow) comes from
+     the `surface-1` class in the JSX so the feed matches the chat response
+     bubble exactly. Previously a translucent `hsl(var(--card)/0.5)` let the
+     ambient dot-field show through on hover. */
+  @apply rounded-2xl px-3.5 py-3;
+}
+
+.agent-timer {
+  @apply flex items-center gap-1 rounded-md px-2 py-0.5;
+  background: hsl(var(--muted) / 0.6);
+}
+
+.agent-timeline {
+  @apply relative pl-5;
+}
+
+.agent-timeline-line {
+  position: absolute;
+  left: 7px;
+  top: 8px;
+  bottom: 8px;
+  width: 1.5px;
+  border-radius: 1px;
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--border) / 0.4),
+    hsl(var(--border) / 0.15),
+    transparent
+  );
+}
+
+.agent-step {
+  @apply relative py-1;
+}
+
+.agent-step-node {
+  position: absolute;
+  left: -21px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agent-step-node-active {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: hsl(var(--primary));
+  animation: agent-soft-pulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes agent-soft-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 0.15; transform: scale(0.85); }
+}
+
+.agent-step-node-done {
+  @apply flex h-4 w-4 items-center justify-center rounded-full;
+  background: hsl(152 69% 41% / 0.12);
+}
+
+.agent-step-body {
+  @apply flex items-start gap-2 rounded-lg px-2 py-1 -mx-1 transition-colors;
+}
+
+.agent-step-body--active {
+  background: hsl(var(--primary) / 0.03);
+}
+
+.agent-step-icon {
+  @apply flex h-5 w-5 shrink-0 items-center justify-center rounded-md mt-px;
+}
+
+.agent-step-duration {
+  @apply shrink-0 font-mono text-[10px] tabular-nums mt-0.5;
+  color: hsl(var(--muted-foreground) / 0.5);
+}
+
+.agent-live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: hsl(var(--muted-foreground) / 0.55);
+  box-shadow: 0 0 0 0 hsl(var(--muted-foreground) / 0.25);
+  animation: agent-live-pulse 1.8s ease-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes agent-live-pulse {
+  0% { box-shadow: 0 0 0 0 hsl(var(--muted-foreground) / 0.25); }
+  70% { box-shadow: 0 0 0 4px hsl(var(--muted-foreground) / 0); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--muted-foreground) / 0); }
+}
+
+.agent-thinking-dots {
+  @apply inline-flex items-center gap-[3px] shrink-0 mt-0.5;
+}
+
+.agent-thinking-dots span {
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.25;
+  animation: agent-dot-drift 1.4s ease-in-out infinite;
+}
+
+.agent-thinking-dots span:nth-child(1) { animation-delay: 0s; }
+.agent-thinking-dots span:nth-child(2) { animation-delay: 0.16s; }
+.agent-thinking-dots span:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes agent-dot-drift {
+  0%, 60%, 100% { opacity: 0.2; transform: translateY(0); }
+  30% { opacity: 0.7; transform: translateY(-2px); }
+}
+
+.agent-avatar-breathe {
+  animation: agent-avatar-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes agent-avatar-glow {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.agent-step-detail {
+  @apply ml-7 mr-1 mt-1.5 mb-0.5 overflow-x-auto rounded-lg px-3 py-2.5;
+  @apply text-[11px] leading-relaxed font-mono whitespace-pre-wrap;
+  color: hsl(var(--muted-foreground) / 0.8);
+  font-style: italic;
+  background: hsl(var(--foreground) / 0.015);
+  border: 1px solid hsl(var(--border) / 0.3);
+  border-left-width: 3px;
+}
+
+/* A formatted statement, not prose: upright (italic monospace is hard to scan
+   at 11px), pre so the indentation survives, and bounded so a 40-line CTE
+   chain scrolls inside its own box instead of pushing the answer off screen. */
+.agent-step-detail--sql {
+  @apply max-h-72 overflow-auto whitespace-pre;
+  font-style: normal;
+  color: hsl(var(--muted-foreground) / 0.95);
+}
+
+.agent-thinking-block {
+  @apply ml-7 mr-1 mt-1.5 mb-0.5 rounded-lg px-3 py-2.5;
+  @apply text-[11px] leading-relaxed whitespace-pre-wrap;
+  color: hsl(var(--muted-foreground) / 0.8);
+  font-style: italic;
+  background: hsl(var(--foreground) / 0.015);
+  border: 1px solid hsl(var(--border) / 0.3);
+  border-left-width: 3px;
+}
+
+.agent-thinking-preview {
+  @apply ml-7 mr-1 mt-0.5 block truncate text-left;
+  @apply text-[10px] italic;
+  color: hsl(var(--muted-foreground) / 0.4);
+  transition: color 0.15s;
+}
+
+.agent-thinking-preview:hover {
+  color: hsl(var(--muted-foreground) / 0.65);
+}
+
+.agent-handoff-badge {
+  @apply inline-flex items-center gap-1 rounded-full px-1.5 py-0.5;
+  @apply text-[10px] font-medium;
+  color: hsl(210 100% 66%);
+  background: hsl(210 100% 66% / 0.08);
+}
+
+.agent-collapsed-pill {
+  @apply inline-flex max-w-full items-center gap-2 rounded-lg px-3 py-1.5 text-[11px];
+  @apply transition-all;
+  /* Opaque so the ambient chat dot-field doesn't show through the pill. */
+  border: 1px solid hsl(var(--border) / 0.5);
+  background: hsl(var(--card));
+}
+
+.agent-collapsed-pill:hover {
+  background: hsl(var(--muted));
+  border-color: hsl(var(--border));
+}
+
+/* ================================================================== */
+/* Chat Input                                                          */
+/* ================================================================== */
+
+.chat-input-container {
+  @apply flex items-end gap-3 rounded-2xl px-4 py-3;
+  @apply transition-all duration-300;
+  border: 1px solid hsl(var(--border) / 0.5);
+  background: hsl(var(--card) / 0.8);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.1);
+}
+
+.chat-input-container:focus-within {
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow:
+    0 0 0 1px hsl(var(--primary) / 0.1),
+    0 0 20px hsl(var(--primary) / 0.06),
+    0 2px 8px hsl(0 0% 0% / 0.1);
+}
+
+.chat-send-btn {
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-xl;
+  @apply transition-all duration-200;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.chat-send-btn:not(:disabled):hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 12px hsl(var(--primary) / 0.2);
+}
+
+.chat-send-btn:not(:disabled):active {
+  transform: scale(0.95);
+}
+
+.chat-send-btn:disabled {
+  @apply cursor-not-allowed opacity-40;
+}
+
+.chat-kbd {
+  @apply inline-flex items-center justify-center rounded px-1 py-px font-sans text-[9px];
+  border: 1px solid hsl(var(--border) / 0.6);
+  background: hsl(var(--muted) / 0.4);
+}
+
+/* ================================================================== */
+/* Widget Data Panel                                                   */
+/* ================================================================== */
+
+.widget-data-panel {
+  @apply space-y-3 rounded-xl p-3;
+  background: hsl(var(--muted) / 0.25);
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.widget-data-section {
+  @apply space-y-1.5;
+}
+
+.widget-data-section-header {
+  @apply flex items-center gap-1.5 text-[11px] font-medium;
+  color: hsl(var(--muted-foreground) / 0.6);
+}
+
+.widget-data-query {
+  @apply overflow-x-auto rounded-lg p-2.5;
+  @apply text-[11px] leading-relaxed font-mono;
+  color: hsl(var(--foreground) / 0.75);
+  background: hsl(var(--foreground) / 0.03);
+  border: 1px solid hsl(var(--border) / 0.4);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.widget-data-table-wrap {
+  @apply overflow-x-auto rounded-lg;
+  border: 1px solid hsl(var(--border) / 0.4);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.widget-data-table {
+  @apply w-full border-collapse text-[11px];
+}
+
+.widget-data-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.widget-data-table th {
+  @apply px-2.5 py-1.5 text-left font-medium;
+  color: hsl(var(--muted-foreground) / 0.7);
+  background: hsl(var(--muted) / 0.8);
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  white-space: nowrap;
+}
+
+.widget-data-table td {
+  @apply px-2.5 py-1.5;
+  color: hsl(var(--foreground) / 0.8);
+  border-bottom: 1px solid hsl(var(--border) / 0.25);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.widget-data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.widget-data-table tbody tr:hover td {
+  background: hsl(var(--muted) / 0.3);
+}
+
+.widget-data-meta {
+  @apply flex flex-wrap items-center gap-1.5;
+}
+
+.widget-data-badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+  @apply text-[10px] font-medium;
+  color: hsl(var(--muted-foreground) / 0.6);
+  background: hsl(var(--muted) / 0.5);
+}
+
+.widget-data-badge--rls {
+  color: hsl(var(--success));
+  background: hsl(var(--success) / 0.08);
+}
+
+.widget-data-toggle {
+  color: hsl(var(--muted-foreground) / 0.6);
+}
+
+.widget-data-toggle:hover {
+  color: hsl(var(--foreground));
+}
+
+.widget-data-toggle--active {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.06);
+}
+
+/* ================================================================== */
+/* Canvas sheet — the dashboard edit canvas (/canvas, /canvas/[id])    */
+/* ================================================================== */
+/* The edit canvas is a plain white sheet (matching the artifact canvas) —
+   no graph paper, no rulers. WidgetRenderer's own tile chrome is only a
+   `ring-1 ring-border/60`, which reads on a tinted surface but disappears
+   on white, so the tiles need the same crisp edge the read-only dashboard
+   view gets from `.dashboard-theme article.rounded-2xl` above: a full
+   hairline border plus a small soft lift, no background tint. This route
+   is NOT inside `.dashboard-theme` (only /dashboards + /system-dashboards
+   are), hence the parallel rule rather than a shared one.
+
+   Specificity (0,2,1) beats the tile's `ring-1` / `shadow-[…]` utilities,
+   so no !important is needed. Bare-surface tiles (tables, card-list
+   grids) drop `rounded-2xl` on purpose and stay excluded — same opt-out
+   the dashboard-theme rule relies on. */
+
+.canvas-sheet article.rounded-2xl {
+  border: 1px solid hsl(var(--border));
+  box-shadow:
+    0 1px 1px hsl(var(--foreground) / 0.03),
+    0 4px 12px -6px hsl(var(--foreground) / 0.10);
+  transition:
+    box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.canvas-sheet article.rounded-2xl:hover {
+  border-color: hsl(var(--primary) / 0.25);
+  box-shadow:
+    0 1px 2px hsl(var(--foreground) / 0.05),
+    0 10px 24px -10px hsl(var(--foreground) / 0.14);
+}
+
+/* ================================================================== */
+/* react-grid-layout                                                   */
+/* ================================================================== */
+
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+}
+
+/* Resize handles — Figma-style: hidden by default, fade in as small
+   filled squares on widget hover or during an active drag/resize.
+   Keeps the canvas calm at rest while exposing all 8 grab points
+   (4 corners + 4 edge midpoints) when the user is placing a tile. */
+
+.react-resizable-handle {
+  position: absolute !important;
+  width: 8px !important;
+  height: 8px !important;
+  padding: 0 !important;
+  z-index: 25 !important;
+  background-color: rgba(80, 80, 100, 0.7) !important;
+  background-image: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  border-radius: 1px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  /* Hidden until the tile is hovered or being interacted with. */
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease,
+              transform 0.12s ease;
+}
+
+.react-resizable-handle::after {
+  content: none !important;
+}
+
+/* Reveal handles when the tile is hovered, the placeholder is showing,
+   the tile itself is being dragged, or any tile is being resized. */
+.react-grid-item:hover > .react-resizable-handle,
+.react-grid-item.resizing > .react-resizable-handle,
+.react-grid-item.react-draggable-dragging > .react-resizable-handle,
+.react-grid-layout:has(.react-grid-placeholder) .react-resizable-handle {
+  opacity: 1;
+}
+
+/* Cursor on the handle itself — square grows slightly and turns blue */
+.react-resizable-handle:hover {
+  background-color: rgb(59, 130, 246) !important;
+  transform: scale(1.25);
+}
+
+/* Translate corner handles to sit centred on the corner, edge handles
+   to sit centred on the edge midpoint. */
+
+/* Corners — sit ON the corner (slightly inset to avoid clipping by the
+   tile's rounded corner) */
+.react-resizable-handle-se,
+.react-resizable-handle:not([class*="react-resizable-handle-"]) {
+  bottom: -3px !important;
+  right: -3px !important;
+  cursor: se-resize !important;
+}
+.react-resizable-handle-sw {
+  bottom: -3px !important;
+  left: -3px !important;
+  cursor: sw-resize !important;
+}
+.react-resizable-handle-nw {
+  top: -3px !important;
+  left: -3px !important;
+  cursor: nw-resize !important;
+}
+.react-resizable-handle-ne {
+  top: -3px !important;
+  right: -3px !important;
+  cursor: ne-resize !important;
+}
+
+/* Edge midpoints */
+.react-resizable-handle-n {
+  top: -3px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  cursor: n-resize !important;
+}
+.react-resizable-handle-n:hover {
+  transform: translateX(-50%) scale(1.25);
+}
+.react-resizable-handle-s {
+  bottom: -3px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  cursor: s-resize !important;
+}
+.react-resizable-handle-s:hover {
+  transform: translateX(-50%) scale(1.25);
+}
+.react-resizable-handle-e {
+  right: -3px !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+  cursor: e-resize !important;
+}
+.react-resizable-handle-e:hover {
+  transform: translateY(-50%) scale(1.25);
+}
+.react-resizable-handle-w {
+  left: -3px !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+  cursor: w-resize !important;
+}
+.react-resizable-handle-w:hover {
+  transform: translateY(-50%) scale(1.25);
+}
+
+/* Selection / placement outline — dashed border on the tile being
+   actively dragged or resized, plus on the placeholder ghost showing
+   where it'll land. Mirrors the Figma "currently-selected" look. */
+.react-grid-item.react-draggable-dragging,
+.react-grid-item.resizing {
+  outline: 1.5px dashed rgba(59, 130, 246, 0.85);
+  outline-offset: 2px;
+  z-index: 30 !important;
+}
+
+.react-grid-placeholder {
+  background-color: rgba(59, 130, 246, 0.10) !important;
+  border: 1.5px dashed rgba(59, 130, 246, 0.6) !important;
+  border-radius: 16px !important;
+  opacity: 1 !important;
+  transition-duration: 80ms !important;
+}
+
+/* ================================================================== */
+/* Login page — staggered fade-up entrance                             */
+/* ================================================================== */
+
+@keyframes login-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.login-enter {
+  opacity: 0;
+  animation: login-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.login-enter-delay-0 { animation-delay: 0.1s; }
+.login-enter-delay-1 { animation-delay: 0.2s; }
+.login-enter-delay-2 { animation-delay: 0.3s; }
+.login-enter-delay-3 { animation-delay: 0.45s; }
+.login-enter-delay-4 { animation-delay: 0.6s; }
+
+@keyframes aurora-drift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(30px, -20px) rotate(120deg); }
+  66% { transform: translate(-20px, 15px) rotate(240deg); }
+  100% { transform: translate(0, 0) rotate(360deg); }
+}
+
+/* ================================================================== */
+/* Apple Intelligence — Workspace Aurora Background                    */
+/* ================================================================== */
+
+@keyframes ai-ws-blob-1 {
+  0%,  100% { transform: translate(0, 0)            scale(1);    }
+  33%        { transform: translate(60px, -45px)    scale(1.08); }
+  66%        { transform: translate(-30px, 60px)    scale(0.93); }
+}
+@keyframes ai-ws-blob-2 {
+  0%,  100% { transform: translate(0, 0)            scale(1);    }
+  40%        { transform: translate(-70px, 55px)    scale(1.10); }
+  70%        { transform: translate(40px, -30px)    scale(0.91); }
+}
+@keyframes ai-ws-blob-3 {
+  0%,  100% { transform: translate(-50%, -50%) scale(1);    }
+  50%        { transform: translate(-53%, -46%) scale(0.89); }
+}
+@keyframes ai-ws-blob-4 {
+  0%,  100% { transform: translate(0, 0)            scale(1);    }
+  50%        { transform: translate(35px, -38px)    scale(1.06); }
+}
+
+.ai-ws-blob {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+.ai-ws-blob-1 {
+  width: 820px; height: 820px; top: -280px; left: -260px;
+  background: radial-gradient(circle at 38% 38%,
+    rgba(80,  120, 255, 0.10) 0%,
+    rgba(60,   95, 240, 0.05) 35%,
+    rgba(40,   70, 210, 0.02) 60%,
+    transparent 76%);
+  filter: blur(80px);
+  animation: ai-ws-blob-1 30s ease-in-out infinite;
+}
+.ai-ws-blob-2 {
+  width: 720px; height: 720px; bottom: -200px; right: -200px;
+  background: radial-gradient(circle at 58% 58%,
+    rgba(150,  70, 255, 0.08) 0%,
+    rgba(120,  50, 230, 0.04) 38%,
+    rgba( 90,  30, 200, 0.01) 62%,
+    transparent 76%);
+  filter: blur(72px);
+  animation: ai-ws-blob-2 38s ease-in-out infinite;
+}
+.ai-ws-blob-3 {
+  width: 580px; height: 580px; top: 50%; left: 62%;
+  background: radial-gradient(circle,
+    rgba(  0, 170, 240, 0.07) 0%,
+    rgba(  0, 140, 220, 0.03) 42%,
+    rgba(  0, 110, 200, 0.01) 65%,
+    transparent 78%);
+  filter: blur(65px);
+  animation: ai-ws-blob-3 24s ease-in-out infinite;
+  transform: translate(-50%, -50%);
+}
+.ai-ws-blob-4 {
+  width: 480px; height: 480px; bottom: 20%; left: 3%;
+  background: radial-gradient(circle,
+    rgba(100, 120, 255, 0.07) 0%,
+    rgba( 70,  90, 220, 0.03) 45%,
+    transparent 70%);
+  filter: blur(60px);
+  animation: ai-ws-blob-4 44s ease-in-out infinite;
+}
+
+/* ================================================================== */
+/* Page header — unified glass bar used by every workspace page        */
+/* ================================================================== */
+
+.page-header {
+  display: flex;
+  height: 4rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  background:
+    radial-gradient(ellipse 60% 160% at 0%   50%, rgba(255,255,255,0.92) 0%, transparent 65%),
+    radial-gradient(ellipse 35% 120% at 100% 50%, rgba(220,235,255,0.80) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(248,251,255,0.88) 100%);
+  backdrop-filter: blur(48px) saturate(170%) brightness(1.01);
+  -webkit-backdrop-filter: blur(48px) saturate(170%) brightness(1.01);
+  border-bottom: 0.5px solid rgba(0,0,0,0.07);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.98) inset,
+    0 2px 12px rgba(0,0,0,0.05),
+    0 4px 24px rgba(55,100,240,0.04);
+  position: relative;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 0.5px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.85) 15%,
+    rgba(255,255,255,1) 50%,
+    rgba(255,255,255,0.85) 85%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+.page-header-icon {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.18) 0%,
+    hsl(var(--primary) / 0.07) 100%
+  );
+  color: hsl(var(--primary));
+  box-shadow:
+    0 0 0 1px hsl(var(--primary) / 0.22) inset,
+    0 1px 0 rgba(255,255,255,0.16) inset,
+    0 2px 8px hsl(var(--primary) / 0.10);
+}
+
+/* ================================================================== */
+/* Apple Intelligence — Liquid Glass Surfaces                          */
+/* ================================================================== */
+
+@layer utilities {
+
+  .ai-topbar {
+    background:
+      radial-gradient(ellipse 50% 140% at 0%   50%, rgba(255,255,255,0.92) 0%, transparent 62%),
+      radial-gradient(ellipse 30% 100% at 100% 50%, rgba(220,235,255,0.78) 0%, transparent 62%),
+      linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,251,255,0.90) 100%);
+    backdrop-filter: blur(64px) saturate(180%) brightness(1.01);
+    -webkit-backdrop-filter: blur(64px) saturate(180%) brightness(1.01);
+    border-bottom: 0.5px solid rgba(0,0,0,0.07);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.98) inset,
+      0 1px 0 rgba(255,255,255,0.60),
+      0 2px 16px rgba(0,0,0,0.06),
+      0 4px 32px rgba(55,100,240,0.04);
+    position: relative;
+  }
+  .ai-topbar::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 0.75px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,0.90) 12%,
+      rgba(255,255,255,1) 50%,
+      rgba(255,255,255,0.90) 88%,
+      transparent 100%);
+    pointer-events: none;
+  }
+
+  .lg-widget {
+    background:
+      radial-gradient(ellipse 150% 85% at  8% 0%, rgba(255,255,255,0.95) 0%, transparent 52%),
+      radial-gradient(ellipse  90% 60% at 94% 0%, rgba(255,255,255,0.75) 0%, transparent 52%),
+      rgba(255, 255, 255, 0.88);
+    background-size: auto, auto, auto;
+    backdrop-filter: blur(52px) saturate(170%) brightness(1.01);
+    -webkit-backdrop-filter: blur(52px) saturate(170%) brightness(1.01);
+    border-top:    0.75px solid rgba(255,255,255,1);
+    border-left:   0.75px solid rgba(255,255,255,0.85);
+    border-right:  0.75px solid rgba(0,0,0,0.05);
+    border-bottom: 0.75px solid rgba(0,0,0,0.06);
+    box-shadow:
+      0 1.5px 0 rgba(255,255,255,1) inset,
+      1.5px 0 0 rgba(255,255,255,0.70) inset,
+      0 -1px 0 rgba(140,180,255,0.06) inset,
+      0 0 0 0.5px rgba(180,210,255,0.12) inset,
+      0 8px 32px rgba(55,100,240,0.07),
+      0 3px 10px rgba(0,0,0,0.06),
+      0 1px  3px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  .lg-widget::before {
+    content: '';
+    position: absolute;
+    left: 3%; right: 3%; top: 0;
+    height: 1px;
+    border-radius: 100px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,0.90) 18%,
+      rgba(255,255,255,1) 50%,
+      rgba(255,255,255,0.90) 82%,
+      transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+}
+
+/* ================================================================== */
+/* Apple Intelligence — Card system                                    */
+/* ================================================================== */
+
+.ai-card-ring {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid hsl(var(--border));
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+
+.ai-card-ring:hover {
+  transform: translateY(-3px);
+}
+
+.ai-card-ring::before { content: none; }
+.ai-card-ring::after  { content: none; }
+
+.card-premium {
+  position: relative;
+  background: hsl(var(--card));
+  overflow: hidden;
+}
+
+.card-premium::before { content: none; }
+.card-premium::after  { content: none; }
+
+/* ================================================================== */
+/* Apple Intelligence — Liquid Glass Buttons                           */
+/* ================================================================== */
+
+@keyframes btn-shine {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(240%)  skewX(-18deg); }
+}
+
+.btn-lg-primary {
+  color: hsl(var(--primary-foreground));
+  background:
+    radial-gradient(ellipse 90% 60% at 22%  6%, hsl(var(--primary) / 0.38) 0%, transparent 52%),
+    radial-gradient(ellipse 65% 45% at 80% 92%, hsl(var(--primary) / 0.20) 0%, transparent 52%),
+    linear-gradient(148deg, hsl(var(--primary) / 0.94) 0%, hsl(var(--primary)) 52%, hsl(var(--primary)) 100%);
+  border-top:    0.75px solid rgba(255,255,255,0.60);
+  border-left:   0.75px solid rgba(255,255,255,0.42);
+  border-right:  0.75px solid hsl(var(--primary) / 0.30);
+  border-bottom: 0.75px solid hsl(var(--primary) / 0.55);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.40) inset,
+    0 -1px 0 rgba(0,0,0,0.26) inset,
+    0 0 0 0.5px rgba(255,255,255,0.22) inset;
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s, filter 0.22s;
+}
+.btn-lg-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 6%; right: 6%;
+  height: 1px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.60) 20%, rgba(255,255,255,0.92) 50%, rgba(255,255,255,0.60) 80%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+.btn-lg-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 65%, transparent 100%);
+  z-index: 1;
+}
+.btn-lg-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.40) inset,
+    0 -1px 0 rgba(0,0,0,0.26) inset;
+}
+.btn-lg-primary:hover:not(:disabled) .btn-shine,
+.btn-lg-primary:hover:not(:disabled)::before {
+  animation: btn-shine 0.55s ease forwards;
+}
+.btn-lg-primary:active:not(:disabled) {
+  transform: scale(0.974) translateY(0);
+  filter: brightness(0.96);
+  transition-duration: 0.1s;
+}
+
+.btn-lg-outline {
+  color: hsl(var(--foreground));
+  background:
+    radial-gradient(ellipse 140% 80% at 12% 4%, rgba(255,255,255,0.24) 0%, transparent 56%),
+    radial-gradient(ellipse  90% 60% at 88% 96%, rgba(200,220,255,0.12) 0%, transparent 56%),
+    linear-gradient(158deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.055) 100%);
+  border-top:    0.75px solid rgba(255,255,255,0.58);
+  border-left:   0.75px solid rgba(255,255,255,0.40);
+  border-right:  0.75px solid rgba(255,255,255,0.14);
+  border-bottom: 0.75px solid rgba(255,255,255,0.10);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.44) inset,
+    0 0 0 0.5px rgba(255,255,255,0.12) inset;
+  backdrop-filter: blur(24px) saturate(190%) brightness(1.08);
+  -webkit-backdrop-filter: blur(24px) saturate(190%) brightness(1.08);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s;
+}
+.btn-lg-outline::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 6%; right: 6%;
+  height: 1px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.76) 25%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.76) 75%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+.btn-lg-outline:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.50) inset,
+    0 0 0 0.5px rgba(255,255,255,0.14) inset;
+}
+.btn-lg-outline:active:not(:disabled) {
+  transform: scale(0.976) translateY(0);
+  transition-duration: 0.1s;
+}
+
+.btn-lg-subtle {
+  color: hsl(var(--foreground) / 0.78);
+  background:
+    radial-gradient(ellipse 120% 80% at 10% 0%, rgba(255,255,255,0.10) 0%, transparent 55%),
+    linear-gradient(158deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%);
+  border-top:    0.75px solid rgba(255,255,255,0.32);
+  border-left:   0.75px solid rgba(255,255,255,0.20);
+  border-right:  0.75px solid rgba(255,255,255,0.07);
+  border-bottom: 0.75px solid rgba(255,255,255,0.06);
+  box-shadow: 0 1.5px 0 rgba(255,255,255,0.26) inset;
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  transition: all 0.22s cubic-bezier(0.16,1,0.3,1);
+}
+.btn-lg-subtle:hover:not(:disabled) {
+  color: hsl(var(--foreground));
+  background:
+    radial-gradient(ellipse 120% 80% at 10% 0%, rgba(255,255,255,0.15) 0%, transparent 55%),
+    linear-gradient(158deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.07) 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 1.5px 0 rgba(255,255,255,0.32) inset;
+}
+.btn-lg-subtle:active:not(:disabled) {
+  transform: scale(0.977) translateY(0);
+  transition-duration: 0.1s;
+}
+
+/* ================================================================== */
+/* Entrance animations                                                  */
+/* ================================================================== */
+
+@keyframes slide-up-fade {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@keyframes pop-in {
+  0%   { opacity: 0; transform: scale(0.90); }
+  65%  {             transform: scale(1.025); }
+  100% { opacity: 1; transform: scale(1);    }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ================================================================== */
+/* Glass Popover / Dropdown / Select content                           */
+/* ================================================================== */
+
+.glass-popover {
+  background:
+    radial-gradient(ellipse 140% 80% at 8% 0%, rgba(255,255,255,0.10) 0%, transparent 52%),
+    rgba(255, 255, 255, 0.065);
+  backdrop-filter: blur(52px) saturate(220%) brightness(1.08);
+  -webkit-backdrop-filter: blur(52px) saturate(220%) brightness(1.08);
+  border-top:    0.5px solid rgba(255,255,255,0.26);
+  border-left:   0.5px solid rgba(255,255,255,0.17);
+  border-right:  0.5px solid rgba(255,255,255,0.06);
+  border-bottom: 0.5px solid rgba(255,255,255,0.05);
+  box-shadow:
+    0 1.5px 0 rgba(255,255,255,0.16) inset,
+    0 0 0 0.5px rgba(255,255,255,0.06) inset,
+    0 4px 16px rgba(0,0,0,0.12),
+    0 1px 4px rgba(0,0,0,0.07);
+  position: relative;
+  overflow: hidden;
+}
+.glass-popover::before {
+  content: '';
+  position: absolute;
+  left: 4%; right: 4%; top: 0;
+  height: 0.75px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28) 30%, rgba(255,255,255,0.40) 50%, rgba(255,255,255,0.28) 70%, transparent);
+  pointer-events: none;
+}
+
+/* ================================================================== */
+/* Glass Modal / Dialog content                                         */
+/* ================================================================== */
+
+.glass-modal {
+  background:
+    radial-gradient(ellipse 150% 80% at 6% 2%,  rgba(255,255,255,0.11) 0%, transparent 52%),
+    radial-gradient(ellipse  90% 60% at 94% 98%, rgba(255,255,255,0.05) 0%, transparent 52%),
+    rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(64px) saturate(220%) brightness(1.10);
+  -webkit-backdrop-filter: blur(64px) saturate(220%) brightness(1.10);
+  border-top:    0.75px solid rgba(255,255,255,0.34);
+  border-left:   0.75px solid rgba(255,255,255,0.22);
+  border-right:  0.75px solid rgba(255,255,255,0.08);
+  border-bottom: 0.75px solid rgba(255,255,255,0.06);
+  box-shadow:
+    0 2px   0 rgba(255,255,255,0.20) inset,
+    1px 0   0 rgba(255,255,255,0.08) inset,
+    0 0 0 0.5px rgba(180,210,255,0.16) inset,
+    0 36px 90px rgba(0,0,0,0.55),
+    0 14px 42px rgba(0,0,0,0.40),
+    0 36px 80px rgba(55,100,240,0.20);
+  position: relative;
+}
+.glass-modal::before {
+  content: '';
+  position: absolute;
+  left: 5%; right: 5%; top: 0;
+  height: 1px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.26) 25%, rgba(255,255,255,0.44) 50%, rgba(255,255,255,0.26) 75%, transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ================================================================== */
+/* Radix UI interactive state selectors — glass item highlights        */
+/* ================================================================== */
+
+[role="option"][data-highlighted],
+[role="menuitem"][data-highlighted],
+[role="menuitemcheckbox"][data-highlighted],
+[role="menuitemradio"][data-highlighted] {
+  background: linear-gradient(155deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.06) 100%) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset;
+  outline: none;
+}
+
+/* Tabs are styled in the component (src/components/ui/tabs.tsx), NOT here.
+   This block used to carry a glass treatment for `[role="tab"]` and
+   `[role="tablist"]` — white gradients, hairline borders and drop shadows, with
+   `!important` on the active state. Unscoped, so it hit every Radix tab in the
+   app, and the `!important` meant the component could not restyle its own
+   active state. A bordered group with a theme-coloured active segment lives with
+   the component instead, where it is discoverable and overridable. */
+
+/* ==================================================================
+   FLEET DESIGN SYSTEM — utility class library
+   ==================================================================
+   Verbatim port of design-system.html with hex color tokens replaced
+   by hsl(var(--*)) so classes theme-shift with useThemeStore. Every
+   class is prefixed `fleet-` so it doesn't collide with existing
+   shadcn / dashboard-theme rules. Opt in per surface by adding the
+   class — no global side-effects.
+   ================================================================== */
+
+:root {
+  /* Token aliases — design file calls them ink / paper / rule.
+     We map onto our existing HSL tokens so theme presets continue
+     to work. Edit these if you want the design system to drift
+     from the base theme. */
+  --fleet-bg: hsl(var(--background));
+  --fleet-surface: hsl(var(--card));
+  --fleet-surface-2: hsl(var(--card));
+  --fleet-ink: hsl(var(--foreground));
+  --fleet-ink-soft: hsl(var(--foreground) / 0.82);
+  --fleet-muted: hsl(var(--muted-foreground));
+  --fleet-line: hsl(var(--border));
+  --fleet-line-soft: hsl(var(--secondary));
+  --fleet-good: hsl(var(--success));
+  --fleet-good-bg: hsl(var(--success) / 0.06);
+  --fleet-good-border: hsl(var(--success) / 0.25);
+  --fleet-warn: hsl(var(--warning));
+  --fleet-warn-bg: hsl(var(--warning) / 0.08);
+  --fleet-warn-border: hsl(var(--warning) / 0.25);
+  --fleet-bad: hsl(var(--destructive));
+  --fleet-bad-bg: hsl(var(--destructive) / 0.06);
+  --fleet-bad-border: hsl(var(--destructive) / 0.25);
+
+  --fleet-font-serif: var(--font-sans);
+}
+
+/* ---- Hero --------------------------------------------------------- */
+.fleet-hero {
+  background: var(--fleet-surface);
+  border-bottom: 1px solid var(--fleet-line);
+  padding: 64px 48px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.fleet-hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -60px;
+  width: 320px; height: 320px;
+  background: radial-gradient(circle, var(--color-ai-halo-b) 0%, transparent 70%);
+  pointer-events: none;
+}
+.fleet-hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--fleet-line-soft);
+  color: var(--fleet-ink-soft);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--fleet-line);
+  margin-bottom: 20px;
+}
+.fleet-hero-title {
+  font-family: var(--fleet-font-serif);
+  font-size: 52px; font-weight: 500;
+  color: var(--fleet-ink);
+  letter-spacing: -1.2px;
+  line-height: 1.05;
+  margin-bottom: 16px;
+}
+.fleet-hero-title span {
+  color: var(--fleet-ink-soft);
+  font-style: italic; font-weight: 400;
+}
+.fleet-hero-subtitle {
+  color: var(--fleet-ink-soft);
+  font-size: 16px; line-height: 1.6;
+  max-width: 540px;
+  margin-bottom: 32px;
+}
+.fleet-hero-meta { display: flex; gap: 32px; flex-wrap: wrap; }
+.fleet-hero-meta-item { display: flex; flex-direction: column; }
+.fleet-hero-meta-value {
+  font-family: var(--fleet-font-serif);
+  font-size: 22px; font-weight: 500;
+  color: var(--fleet-ink);
+  letter-spacing: -0.4px;
+}
+.fleet-hero-meta-label {
+  font-size: 11px; color: var(--fleet-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-weight: 600; margin-top: 2px;
+}
+
+/* ---- Section header ---------------------------------------------- */
+.fleet-section-eyebrow {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--fleet-ink-soft);
+  margin-bottom: 8px;
+}
+.fleet-section-title {
+  font-family: var(--fleet-font-serif);
+  font-size: 30px; font-weight: 500;
+  color: var(--fleet-ink);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.fleet-section-desc {
+  color: var(--fleet-ink-soft);
+  font-size: 14.5px; line-height: 1.65;
+  margin-bottom: 32px;
+  max-width: 620px;
+}
+.fleet-divider {
+  height: 1px;
+  background: var(--fleet-line);
+  margin-bottom: 32px;
+}
+
+/* ---- Surface / KPI / brief cards --------------------------------- */
+.fleet-surface-card {
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  border-radius: 12px;
+  padding: 20px;
+}
+.fleet-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap: 16px;
+}
+.fleet-kpi {
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  border-radius: 12px;
+  padding: 16px 20px;
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+.fleet-kpi:hover { transform: translateY(-2px); border-color: var(--fleet-ink-soft); }
+.fleet-kpi-label {
+  font-size: 11px; color: var(--fleet-muted);
+  text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+}
+.fleet-kpi-value {
+  font-family: var(--fleet-font-serif);
+  font-size: 32px; font-weight: 500;
+  letter-spacing: -0.5px; line-height: 1.1;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+  color: var(--fleet-ink);
+}
+.fleet-kpi-delta { font-size: 12px; color: var(--fleet-ink-soft); margin-top: 6px; }
+.fleet-kpi-delta.up { color: var(--fleet-good); }
+.fleet-kpi-delta.down { color: var(--fleet-bad); }
+.fleet-brief-card {
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex; justify-content: space-between; gap: 20px;
+  align-items: flex-start;
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+.fleet-brief-card:hover { transform: translateY(-2px); border-color: var(--fleet-ink-soft); }
+.fleet-brief-eyebrow {
+  font-size: 11px; color: var(--fleet-muted);
+  text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+}
+.fleet-brief-title {
+  font-family: var(--fleet-font-serif);
+  font-size: 22px; font-weight: 500;
+  letter-spacing: -0.4px;
+  margin-top: 4px; line-height: 1.25;
+  color: var(--fleet-ink);
+}
+.fleet-brief-body {
+  font-size: 14.5px; color: var(--fleet-ink-soft);
+  line-height: 1.65; margin-top: 8px;
+  max-width: 60ch;
+}
+
+/* ---- Chips & Pills ------------------------------------------------ */
+.fleet-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.fleet-chip {
+  background: transparent;
+  border: 1px solid var(--fleet-line);
+  border-radius: 999px;
+  color: var(--fleet-ink-soft);
+  padding: 4px 11px;
+  font-size: 11.5px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer; font-family: inherit;
+  transition: all 120ms ease;
+}
+.fleet-chip:hover { border-color: var(--fleet-ink); color: var(--fleet-ink); }
+.fleet-chip.fleet-chip-on {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.fleet-chip-count {
+  font-size: 10.5px;
+  color: var(--fleet-muted);
+  font-variant-numeric: tabular-nums;
+}
+.fleet-chip-on .fleet-chip-count { color: hsl(var(--primary-foreground) / 0.7); }
+
+.fleet-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px; font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--fleet-line);
+  background: var(--fleet-surface);
+  color: var(--fleet-ink-soft);
+}
+.fleet-pill-dot {
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: var(--fleet-muted);
+}
+.fleet-pill-good { color: var(--fleet-good); border-color: var(--fleet-good-border); background: var(--fleet-good-bg); }
+.fleet-pill-good .fleet-pill-dot { background: var(--fleet-good); }
+.fleet-pill-warn { color: var(--fleet-warn); border-color: var(--fleet-warn-border); background: var(--fleet-warn-bg); }
+.fleet-pill-warn .fleet-pill-dot { background: var(--fleet-warn); }
+.fleet-pill-bad { color: var(--fleet-bad); border-color: var(--fleet-bad-border); background: var(--fleet-bad-bg); }
+.fleet-pill-bad .fleet-pill-dot { background: var(--fleet-bad); }
+
+/* ---- Alerts ------------------------------------------------------- */
+.fleet-alert {
+  display: flex; gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid;
+  margin-bottom: 12px;
+}
+.fleet-alert-icon { flex-shrink: 0; margin-top: 1px; }
+.fleet-alert-title { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+.fleet-alert-desc { font-size: 13px; opacity: 0.85; line-height: 1.5; }
+.fleet-alert-success { background: var(--fleet-good-bg); border-color: var(--fleet-good-border); color: var(--fleet-good); }
+.fleet-alert-info { background: var(--fleet-line-soft); border-color: var(--fleet-line); color: var(--fleet-ink-soft); }
+.fleet-alert-warning { background: var(--fleet-warn-bg); border-color: var(--fleet-warn-border); color: var(--fleet-warn); }
+.fleet-alert-error { background: var(--fleet-bad-bg); border-color: var(--fleet-bad-border); color: var(--fleet-bad); }
+
+/* ---- Form labels / search ---------------------------------------- */
+.fleet-form-label {
+  font-size: 11.5px; font-weight: 600;
+  color: var(--fleet-ink-soft);
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.fleet-form-hint { font-size: 12px; color: var(--fleet-muted); }
+.fleet-search-wrap {
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--fleet-line-soft);
+  border: 1px solid var(--fleet-line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: var(--fleet-muted);
+  transition: all 120ms ease;
+}
+.fleet-search-wrap:focus-within {
+  border-color: var(--fleet-ink);
+  background: var(--fleet-surface);
+  color: var(--fleet-ink);
+}
+.fleet-search-wrap input {
+  flex: 1; border: 0; background: transparent; outline: 0;
+  font-size: 13.5px;
+  color: var(--fleet-ink);
+  font-family: inherit;
+}
+.fleet-search-wrap input::placeholder { color: var(--fleet-muted); }
+
+/* ---- Navbar / navset / npill ------------------------------------ */
+.fleet-navbar {
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  border-radius: 12px;
+  padding: 0 20px;
+  display: flex; align-items: center;
+  height: 56px; gap: 12px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+}
+.fleet-nav-brand {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--fleet-font-serif);
+  font-weight: 500; font-size: 16px;
+  color: var(--fleet-ink);
+  letter-spacing: -0.2px;
+  margin-right: 16px;
+}
+.fleet-nav-mark {
+  width: 22px; height: 22px;
+  background: var(--fleet-ink);
+  color: hsl(var(--background));
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.fleet-navset {
+  display: inline-flex; gap: 4px; padding: 4px;
+  border: 1px solid var(--fleet-line);
+  border-radius: 999px;
+  background: hsl(var(--foreground) / 0.04);
+}
+.fleet-npill {
+  padding: 5px 14px;
+  border-radius: 999px;
+  color: var(--fleet-ink-soft);
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 0; background: transparent;
+  font-family: inherit;
+  transition: all 120ms ease;
+  text-decoration: none;
+  display: inline-flex; align-items: center;
+}
+.fleet-npill:hover { color: var(--fleet-ink); }
+.fleet-npill.fleet-npill-active {
+  background: var(--fleet-ink);
+  color: hsl(var(--background));
+}
+
+/* ---- Data tables ------------------------------------------------- */
+.fleet-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.fleet-data-table thead th {
+  text-align: left;
+  padding: 8px 14px;
+  background: var(--fleet-line-soft);
+  color: var(--fleet-ink-soft);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--fleet-line);
+}
+.fleet-data-table td {
+  padding: 9px 14px;
+  border-top: 1px solid var(--fleet-line);
+  color: var(--fleet-ink-soft);
+  vertical-align: middle;
+}
+.fleet-data-table tbody tr:nth-child(even) td {
+  background: hsl(var(--foreground) / 0.012);
+}
+.fleet-data-table tbody tr:hover td { background: var(--fleet-line-soft); }
+
+/* ---- Progress ---------------------------------------------------- */
+.fleet-progress-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.fleet-progress-meta { display: flex; justify-content: space-between; }
+.fleet-progress-label { font-size: 13px; font-weight: 500; color: var(--fleet-ink); }
+.fleet-progress-val { font-size: 13px; color: var(--fleet-muted); font-variant-numeric: tabular-nums; }
+.fleet-progress-track {
+  height: 6px;
+  background: var(--fleet-line-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.fleet-progress-fill {
+  height: 100%;
+  background: var(--fleet-ink);
+  border-radius: 999px;
+  transition: width 350ms cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ---- Markdown answer body ---------------------------------------- */
+.fleet-md-body { font-size: 14.5px; line-height: 1.65; color: var(--fleet-ink); }
+.fleet-md-body h3 {
+  font-family: var(--fleet-font-serif);
+  font-weight: 500; font-size: 17px;
+  letter-spacing: -0.3px;
+  margin: 0 0 8px;
+}
+.fleet-md-body p { margin: 0 0 10px; }
+.fleet-md-body p:last-child { margin-bottom: 0; }
+.fleet-md-body strong { font-weight: 600; }
+.fleet-md-body code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: var(--fleet-line-soft);
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid var(--fleet-line);
+}
+.fleet-md-body table {
+  border-collapse: collapse;
+  width: 100%; font-size: 13px;
+  font-family: var(--font-mono);
+  margin: 12px 0 0;
+  border: 1px solid var(--fleet-line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.fleet-md-body thead th {
+  background: var(--fleet-line-soft);
+  color: var(--fleet-ink-soft);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--fleet-line);
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+.fleet-md-body tbody td {
+  padding: 7px 12px;
+  border-top: 1px solid var(--fleet-line);
+  color: var(--fleet-ink-soft);
+}
+
+/* ---- Editorial helpers ------------------------------------------- */
+.fleet-eyebrow {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  /* Admin portal's .ds-section-eyebrow uses the dark ink-soft tone, not
+     the light muted gray — keeps section labels readable. */
+  color: var(--fleet-ink-soft);
+}
+.fleet-serif {
+  font-family: var(--fleet-font-serif);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+.fleet-paper {
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+}
+
+/* ---- Page-level wrapper ----------------------------------------- */
+/* Pages that opt into the Fleet design system by adding `.fleet-page`
+   to their root get: paper background, neutral text, no aurora blobs,
+   no glass effects. Use this on workspace pages that should look
+   like the design file. */
+.fleet-page {
+  background: var(--fleet-bg);
+  color: var(--fleet-ink);
+}
+.fleet-page .ai-ws-blob { display: none !important; }
+
+/* ---- Login page (self-contained, no Tailwind reliance) ---------- */
+.workspace-login-shell {
+  position: relative;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--fleet-bg);
+  color: var(--fleet-ink);
+}
+/* Ambient dot field behind the card (rendered by <DotField/>) — mirrors the
+   admin portal login. Dot color follows --login-dot (set to the locked brand
+   color by the (auth) layout) and falls back to the primary token. Both grids
+   share the wander animation; only the base pulses; the glow follows --mx/--my. */
+.login-dotfield {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.login-dotfield-base,
+.login-dotfield-glow {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--dot) 1.3px, transparent 1.6px);
+  background-size: 26px 26px;
+  animation: login-wander 26s ease-in-out infinite;
+}
+.login-dotfield-base {
+  --dot: color-mix(in srgb, var(--login-dot, hsl(var(--primary))) 22%, transparent);
+  animation:
+    login-wander 26s ease-in-out infinite,
+    login-pulse 8s ease-in-out infinite;
+  -webkit-mask-image: radial-gradient(ellipse 70% 62% at 50% 45%, #000 28%, transparent 78%);
+  mask-image: radial-gradient(ellipse 70% 62% at 50% 45%, #000 28%, transparent 78%);
+}
+.login-dotfield-glow {
+  --dot: color-mix(in srgb, var(--login-dot, hsl(var(--primary))) 55%, transparent);
+  -webkit-mask-image: radial-gradient(
+    circle 150px at var(--mx, -300px) var(--my, -300px), #000 0%, transparent 72%);
+  mask-image: radial-gradient(
+    circle 150px at var(--mx, -300px) var(--my, -300px), #000 0%, transparent 72%);
+}
+@keyframes login-wander {
+  0% { background-position: 0px 0px; }
+  18% { background-position: 22px -14px; }
+  36% { background-position: -16px 20px; }
+  54% { background-position: 26px 12px; }
+  72% { background-position: -20px -8px; }
+  88% { background-position: 12px 22px; }
+  100% { background-position: 0px 0px; }
+}
+@keyframes login-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login-dotfield-base,
+  .login-dotfield-glow { animation: none; }
+}
+.workspace-login-card-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+}
+.workspace-login-card-wrap::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -50px;
+  width: 260px; height: 260px;
+  background: radial-gradient(circle, var(--color-ai-halo-b) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.workspace-login-card {
+  position: relative;
+  z-index: 1;
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  border-radius: 16px;
+  padding: 40px 36px 32px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.06);
+}
+.workspace-login-logo {
+  width: 56px; height: 56px;
+  background: var(--fleet-ink);
+  color: var(--fleet-bg);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto;
+}
+/* Default (no uploaded logo): the GRAFFS.io lockup / wordmark replaces the ink
+   chip — drop the fixed square + fill so it sits naturally, still centered. */
+.workspace-login-logo--lockup {
+  width: auto; height: auto;
+  background: transparent;
+  color: inherit;
+  border-radius: 0;
+  margin-bottom: 4px;
+}
+/* Uploaded logo: let the image span the card width instead of the 56px chip. */
+.workspace-login-logo--img {
+  width: 100%; height: auto;
+  background: transparent;
+  border-radius: 0;
+  margin-bottom: 4px;
+}
+.workspace-login-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fleet-muted);
+  text-align: center;
+  margin-top: 16px;
+}
+.workspace-login-title {
+  font-family: var(--fleet-font-serif);
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  color: var(--fleet-ink);
+  text-align: center;
+  margin-top: 6px;
+  line-height: 1.1;
+}
+.workspace-login-subtitle {
+  font-size: 14px;
+  color: var(--fleet-ink-soft);
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+.workspace-login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.workspace-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 150ms ease;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+}
+.workspace-login-btn:active { transform: scale(0.98); }
+.workspace-login-btn-primary {
+  background: var(--fleet-ink);
+  color: var(--fleet-bg);
+  border: 1px solid var(--fleet-ink);
+}
+.workspace-login-btn-primary:hover {
+  background: hsl(var(--foreground) / 0.85);
+}
+.workspace-login-btn-secondary {
+  background: var(--fleet-surface);
+  color: var(--fleet-ink);
+  border: 1px solid var(--fleet-line);
+}
+.workspace-login-btn-secondary:hover {
+  border-color: var(--fleet-ink);
+}
+.workspace-login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 2px 0;
+}
+.workspace-login-divider-line {
+  height: 1px;
+  flex: 1;
+  background: var(--fleet-line);
+}
+.workspace-login-divider-text {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--fleet-muted);
+}
+.workspace-login-secured {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--fleet-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--fleet-ink-soft);
+}
+.workspace-login-fineprint {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--fleet-muted);
+  white-space: nowrap;
+}
+.workspace-login-fineprint a {
+  color: var(--fleet-ink-soft);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--fleet-muted);
+}
+.workspace-login-fineprint a:hover {
+  border-bottom-style: solid;
+  color: var(--fleet-ink);
+}
+.workspace-login-version {
+  margin-top: 24px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--fleet-muted);
+  letter-spacing: 0.2px;
+}
+
+/* — Environment marker, version line ————————————————————————————
+   Plain text in the same discreet mono as the version beside it — no pill, no
+   uppercase. Kept visually identical to the admin portal's `.ds-env`; the two
+   apps sit side by side and a deploy marker that looks different in each is
+   worse than none.
+
+   Production is the one exception: colour only, no change to size or weight, so
+   the line still reads as one style while the environment nobody can afford to
+   misread still stands out. */
+.ds-env {
+  color: inherit;
+}
+.ds-env[data-env="production"] {
+  color: hsl(var(--destructive));
+  font-weight: 600;
+}
+
+
+/* ---- Floating dock (top center nav) ----------------------------- */
+.fleet-dock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow:
+    0 1px 2px rgba(15,23,42,0.04),
+    0 8px 24px rgba(15,23,42,0.08);
+}
+/* Dock brand circle — surface-following so the logo inverts cleanly
+   between light and dark modes. Light: black mark on white bg.
+   Dark: white mark on dark bg. */
+.fleet-dock-brand {
+  width: 30px; height: 30px;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 120ms ease;
+}
+.fleet-dock-brand:hover { border-color: hsl(var(--foreground)); }
+.fleet-dock-navset {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--fleet-line);
+  border-radius: 999px;
+  background: hsl(var(--foreground) / 0.035);
+}
+.fleet-dock-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0 4px;
+  border-radius: 999px;
+  /* Match the admin portal sidebar nav (.ds-nav-item): system sans,
+     13.5px, weight 500, no extra tracking. */
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--fleet-ink-soft);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.fleet-dock-item:hover { color: var(--fleet-ink); background: hsl(var(--foreground) / 0.05); }
+.fleet-dock-item.fleet-dock-item-active {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  /* Admin .ds-nav-item.active bumps to weight 600. */
+  font-weight: 600;
+}
+.fleet-dock-item.fleet-dock-item-active:hover {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.fleet-dock-item-icon { display: inline-flex; flex-shrink: 0; }
+.fleet-dock-item-label {
+  white-space: nowrap;
+  overflow: hidden;
+  transition: max-width 220ms ease, opacity 220ms ease;
+}
+.fleet-dock-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--fleet-line);
+  flex-shrink: 0;
+}
+.fleet-dock-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  color: var(--fleet-muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.fleet-dock-ctrl:hover { background: hsl(var(--primary) / 0.08); color: hsl(var(--primary)); }
+.fleet-dock-ctrl:active { transform: scale(0.94); }
+
+/* Restore "Menu" pill shown when dock is hidden */
+.fleet-dock-restore {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  color: var(--fleet-ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.06);
+  transition: border-color 120ms ease;
+}
+.fleet-dock-restore:hover { border-color: var(--fleet-ink); }
+
+/* ---- Graff voice-assistant orb (AI surface) -------------------- */
+/* Paper-bg pill with ink mark + sky-blue halo. Expands on hover to
+   reveal an "Ask Graff" label. Collapses back to an icon-only circle
+   when active (listening / processing / speaking) so it doesn't take
+   over the canvas. */
+.fleet-orb {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  height: 52px;
+  padding: 0;
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 52px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid var(--fleet-line);
+  background: var(--fleet-surface);
+  color: var(--fleet-ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-family: inherit;
+  white-space: nowrap;
+  animation: fleet-ask-glow 2800ms ease-in-out infinite;
+  transition: gap 220ms ease, padding 220ms ease, border-color 200ms ease,
+              background 200ms ease, color 200ms ease;
+}
+/* Clip the label only — keeps the outer halo + pulse ring visible
+   while the label slides in on hover. (Previously the parent had
+   `overflow: hidden`, which cropped the active state's halo rings.) */
+.fleet-orb-label {
+  overflow: hidden;
+}
+.fleet-orb-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 999px;
+}
+.fleet-orb-label {
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 220ms ease, opacity 220ms ease;
+}
+
+/* Expand on hover to show "Ask Graff" */
+.fleet-orb:hover {
+  animation-duration: 2000ms;
+  border-color: var(--fleet-ink);
+  gap: 4px;
+  padding-right: 18px;
+}
+.fleet-orb:hover .fleet-orb-label {
+  max-width: 110px;
+  opacity: 1;
+}
+
+/* Connected / active — always icon-only, soft breathing halo ring */
+.fleet-orb-active {
+  animation-duration: 1800ms;
+  border-color: var(--color-ai-halo-b-strong);
+}
+.fleet-orb-active::after {
+  content: '';
+  position: absolute; inset: -4px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-ai-halo-b-strong);
+  pointer-events: none;
+  animation: fleet-orb-ring-breathe 1800ms ease-in-out infinite;
+}
+.fleet-orb-active:hover {
+  gap: 0;
+  padding-right: 0;
+}
+.fleet-orb-active:hover .fleet-orb-label {
+  max-width: 0;
+  opacity: 0;
+}
+@keyframes fleet-orb-ring-breathe {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 0.85; transform: scale(1.05); }
+}
+
+/* Listening — keep the icon disc on paper (no fill, no inversion).
+   The "live" signal comes from the outward sonar rings + outer halo,
+   not from filling the orb itself. */
+.fleet-orb-listening .fleet-orb-icon {
+  background: transparent;
+  color: var(--fleet-ink);
+}
+
+/* Sonar — first ring emanates from the orb edge while listening */
+.fleet-orb-listening::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-ai-halo-b-strong);
+  pointer-events: none;
+  animation: fleet-orb-sonar 1800ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+@keyframes fleet-orb-sonar {
+  0%   { opacity: 0.7; transform: scale(1);    }
+  100% { opacity: 0;   transform: scale(1.55); }
+}
+
+/* Sonar — second ring with delayed phase for a continuous wave feel */
+.fleet-orb-sonar-2 {
+  position: absolute; inset: 0;
+  border-radius: 999px;
+  border: 1px solid var(--color-ai-halo-a-strong);
+  pointer-events: none;
+  opacity: 0;
+  animation: fleet-orb-sonar 1800ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  animation-delay: 900ms;
+}
+
+/* Error — destructive fill, no halo */
+.fleet-orb-error {
+  background: hsl(var(--destructive));
+  border-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  animation: none;
+  box-shadow: 0 0 0 1px hsl(var(--destructive) / 0.25),
+              0 6px 18px -8px hsl(var(--destructive) / 0.5);
+}
+
+/* Mute / speaker toggle pills above the orb */
+.fleet-orb-ctrl {
+  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 999px;
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  color: var(--fleet-ink-soft);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  transition: all 120ms ease;
+}
+.fleet-orb-ctrl:hover {
+  border-color: var(--fleet-ink);
+  color: var(--fleet-ink);
+}
+.fleet-orb-ctrl-on {
+  background: hsl(var(--destructive));
+  border-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+.fleet-orb-ctrl-on:hover {
+  background: hsl(var(--destructive) / 0.9);
+  border-color: hsl(var(--destructive) / 0.9);
+  color: hsl(var(--destructive-foreground));
+}
+
+/* Live-state dot — green/ink pulse for listening, amber for connecting/thinking.
+   Sits on the orb's outer edge with a paper-bg ring so it reads cleanly
+   against both the icon and the surrounding halo. */
+.fleet-orb-status-dot {
+  position: absolute;
+  top: 0; right: 0;
+  width: 11px; height: 11px;
+  border-radius: 999px;
+  border: 2px solid var(--fleet-surface);
+  background: var(--fleet-good);
+  box-shadow: 0 0 0 1px var(--color-ai-halo-b-strong);
+  animation: fleet-orb-status-pulse 1600ms ease-in-out infinite;
+}
+.fleet-orb-status-dot.fleet-orb-status-dot-processing {
+  background: var(--fleet-warn);
+  animation-duration: 1200ms;
+}
+@keyframes fleet-orb-status-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1;   }
+  50%      { transform: scale(1.15); opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fleet-orb { animation: none; box-shadow: 0 0 0 1px var(--color-ai-halo-a-strong), 0 6px 18px -8px rgba(15,23,42,0.18); }
+  .fleet-orb-active::after            { animation: none; opacity: 0.6; }
+  .fleet-orb-status-dot               { animation: none; }
+  .fleet-orb-listening::before        { animation: none; opacity: 0.4; }
+  .fleet-orb-sonar-2                  { animation: none; display: none; }
+}
+
+/* ---- Branded loading state (GraffLoadingOrb) -------------------- */
+/* Paper-bg ink mark, sky-blue AI halo, single arc rotating around the
+   perimeter in the active theme/brand base color (`--primary`). Shares
+   the `fleet-ask-glow` halo with the voice button so "loading" and
+   "thinking" feel like one signal. */
+@property --fleet-loader-a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes fleet-loader-spin { to { --fleet-loader-a: 360deg; } }
+
+.fleet-loader {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  color: var(--fleet-ink);
+  animation: fleet-ask-glow 2400ms ease-in-out infinite;
+}
+.fleet-loader-arc {
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--fleet-loader-a),
+    hsl(var(--primary)) 0deg,
+    hsl(var(--primary) / 0) 90deg,
+    hsl(var(--primary) / 0) 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  padding: 2px;
+  animation: fleet-loader-spin 1100ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fleet-loader { animation: none; }
+  .fleet-loader-arc { animation: none; opacity: 0.55; }
+}
+
+/* ---- Menu rows (chat history sidebar entries) ------------------- */
+/* Compact ChatGPT-style list items: icon + label + optional trailing
+   meta, with hairline radius and quiet hover. */
+.fleet-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fleet-ink-soft);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 120ms ease, color 120ms ease;
+}
+.fleet-menu-row:hover {
+  background: hsl(var(--primary) / 0.06);
+  color: hsl(var(--primary));
+}
+.fleet-menu-row-active {
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+.fleet-menu-row-disabled {
+  cursor: not-allowed;
+  color: hsl(var(--muted-foreground) / 0.7);
+}
+.fleet-menu-row-disabled:hover {
+  background: transparent;
+  color: hsl(var(--muted-foreground) / 0.7);
+}
+
+/* ---- Message bubble action row (copy / thumbs / regen) ---------- */
+.fleet-msg-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  color: var(--fleet-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease, transform 120ms ease;
+}
+.fleet-msg-action:hover {
+  background: var(--fleet-line-soft);
+  color: var(--fleet-ink);
+}
+.fleet-msg-action:active { transform: scale(0.92); }
+.fleet-msg-action-on {
+  background: hsl(var(--foreground) / 0.08);
+  color: var(--fleet-ink);
+}
+.fleet-msg-action-on:hover {
+  background: hsl(var(--foreground) / 0.12);
+}
+
+/* ---- Topbar light/dark toggle ----------------------------------- */
+.fleet-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: var(--fleet-surface);
+  border: 1px solid var(--fleet-line);
+  color: var(--fleet-ink-soft);
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.fleet-theme-toggle:hover {
+  border-color: var(--fleet-ink);
+  color: var(--fleet-ink);
+}
+.fleet-theme-toggle:active { transform: scale(0.94); }
+/* ----------------------------------------------------------------- */
+/* Voice action visualisation — highlight pulse                      */
+/* Applied transiently (~700ms) by <VoiceActionOverlay> to any       */
+/* element the voice agent is interacting with, so the user can SEE  */
+/* the target the same way Selenium IDE flashes the element it       */
+/* clicks. Driven entirely by toggling the class — no JS animation   */
+/* loop, no inline styles, GPU-only via box-shadow + outline.        */
+/* ----------------------------------------------------------------- */
+@keyframes gf-voice-action-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(56, 132, 255, 0.55), 0 0 0 0 rgba(56, 132, 255, 0.30); }
+  60%  { box-shadow: 0 0 0 8px rgba(56, 132, 255, 0.00), 0 0 0 14px rgba(56, 132, 255, 0.00); }
+  100% { box-shadow: 0 0 0 0 rgba(56, 132, 255, 0.00); }
+}
+.gf-voice-action-pulse {
+  position: relative;
+  animation: gf-voice-action-pulse 700ms ease-out 1;
+  outline: 2px solid rgba(56, 132, 255, 0.65) !important;
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+
+/* ===================================================================== */
+/* Ambient dot field behind the chat conversation (rendered by            */
+/* <ChatDotField/>): a subtle theme/brand-colored base grid everywhere PLUS */
+/* a brighter grid revealed only around the pointer (--mx/--my set on     */
+/* .chat-dot-field on mousemove). Both grids share the wander animation so */
+/* they stay aligned; only the base pulses. Purely decorative; sits       */
+/* behind the conversation column (which is raised with z-10).            */
+/* ===================================================================== */
+.chat-dot-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.chat-dot-field-base,
+.chat-dot-field-glow {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--dot) 1.3px, transparent 1.6px);
+  background-size: 26px 26px;
+  animation: chat-dots-wander 26s ease-in-out infinite;
+}
+.chat-dot-field-base {
+  --dot: hsl(var(--primary) / 0.22);
+  animation:
+    chat-dots-wander 26s ease-in-out infinite,
+    chat-dots-pulse 8s ease-in-out infinite;
+  -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 42%, #000 22%, transparent 80%);
+  mask-image: radial-gradient(ellipse 78% 68% at 50% 42%, #000 22%, transparent 80%);
+}
+/* Brighter dots, shown only in a soft circle that follows the cursor. */
+.chat-dot-field-glow {
+  --dot: hsl(var(--primary) / 0.62);
+  -webkit-mask-image: radial-gradient(
+    circle 150px at var(--mx, -300px) var(--my, -300px),
+    #000 0%,
+    transparent 72%
+  );
+  mask-image: radial-gradient(
+    circle 150px at var(--mx, -300px) var(--my, -300px),
+    #000 0%,
+    transparent 72%
+  );
+}
+/* Wander through several directions (not a straight drift) so the dots read as
+   randomly floating; loops seamlessly by returning to 0 0. */
+@keyframes chat-dots-wander {
+  0% { background-position: 0px 0px; }
+  18% { background-position: 22px -14px; }
+  36% { background-position: -16px 20px; }
+  54% { background-position: 26px 12px; }
+  72% { background-position: -20px -8px; }
+  88% { background-position: 12px 22px; }
+  100% { background-position: 0px 0px; }
+}
+@keyframes chat-dots-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.78; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-dot-field-base,
+  .chat-dot-field-glow {
+    animation: none;
+  }
+}
+
+/* Momentary ring on whatever a jump just scrolled to — a chat turn (from the
+   canvas switcher) or a chart on the canvas (from a transcript card). Without
+   it a smooth scroll on a busy surface lands the user somewhere plausible with
+   nothing saying WHICH thing they asked for; with 15 charts on one canvas that
+   is the whole difference between "it worked" and "it opened the wrong one".
+   Drawn as a box-shadow so it costs no layout and cannot reflow the target. */
+.gf-jump-flash {
+  animation: gf-jump-flash 1.6s ease-out 1;
+  border-radius: 1rem;
+}
+@keyframes gf-jump-flash {
+  0%   { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.55); }
+  12%  { box-shadow: 0 0 0 3px hsl(var(--primary) / 0.45); }
+  100% { box-shadow: 0 0 0 6px hsl(var(--primary) / 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gf-jump-flash { animation: none; }
+}

@@ -58,12 +58,15 @@ describe('dashboards pane', () => {
   it('shows no filter controls on Client Book or Firm Performance, but keeps them on Market Overview', async () => {
     render(<DemoShell />)
     const user = await openDashboards()
+    const back = () => user.click(screen.getByRole('button', { name: /all dashboards/i }))
 
     await user.click(screen.getByRole('button', { name: /client book/i }))
     expect(document.querySelectorAll('select').length).toBe(0)
+    await back()
 
     await user.click(screen.getByRole('button', { name: /firm performance/i }))
     expect(document.querySelectorAll('select').length).toBe(0)
+    await back()
 
     await user.click(screen.getByRole('button', { name: /market overview/i }))
     expect(document.querySelectorAll('select').length).toBe(2)
@@ -76,9 +79,11 @@ describe('dashboards pane', () => {
       screen.getByPlaceholderText(/describe a new dashboard/i),
       'foreign buying and selling by sector this quarter{Enter}',
     )
-    vi.advanceTimersByTime(5000)
     await waitFor(() =>
-      expect(screen.getByText(/Composed 4 widgets/i)).toBeDefined())
+      expect(screen.getByText(/Parsed the request/i)).toBeDefined())
+    vi.advanceTimersByTime(5000)
+    // Completing the build opens the dashboard it produced, which
+    // replaces the landing page the feed was running on.
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: /foreign buying and selling/i }))
         .toBeDefined())
@@ -118,9 +123,9 @@ describe('dashboards pane', () => {
       screen.getByPlaceholderText(/describe a new dashboard/i),
       'liquidity by counter{Enter}',
     )
-    vi.advanceTimersByTime(5000)
     await waitFor(() =>
-      expect(screen.getByText(/Composed 4 widgets/i)).toBeDefined())
+      expect(screen.getByText(/Parsed the request/i)).toBeDefined())
+    vi.advanceTimersByTime(5000)
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: /liquidity and turnover by counter/i }))
         .toBeDefined())
@@ -139,9 +144,9 @@ describe('dashboards pane', () => {
     await user.click(
       screen.getByRole('button', { name: /sector valuation, p\/e against dividend yield/i }),
     )
-    vi.advanceTimersByTime(5000)
     await waitFor(() =>
-      expect(screen.getByText(/Composed 4 widgets/i)).toBeDefined())
+      expect(screen.getByText(/Parsed the request/i)).toBeDefined())
+    vi.advanceTimersByTime(5000)
     await waitFor(() =>
       expect(screen.getByRole('heading', { name: /sector valuation, p\/e against dividend yield/i }))
         .toBeDefined())

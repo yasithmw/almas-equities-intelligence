@@ -1,18 +1,11 @@
-import styles from './StatusPill.module.css'
+import { Badge } from '@/components/ui/badge'
 
 type Tone = 'ok' | 'ac'
 
-const TONE_CLASS: Record<Tone, string> = {
-  ok: styles.ok,
-  ac: styles.ac,
-}
-
-// Ports the client brief's .st / .st-ok / .st-ac (grep-verified: Exhibit
-// C's own .dhead carries exactly this pill, <span class="st st-ok">Pre-
-// built</span>). A dashboard built through "describe a new dashboard"
-// gets .st-ac instead (navy-tinted, the document's own "active" tone)
-// so it reads as a live, just-built thing rather than a second
-// "Pre-built" claim that would not be true.
+// A dashboard that shipped with the platform reads as a settled fact, so
+// it takes the success badge. One built through "describe a new
+// dashboard" takes the neutral secondary badge instead: calling it
+// "Pre-built" a second time would simply not be true.
 export default function StatusPill({ tone, children }: { tone: Tone; children: React.ReactNode }) {
-  return <span className={`${styles.st} ${TONE_CLASS[tone]}`}>{children}</span>
+  return <Badge variant={tone === 'ok' ? 'success' : 'secondary'}>{children}</Badge>
 }

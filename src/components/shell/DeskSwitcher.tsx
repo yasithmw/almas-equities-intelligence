@@ -1,23 +1,38 @@
 'use client'
 
+import { Briefcase, FlaskConical, TrendingUp } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { DESKS } from '@/lib/desks'
+import type { DeskId } from '@/lib/types'
+import { cn } from '@/lib/utils'
 import { useDemo } from './DemoContext'
-import styles from './DeskSwitcher.module.css'
 
-// Semantic colour rule (design brief): aqua is Almas's own side of the
-// story, and the desk switcher plus the active-desk indicator are named
-// together as the example, because the desks are Almas's own people.
-// Ruling R1: rather than adding a separate "active desk" pill next to a
-// switcher that repeats every person's name, the switcher's own active
-// button doubles as that indicator, carrying data-testid="active-desk".
-// That keeps the top bar from showing the same name twice.
+// Built in the platform's own segmented-control idiom, lifted from
+// ResponseModeToggle: a bordered group on a muted ground where the
+// active segment is a raised card (bg-background + shadow-sm) rather
+// than a filled accent. That is how the product signals "one of these
+// is selected", so the desk switcher signals it the same way.
+const ICONS: Record<DeskId, LucideIcon> = {
+  management: Briefcase,
+  dealing: TrendingUp,
+  research: FlaskConical,
+}
+
+// Ruling R1: the switcher's own active button doubles as the
+// active-desk indicator (data-testid="active-desk"), so the header
+// never prints the same desk name twice.
 export default function DeskSwitcher() {
   const { desk, setDesk } = useDemo()
 
   return (
-    <div className={styles.switcher} role="group" aria-label="Desk">
+    <div
+      className="flex items-center rounded-lg border border-border/50 bg-muted/30 p-0.5"
+      role="group"
+      aria-label="Desk"
+    >
       {DESKS.map((d) => {
         const active = d.id === desk
+        const Icon = ICONS[d.id]
         return (
           <button
             key={d.id}
@@ -25,13 +40,16 @@ export default function DeskSwitcher() {
             aria-pressed={active}
             aria-label={`${d.label}, ${d.person}`}
             data-testid={active ? 'active-desk' : undefined}
-            className={active ? `${styles.btn} ${styles.active}` : styles.btn}
             onClick={() => setDesk(d.id)}
+            className={cn(
+              'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11.5px] font-medium transition-all duration-200',
+              active
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
           >
-            <span className={styles.dot} aria-hidden="true" />
-            <span className={styles.label}>{d.label}</span>
-            <span className={styles.initial} aria-hidden="true">{d.label.charAt(0)}</span>
-            <span className={styles.person}>{d.person}</span>
+            <Icon className="h-3 w-3 shrink-0" strokeWidth={2} />
+            <span>{d.label}</span>
           </button>
         )
       })}

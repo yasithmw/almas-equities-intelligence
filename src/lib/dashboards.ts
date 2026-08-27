@@ -378,7 +378,7 @@ function firmPanels(_desk: DeskId, _filters: Filters): DashPanel[] {
       span: 1,
       body: {
         kind: 'bars',
-        title: 'Revenue by desk',
+        title: 'Revenue by relationship manager',
         rows: byRm.map((r) => ({ label: r.rm, value: r.revenueMn, display: fmtRsM(r.revenueMn) })),
         source: 'Source: your brokerage ledger',
         caption: 'Allocated by book size, illustrative values',
@@ -390,12 +390,12 @@ function firmPanels(_desk: DeskId, _filters: Filters): DashPanel[] {
       body: {
         kind: 'table',
         title: 'Revenue concentration',
-        columns: ['Desk', 'Revenue share', 'Flag'],
+        columns: ['Manager', 'Share', 'Flag'],
         rows: byRm.map((r) => [
           r.rm, fmtPct(r.sharePct), r.sharePct > CONCENTRATION_THRESHOLD_PCT ? 'High' : 'OK',
         ]),
         source: 'Source: your brokerage ledger',
-        caption: `Flagged above ${CONCENTRATION_THRESHOLD_PCT}% from one desk`,
+        caption: `Flagged above ${CONCENTRATION_THRESHOLD_PCT}% with one manager`,
       },
     },
   ]
@@ -427,7 +427,7 @@ const FIRM: Dashboard = {
   id: 'firm',
   title: 'Firm Performance',
   badge: 'Pre-built',
-  description: 'Brokerage revenue against turnover, by desk, and its concentration.',
+  description: 'Brokerage revenue against turnover, by relationship manager, and its concentration.',
   // Same reasoning as Client Book: firmPanels ignores filters, and
   // Period specifically would need per-period revenue this dataset
   // does not carry (task-8 fix-round-2 brief).

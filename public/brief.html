@@ -57,14 +57,7 @@ h1,h2,h3,h4,p{margin:0;}
 ::selection{background:var(--tint-2);}
 :focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px;}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 40px;}
-@media(max-width:720px){
-  .wrap{padding:0 20px;}
-  .dqt{overflow-x:auto;}
-  .dqt .th,.dqt .tr{min-width:430px;}
-  .gate{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .garr{display:none;}
-  .gstep{min-width:0;}
-}
+@media(max-width:720px){.wrap{padding:0 20px;}}
 
 /* ============ CAPABILITY CHAPTERS ============ */
 .capnav{margin-top:32px;display:flex;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
@@ -109,7 +102,6 @@ h1,h2,h3,h4,p{margin:0;}
 }
 .chkwrap{margin-top:26px;}
 .chklbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:10px;}
-.note.nw{max-width:76ch;margin-top:26px;}
 
 /* ============ MASTHEAD ============ */
 .mast{position:relative;background:radial-gradient(120% 140% at 78% 8%,var(--navy) 0%,var(--navy-2) 46%,var(--navy-3) 100%);color:oklch(0.965 0.008 262);overflow:hidden;}
@@ -147,12 +139,10 @@ h1 em{font-style:italic;color:oklch(0.86 0.075 208);}
 .an-1{animation-delay:.12s;} .an-2{animation-delay:.34s;} .an-3{animation-delay:.5s;}
 .an-4{animation-delay:.86s;} .an-5{animation-delay:1.08s;}
 @keyframes rise{from{opacity:0;transform:translateY(9px);}to{opacity:1;transform:none;}}
-.gr{transform:scaleX(0);animation:grow .9s var(--ease) both;}
 @keyframes grow{to{transform:scaleX(1);}}
-.car{animation:blink 1.15s steps(1,end) 6;}
 @keyframes blink{50%{opacity:.25;}}
 @media (prefers-reduced-motion:reduce){
-  .an,.gr,.car{animation:none;opacity:1;transform:none;}
+  .an{animation:none;opacity:1;transform:none;}
   .cover-foot .cue i{animation:none;}
 }
 
@@ -329,16 +319,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 .frame-q{border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--lift-sm);}
 
 /* alternating feature split */
-.stag{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue-2);margin-bottom:11px;}
-.mini{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;}
-.mini li{font-size:14.5px;color:var(--ink-2);display:flex;gap:11px;align-items:baseline;line-height:1.45;}
-.mini li .m{font-family:var(--mono);color:var(--navy);font-size:12px;flex:none;position:relative;top:1px;}
 
-.note{margin-top:20px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:17px 20px;}
-.note .lbl{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--blue-2);margin-bottom:8px;}
-.note .lbl::before{content:"";width:13px;height:1px;background:currentColor;}
-.note p{font-size:13.5px;color:var(--ink-2);line-height:1.6;}
-.note p b{font-weight:600;color:var(--ink);}
 
 /* ============ MOCK INTERNALS ============ */
 .mbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--surface);}
@@ -422,33 +403,39 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 
 
 /* data-quality gate flow */
-.gate{display:flex;align-items:flex-start;gap:0;margin-top:4px;flex-wrap:wrap;}
-.gstep{flex:1;min-width:104px;text-align:center;position:relative;padding-top:4px;}
-.gstep .gb{border:1px solid var(--line);border-radius:10px;padding:11px 8px;background:var(--surface);font-family:var(--mono);font-size:11px;color:var(--ink-2);box-shadow:var(--lift-sm);}
-.gstep.g-gold .gb{background:var(--navy);border-color:var(--navy);color:#fff;}
-.gstep.g-gate .gb{border-color:oklch(0.655 0.115 75 / .5);background:oklch(0.655 0.115 75 / .1);color:oklch(0.45 0.10 70);font-weight:500;}
-.gstep .gl{font-size:11.5px;color:var(--faint);margin-top:7px;line-height:1.35;}
-.garr{flex:none;width:26px;text-align:center;color:var(--faint);font-size:13px;padding-top:14px;}
-.qbranch{display:flex;align-items:center;gap:9px;margin-top:14px;padding:11px 15px;border:1px dashed oklch(0.655 0.115 75 / .55);border-radius:10px;background:oklch(0.655 0.115 75 / .07);}
-.qbranch .qi{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:oklch(0.45 0.10 70);}
-.qbranch .qt{font-size:13px;color:var(--ink-2);}
-
-/* dq table */
-.dqt{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--lift-sm);}
-.dqt .th,.dqt .tr{display:grid;grid-template-columns:1.5fr 1fr .7fr .95fr;align-items:center;}
-.dqt .th{background:var(--panel);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
-.dqt .th span{padding:12px 15px;}
-.dqt .tr{border-bottom:1px solid var(--hair);}
-.dqt .tr:last-child{border-bottom:0;}
-.dqt .tr span{padding:12px 15px;font-size:12.5px;color:var(--ink-2);}
-.dqt .tr .mono{font-family:var(--mono);font-size:11.5px;}
 .st{font-family:var(--mono);font-size:10.5px;border-radius:16px;padding:3px 9px;white-space:nowrap;}
-.st-hi{color:var(--down);background:oklch(0.565 0.165 25 / .1);}
-.st-md{color:oklch(0.48 0.10 70);background:oklch(0.655 0.115 75 / .14);}
 .st-ok{color:var(--up);background:oklch(0.575 0.115 155 / .12);}
-.st-qr{color:#fff;background:var(--warn);}
-.st-ac{color:var(--navy);background:var(--tint-2);}
-.st-rl{color:var(--up);background:oklch(0.575 0.115 155 / .14);}
+/* Exhibit E: the quarantine review queue, after the admin portal screen */
+.qq{--amb:oklch(0.45 0.10 70);--rose:oklch(0.44 0.14 25);}
+.qhead{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line);}
+.qt2{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--navy);display:flex;align-items:center;gap:9px;}
+.qt2::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--warn);flex:none;}
+.qflow{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);flex-wrap:wrap;}
+.qflow b{font-weight:500;color:var(--amb);background:oklch(0.655 0.115 75 / .15);border-radius:5px;padding:3px 8px;}
+.qflow u{text-decoration:none;color:#fff;background:var(--navy);border-radius:5px;padding:3px 8px;}
+.qbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:11px 18px;background:var(--panel);border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted);}
+.qbar b{font-weight:600;color:var(--ink-2);}
+.qbtn2{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);border:1px solid var(--line);border-radius:7px;padding:6px 13px;background:var(--surface);white-space:nowrap;}
+.qrow{padding:12px 18px;border-bottom:1px solid var(--hair);}
+.qrow:last-child{border-bottom:0;}
+.qtags{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.qpill{font-family:var(--mono);font-size:10px;letter-spacing:.05em;border-radius:5px;padding:3px 8px;background:var(--panel);color:var(--muted);border:1px solid var(--hair);white-space:nowrap;}
+.qpill.tbl{color:var(--navy);background:var(--tint);border-color:transparent;font-weight:500;}
+.qpill.blk{color:var(--rose);background:oklch(0.565 0.165 25 / .12);border-color:transparent;}
+.qpill.op{color:var(--amb);background:oklch(0.655 0.115 75 / .16);border-color:transparent;}
+.qpill.ap{color:oklch(0.40 0.09 155);background:oklch(0.575 0.115 155 / .14);border-color:transparent;}
+.qsub{font-size:13px;color:var(--ink-2);margin-top:7px;line-height:1.45;}
+.qsub em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--ink);}
+.qsub s{text-decoration:none;color:var(--faint);}
+.qdet{margin:12px -18px -12px;padding:15px 18px 16px;background:var(--tint);border-top:1px solid oklch(0.315 0.125 264 / .13);}
+.qdl{display:grid;grid-template-columns:104px 1fr;gap:9px 16px;align-items:baseline;}
+.qk{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue-2);}
+.qv{font-size:13px;color:var(--ink-2);line-height:1.45;}
+.qv em{font-style:normal;font-family:var(--mono);font-size:12.5px;color:var(--ink);}
+.qacts{display:flex;gap:8px;flex-wrap:wrap;}
+.qact{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--line);border-radius:7px;padding:7px 14px;background:var(--surface);color:var(--ink-2);}
+.qact.pri{background:var(--navy);border-color:var(--navy);color:#fff;}
+@media(max-width:620px){.qdl{grid-template-columns:1fr;gap:3px;}.qdl .qk{margin-top:8px;}}
 .chk{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px;}
 .chk span{font-family:var(--mono);font-size:11px;color:var(--ink-2);background:var(--panel);border:1px solid var(--hair);border-radius:6px;padding:5px 9px;}
 
@@ -492,67 +479,16 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 .close p{font-size:15.5px;line-height:1.6;color:oklch(0.955 0.012 262);}
 .close p b{color:#fff;font-weight:600;}
 
-/* what already exists */
-.built{margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-@media(max-width:860px){.built{grid-template-columns:1fr 1fr;}}
-@media(max-width:560px){.built{grid-template-columns:1fr;}}
-.bx{border:1px solid var(--line);border-radius:12px;padding:16px 17px;background:var(--surface);box-shadow:var(--lift-sm);}
-.bx .bh{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
-.bx .bh .tick{width:15px;height:15px;border-radius:50%;background:oklch(0.575 0.115 155 / .13);color:var(--up);display:flex;align-items:center;justify-content:center;font-size:9px;flex:none;}
-.bx .bh b{font-size:14px;font-weight:600;}
-.bx p{font-size:13px;color:var(--muted);line-height:1.5;}
-
-/* timeline */
-.tl{margin-top:32px;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:22px 24px 18px;box-shadow:var(--lift);overflow-x:auto;}
-.tlg{min-width:660px;}
-.tlh{display:grid;grid-template-columns:186px repeat(12,1fr);gap:0;align-items:end;padding-bottom:9px;border-bottom:1px solid var(--line);}
-.tlh .sp{grid-column:1;}
-.tlh .w{font-family:var(--mono);font-size:9.5px;color:var(--faint);text-align:center;letter-spacing:.02em;}
-.tlr{display:grid;grid-template-columns:186px repeat(12,1fr);gap:0;align-items:center;padding:9px 0;border-bottom:1px solid var(--hair);}
-.tlr:last-child{border-bottom:0;}
-.tlr .sn{font-size:13.5px;color:var(--ink);padding-right:14px;line-height:1.3;}
-.tlr .sn i{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:3px;}
-.bar{height:22px;border-radius:6px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9.5px;color:oklch(0.98 0.01 262);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 7px;}
-.bar.b2{background:var(--blue);}
-.bar.b3{background:var(--aqua-ink);}
-.bar.b4{background:oklch(0.42 0.14 260);}
-.gates{display:flex;justify-content:space-between;gap:12px;margin-top:16px;padding-top:15px;border-top:1px solid var(--line);flex-wrap:wrap;}
-.gt2{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-2);}
-.gt2 .dm{width:9px;height:9px;background:var(--navy);transform:rotate(45deg);flex:none;}
-.gt2 b{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);}
-
-/* success measures */
-.meas{margin-top:30px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface);box-shadow:var(--lift-sm);}
-.meas .mh2,.meas .mr{display:grid;grid-template-columns:1.1fr 1.35fr 1.05fr;}
-.meas .mh2{background:var(--panel);border-bottom:1px solid var(--line);}
-.meas .mh2 span{padding:12px 18px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
-.meas .mr{border-bottom:1px solid var(--hair);}
-.meas .mr:last-child{border-bottom:0;}
-.meas .mr span{padding:15px 18px;font-size:13.5px;color:var(--muted);line-height:1.5;}
-.meas .mr .k2{color:var(--ink);font-weight:500;font-size:14px;}
-.meas .mr .tg{color:var(--navy);font-family:var(--mono);font-size:12.5px;}
-@media(max-width:820px){
-  .meas .mh2{display:none;}
-  .meas .mr{grid-template-columns:1fr;gap:0;padding:6px 0;}
-  .meas .mr span{padding:5px 18px;}
-  .meas .mr .k2{padding-top:12px;}
-  .meas .mr .tg{padding-bottom:12px;}
-}
-
-/* next steps */
-.nsteps{display:grid;grid-template-columns:repeat(3,1fr);margin-top:32px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--lift-sm);}
-@media(max-width:760px){.nsteps{grid-template-columns:1fr;}}
-.ns{padding:24px 26px;border-right:1px solid var(--line);}
-.ns:last-child{border-right:0;}
-.ns .nn{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--navy);}
-.ns h3{font-family:var(--serif);font-size:20px;font-weight:500;margin:9px 0 6px;}
-.ns p{font-size:14px;color:var(--muted);}
-
 /* footer */
 .foot{border-top:1px solid var(--line);background:var(--panel);}
 .foot-in{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:28px 0;flex-wrap:wrap;}
-.foot .l{font-size:12.5px;color:var(--muted);max-width:64ch;}
+.foot .l{list-style:none;margin:0;padding:0;font-size:12.5px;color:var(--muted);max-width:62ch;display:flex;flex-direction:column;gap:6px;}
+.foot .l li{display:flex;gap:9px;line-height:1.5;}
+.foot .l li::before{content:"";flex:none;width:4px;height:4px;border-radius:50%;background:var(--line);margin-top:8px;}
 .foot .r{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.05em;}
+.foot .r a{color:var(--navy);text-decoration:none;border-bottom:1px solid oklch(0.315 0.125 264 / .3);padding-bottom:1px;transition:border-color .2s var(--ease);}
+.foot .r a:hover{border-bottom-color:var(--navy);}
+.foot .r a b{font-weight:600;}
 
 /* ---- node-type palette, harmonised from the admin portal's TYPE_COLORS ---- */
 :root{
@@ -632,7 +568,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 /* print: this brief will be PDF'd */
 @media print{
   .nav{display:none;}
-  .rv,.an,.gr{opacity:1!important;transform:none!important;animation:none!important;}
+  .rv,.an{opacity:1!important;transform:none!important;animation:none!important;}
   body{background:#fff;font-size:11pt;}
   .art{padding:22px 0;break-inside:avoid;}
   .mast{min-height:auto!important;background:var(--navy-2)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:page;}
@@ -642,7 +578,8 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
   .bpan,.bstg,.bl3>div{break-inside:avoid;}
   .bfh,.bfd,.blh{break-after:avoid;}
   .bpan{box-shadow:none;}
-  .frame,.tl,.meas,.dqt,.frame-q{box-shadow:none;break-inside:avoid;}
+  .frame,.frame-q{box-shadow:none;break-inside:avoid;}
+  .qrow,.qdet{break-inside:avoid;}
   h2,h3{break-after:avoid;}
 }
 </style>
@@ -687,7 +624,6 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
         <li><a href="#beyond" data-s="beyond">Beyond BI</a></li>
         <li><a href="#capabilities" data-s="capabilities">Capabilities</a></li>
         <li><a href="#security" data-s="security">Security</a></li>
-        <li><a href="#pilot" data-s="pilot">The pilot</a></li>
       </ul>
     </nav>
     <div class="nav-mark">Kainovation &times; Almas</div>
@@ -1126,8 +1062,8 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
         <div class="uc"><span class="ul">At Almas</span><span class="uv">An account opened as ordinary retail in 2019 that now turns over daily shows up where it belongs, not where it was filed.</span></div>
       </div>
       <div class="sub">
-        <div class="sk"><i>02</i><b>Grouped three ways, then cross-checked</b></div>
-        <p>The same accounts are grouped three separate ways, using different reasoning each time. Where at least two of the three put an account in the same group it is firmly placed, and where they disagree it goes to the closest fit and is marked as such.</p>
+        <div class="sk"><i>02</i><b>Grouped more than one way, then cross-checked</b></div>
+        <p>The same accounts are grouped several separate ways, using different reasoning each time. An account that lands in the same group across those passes is firmly placed, and where they disagree it goes to the closest fit and is marked as such.</p>
         <div class="uc"><span class="ul">At Almas</span><span class="uv">A relationship manager can see which part of a call list is solid and which part is a judgement call, before picking up the phone.</span></div>
       </div>
       <div class="sub">
@@ -1141,21 +1077,6 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
         <div class="uc"><span class="ul">At Almas</span><span class="uv">See which active clients drifted towards dormant this quarter, and whose book each of them sits in.</span></div>
       </div>
     </div>
-    <div class="dochead" style="margin-top:56px">
-      <div>
-        <div class="stag">What the desks do with it</div>
-        <h3 class="subh">The segments become something anyone can ask about</h3>
-        <div class="note"><div class="lbl">Where it stands</div><p>The engine is built and runs today on another client&rsquo;s data. The grouping itself is fixed and repeatable, and an agent only proposes the names. Pointing it at Almas&rsquo;s accounts is a data-mapping exercise inside the pilot, not new engineering.</p></div>
-      </div>
-      <div>
-        <p>Once a run is published, the segments sit in your data like any other field. Your desks can ask about them in plain language, put them on a dashboard, or work them as a call list, and each person only ever sees the accounts in their own book.</p>
-        <ul class="mini">
-          <li><span class="m">&rarr;</span>A relationship manager asks for the dormant accounts in their own book, with the date each one last traded.</li>
-          <li><span class="m">&rarr;</span>Research pulls the dividend-income clients before a rights issue is announced.</li>
-          <li><span class="m">&rarr;</span>Management asks which segment is carrying the concentration in a single sector.</li>
-        </ul>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1166,7 +1087,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
       <div><div class="cnum">Capability 04</div><h3>Data quality and quarantine</h3></div>
       <p class="crole">Nothing reaches an answer unchecked</p>
     </div>
-    <p class="clede">Every answer is only as good as the numbers under it, so data quality is a first-class part of the platform rather than a report someone runs monthly. Checks run on a schedule, findings become tracked issues, and rows that fail a guard never reach the layer the agents query.</p>
+    <p class="clede">An answer is only as good as the numbers under it, so this is a standing part of the platform rather than a report someone runs at month end. Checks you configure run on their own schedule against your own tables, and what they catch is held back rather than quietly averaged in.</p>
     <div class="chkwrap">
       <div class="chklbl">Check types available per table and column</div>
       <div class="chk"><span>Completeness</span><span>Uniqueness</span><span>Freshness</span><span>Range</span><span>Referential</span><span>Schema</span><span>Regex</span><span>Format</span><span>Row-count drift</span><span>Cardinality drift</span><span>Custom SQL</span><span>Expression</span></div>
@@ -1179,45 +1100,54 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
       </div>
       <div class="sub">
         <div class="sk"><i>02</i><b>A gate in the pipeline, not in the app</b></div>
-        <p>Rows that fail a check are held on the way from the conformed layer into the layer the agents query, so an answer cannot be composed from them at all.</p>
+        <p>A row that fails a blocking check is stopped on its way into the layer the agents query, so an answer cannot be composed from it at all. The guard sits in the pipeline, so it holds whatever route the data came in by.</p>
         <div class="uc"><span class="ul">At Almas</span><span class="uv">A dividend that was never declared in the source cannot quietly understate a yield screen.</span></div>
       </div>
       <div class="sub">
-        <div class="sk"><i>03</i><b>A review queue your admins own</b></div>
-        <p>Every violation is recorded with the failing rule and the offending row. Your team moves it from <b>quarantined</b> to <b>acknowledged</b> or <b>released</b>, and that decision is applied on the next rebuild.</p>
-        <div class="uc"><span class="ul">At Almas</span><span class="uv">The back office clears a corporate-action mismatch once, and it stays cleared through the next run.</span></div>
+        <div class="sk"><i>03</i><b>A review queue, with the fix drafted</b></div>
+        <p>Every held row is recorded with the rule it broke and the row itself, and an agent drafts the correction. Your team applies that fix, ignores the row, or drops it, and the decision takes effect on the next run.</p>
+        <div class="uc"><span class="ul">At Almas</span><span class="uv">The back office corrects a corporate-action mismatch once, and the corrected row goes through on the next run.</span></div>
       </div>
       <div class="sub">
-        <div class="sk"><i>04</i><b>Severity and coverage in the open</b></div>
-        <p>Each check carries a severity, and coverage is visible per table and column, so the gaps are something you can see rather than something you assume.</p>
-        <div class="uc"><span class="ul">At Almas</span><span class="uv">Before month-end reporting you can tell which tables in scope still have no checks against them.</span></div>
+        <div class="sk"><i>04</i><b>Try it before it blocks anything</b></div>
+        <p>The guard can run in preview, listing every row it would have stopped without stopping any of them. You see what it would catch, and what that would cost you, before a single check goes live.</p>
+        <div class="uc"><span class="ul">At Almas</span><span class="uv">Run it over a quarter of history during the pilot, then decide together which checks are worth enforcing.</span></div>
       </div>
     </div>
     <div class="ex">
-    <div class="ex-cap"><span class="tag">Exhibit E</span><span class="t">Where the gate sits, and the review queue</span></div>
-    <div class="frame-q" style="padding:18px">
-      <div class="gate">
-        <div class="gstep"><div class="gb">Bronze</div><div class="gl">Raw, as received</div></div>
-        <div class="garr">&rarr;</div>
-        <div class="gstep"><div class="gb">Silver</div><div class="gl">Conformed, checks run</div></div>
-        <div class="garr">&rarr;</div>
-        <div class="gstep g-gate"><div class="gb">Gate</div><div class="gl">Fail, and the row is held</div></div>
-        <div class="garr">&rarr;</div>
-        <div class="gstep g-gold"><div class="gb">Gold</div><div class="gl">What the agents query</div></div>
+    <div class="ex-cap"><span class="tag">Exhibit E</span><span class="t">The review queue, with a held row opened</span></div>
+    <div class="frame-q qq">
+      <div class="qhead">
+        <span class="qt2">Data quarantine</span>
+        <span class="qflow"><span>Raw</span><span>&rarr;</span><span>Checked</span><span>&rarr;</span><b>Guard</b><span>&rarr;</span><u>What the agents query</u></span>
       </div>
-      <div class="qbranch"><span class="qi">Held back</span><span class="qt">Quarantine, with the failing rule and row recorded for review</span></div>
-      <div class="dqt" style="margin-top:16px">
-        <div class="th"><span>Table and column</span><span>Check</span><span>Severity</span><span>State</span></div>
-        <div class="tr"><span class="mono">prices &middot; last_price</span><span>Freshness</span><span><span class="st st-hi">High</span></span><span><span class="st st-qr">quarantined</span></span></div>
-        <div class="tr"><span class="mono">trades &middot; account_id</span><span>Completeness</span><span><span class="st st-md">Medium</span></span><span><span class="st st-qr">quarantined</span></span></div>
-        <div class="tr"><span class="mono">dividends &middot; declared</span><span>Completeness</span><span><span class="st st-md">Medium</span></span><span><span class="st st-ac">acknowledged</span></span></div>
-        <div class="tr"><span class="mono">corp_actions &middot; split</span><span>Referential</span><span><span class="st st-ok">Low</span></span><span><span class="st st-rl">released</span></span></div>
-        <div class="tr"><span class="mono">fx_rates &middot; lkr_usd</span><span>Freshness</span><span><span class="st st-ok">Low</span></span><span><span class="st st-rl">released</span></span></div>
+      <div class="qbar"><span><b>5</b> held, <b>2</b> decided. Decisions take effect on the next run.</span><span class="qbtn2">Run now</span></div>
+
+      <div class="qrow">
+        <div class="qtags"><span class="qpill tbl">prices</span><span class="qpill blk">blocking</span><span class="qpill op">open</span><span class="qpill">freshness</span></div>
+        <div class="qsub"><em>last_price</em> unchanged for three days on four counters</div>
       </div>
-      <div class="capn" style="padding:0 2px"><span>Checks run on a schedule against your own tables</span><span>Illustrative rows</span></div>
+
+      <div class="qrow">
+        <div class="qtags"><span class="qpill tbl">trades</span><span class="qpill blk">blocking</span><span class="qpill op">open</span><span class="qpill">nulls</span><span class="qpill">referential</span></div>
+        <div class="qsub"><em>account_id</em> is empty on 1,204 rows</div>
+        <div class="qdet">
+          <div class="qdl">
+            <span class="qk">The rule</span><span class="qv">No trade may reach the serving layer without an account it belongs to.</span>
+            <span class="qk">The row</span><span class="qv"><em>trade_id 88214</em> &middot; JKH &middot; 4,000 at Rs 19.10 &middot; 12 Aug &middot; account_id empty</span>
+            <span class="qk">Drafted fix</span><span class="qv">Set <em>account_id 10482</em>, matched from the contract note for the same trade.</span>
+            <span class="qk"></span><span class="qv"><span class="qacts"><span class="qact pri">Apply the fix</span><span class="qact">Let it through</span><span class="qact">Drop the row</span></span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="qrow">
+        <div class="qtags"><span class="qpill tbl">dividends</span><span class="qpill">visible</span><span class="qpill ap">applied</span><span class="qpill">nulls</span></div>
+        <div class="qsub"><em>declared</em> is empty on 12 rows <s>&middot; corrected, goes through on the next run</s></div>
+      </div>
     </div>
+    <div class="capn" style="padding:0 2px"><span>Checks run on a schedule against your own tables</span><span>Illustrative</span></div>
     </div>
-    <div class="note nw"><div class="lbl">Where the gate sits</div><p>The gate is in the data pipeline, not in the app. Failing rows are quarantined on the way into the gold serving layer, so an answer can never be composed from them. The platform records each violation, gives your admins a review queue (<b>quarantined</b>, then <b>acknowledged</b> or <b>released</b>), and applies those decisions on the next rebuild.</p></div>
   </div>
 </section>
 
@@ -1226,10 +1156,10 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
   <div class="wrap">
     <div class="slab"><span>06</span><span class="r"></span>Security and where it runs</div>
     <h2>Built to hold a client&rsquo;s book</h2>
-    <p class="dek">Two things matter to a brokerage: that a user can only ever see their own slice of the data, and that the whole thing runs somewhere you control. Access is enforced in three independent, fail-closed layers, and the platform is deployed on Azure into <b>a dedicated tenant and subscription for Almas alone</b>.</p>
+    <p class="dek">A brokerage asks two questions of anything that holds its book: who can see what, and where does the data actually sit. On the first, every answer is narrowed to the person who asked, and the narrowing is applied in three independent places, so no single mistake can widen it.</p>
 
     <div class="layers">
-      <div class="layer"><span class="ll">1</span><div><h4>Data-layer identity</h4><p>Queries reach Fabric over a single governed connection, with the database ready to carry its own per-user predicates when you want them added.</p></div></div>
+      <div class="layer"><span class="ll">1</span><div><h4>Data-layer identity</h4><p>Queries reach Fabric over a single governed connection, with the tables able to carry per-user rules underneath, switched on as your policy requires.</p></div></div>
       <div class="layer"><span class="ll">2</span><div><h4>Application filtering <span class="pr">primary</span></h4><p>Every query the agents generate is rewritten server-side, in SQL, to the rows that user is allowed to see.</p></div></div>
       <div class="layer"><span class="ll">3</span><div><h4>Agent access control</h4><p>Tools are gated per agent and restricted tables are hidden from the agents themselves, so a model cannot reach for what it should not have.</p></div></div>
     </div>
@@ -1237,87 +1167,24 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
       <p><b>A missing rule denies everything.</b> The layers fail closed, so a configuration mistake results in no data rather than the wrong data.</p>
     </div>
 
-    <h3 class="subh">How it is deployed on Azure</h3>
-    <p class="dek" style="margin-top:12px">Every customer gets their own tenant and subscription, provisioned from version-controlled infrastructure code, so no two clients ever share a database, a cache or a key store.</p>
+    <h3 class="subh">Where the data sits</h3>
+    <p class="dek" style="margin-top:12px">The platform runs on Azure, inside a tenant and subscription belonging to <b>Almas alone</b>. Nothing in it is shared with another client: not a database, not a cache, not a key store. The environment is defined in version-controlled code, so what can reach your data changes by a reviewed commit, never by someone clicking through a portal.</p>
     <div class="azure">
-      <div class="az"><span class="ac"></span><div><div class="at2">A dedicated tenant per customer</div><div class="ad">Separate Azure tenant and subscription, built from Terraform with its own environments. Almas shares no infrastructure with any other client.</div></div></div>
-      <div class="az"><span class="ac"></span><div><div class="at2">Microsoft Entra ID for identity</div><div class="ad">Your existing sign-on and groups. No separate password for staff to manage, and leavers lose access when their Entra account does.</div></div></div>
-      <div class="az"><span class="ac"></span><div><div class="at2">Private networking</div><div class="ad">Databases, cache and storage are reachable only over private endpoints inside a private virtual network, with network security groups per subnet and private DNS.</div></div></div>
-      <div class="az"><span class="ac"></span><div><div class="at2">No credentials in code</div><div class="ad">Every secret sits in Azure Key Vault and services authenticate to each other with managed identities, under least-privilege Azure role assignments.</div></div></div>
-      <div class="az"><span class="ac"></span><div><div class="at2">Guarded entry</div><div class="ad">Public traffic arrives only through Azure Front Door and an application gateway running a web application firewall with the OWASP core rule set and bot protection.</div></div></div>
-      <div class="az"><span class="ac"></span><div><div class="at2">Encrypted in transit and at rest</div><div class="ad">TLS 1.2 or higher and HTTPS only, plain FTP disabled, and storage encrypted at rest with infrastructure-level encryption.</div></div></div>
-      <div class="az"><span class="ac"></span><div><div class="at2">Watched and logged</div><div class="ad">Diagnostics from every service stream into Log Analytics, with Microsoft Defender for Cloud enabled and deletion locks on production resources.</div></div></div>
-      <div class="az"><span class="ac"></span><div><div class="at2">You choose the region</div><div class="ad">The deployment region is your decision and your data stays in it, which keeps the residency answer simple for your auditors and regulators.</div></div></div>
+      <div class="az"><span class="ac"></span><div><div class="at2">Your own sign-on, your own leavers process</div><div class="ad">Staff sign in with the Microsoft account they already use, through Entra ID. There is no second password for anyone to hold, and when someone leaves Almas their access to the platform leaves with their account.</div></div></div>
+      <div class="az"><span class="ac"></span><div><div class="at2">The data has no public address</div><div class="ad">Databases, cache and storage are reachable only from inside the platform&rsquo;s own private network. Public traffic reaches the application and nothing else, over HTTPS through a web application firewall, and the data is encrypted where it is stored.</div></div></div>
+      <div class="az"><span class="ac"></span><div><div class="at2">No shared passwords to lose</div><div class="ad">Services authenticate to each other as themselves, with permissions granted one at a time. What secrets exist live in Azure Key Vault, not in code and not in an engineer&rsquo;s hands.</div></div></div>
+      <div class="az"><span class="ac"></span><div><div class="at2">Every question leaves a record</div><div class="ad">Each question, the queries it ran and the answer it returned are kept against the person who asked, and can be opened in full afterwards. Service diagnostics stream to one place, and Defender for Cloud watches the subscription for unusual access to the databases, storage and key store.</div></div></div>
     </div>
   </div>
 </section>
-
-<!-- ==================== 09 PILOT ==================== -->
-<section class="art rv" id="pilot">
-  <div class="wrap">
-    <div class="slab"><span>07</span><span class="r"></span>The pilot</div>
-    <h2>Twelve weeks to a working platform on your data</h2>
-    <p class="dek">The product is built. What a pilot does is point it at Almas: understand how your desks actually work, move your data onto Fabric, encode your definitions, and hand over something your team runs. Below is what already exists, and what the twelve weeks add.</p>
-
-    <div class="built">
-      <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Agent workforce</b></div><p>The orchestrator, the data and interface agents, and the adversarial review pass, all in production.</p></div>
-      <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Chat and dashboards</b></div><p>The ask surface, live dashboard generation, and saved dashboards for recurring views.</p></div>
-      <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Admin portal</b></div><p>Connectors, definitions, agent configuration, change review and audit, already shipping.</p></div>
-      <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Knowledge graph</b></div><p>Graph build and traversal, with relationships resolved under the asking user&rsquo;s identity.</p></div>
-      <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Data quality service</b></div><p>Scheduled checks, quarantine, and the review queue, running against a live medallion pipeline.</p></div>
-      <div class="bx"><div class="bh"><span class="tick">&#10003;</span><b>Client segmentation</b></div><p>Accounts grouped by behaviour three separate ways and cross-checked, versioned per run, running today on another client&rsquo;s data.</p></div>
-    </div>
-
-    <div class="ex">
-      <div class="ex-cap"><span class="tag">Plan</span><span class="t">Twelve weeks, two sign-off gates</span></div>
-      <div class="tl">
-        <div class="tlg">
-          <div class="tlh">
-            <span class="sp"></span>
-            <span class="w">W1</span><span class="w">W2</span><span class="w">W3</span><span class="w">W4</span><span class="w">W5</span><span class="w">W6</span><span class="w">W7</span><span class="w">W8</span><span class="w">W9</span><span class="w">W10</span><span class="w">W11</span><span class="w">W12</span>
-          </div>
-          <div class="tlr"><span class="sn">Business context and URS<i>Weeks 1 to 2</i></span><span class="bar" style="grid-column:2 / span 2">Discovery, sign-off</span></div>
-          <div class="tlr"><span class="sn">Azure foundation<i>Weeks 3 to 4</i></span><span class="bar b4" style="grid-column:4 / span 2">Dedicated tenant</span></div>
-          <div class="tlr"><span class="sn">Your data onto Fabric<i>Weeks 5 to 7</i></span><span class="bar b2" style="grid-column:6 / span 3">Onboard, model, quality checks</span></div>
-          <div class="tlr"><span class="sn">Definitions and graph<i>Weeks 8 to 9</i></span><span class="bar b2" style="grid-column:9 / span 2">Metrics and graph</span></div>
-          <div class="tlr"><span class="sn">Agents and dashboards<i>Week 10</i></span><span class="bar b3" style="grid-column:11 / span 1">Configure</span></div>
-          <div class="tlr"><span class="sn">UAT and handover<i>Weeks 11 to 12</i></span><span class="bar b3" style="grid-column:12 / span 2">Test and handover</span></div>
-        </div>
-        <div class="gates">
-          <div class="gt2"><span class="dm"></span><span><b>Gate 1, end of week 2.</b> Requirements, the question set and the success measures agreed in writing before build starts.</span></div>
-          <div class="gt2"><span class="dm"></span><span><b>Gate 2, end of week 12.</b> User acceptance signed off, and the platform handed to your team with training and runbooks.</span></div>
-        </div>
-      </div>
-      <div class="capn"><span>Week 1 starts once data access and a nominated owner are in place</span><span>Assumes sign-offs inside five working days</span></div>
-    </div>
-
-    <h3 class="subh">How we will know it worked</h3>
-    <p class="dek" style="margin-top:12px">Targets are meaningless until we know where you are starting from, so the first two weeks measure the baseline and you agree the numbers with us at gate 1. These are the measures we propose, and the shape of target we would expect to commit to.</p>
-    <div class="meas">
-      <div class="mh2"><span>Measure</span><span>Baselined in weeks 1 to 2</span><span>Target by week 12</span></div>
-      <div class="mr"><span class="k2">Time to an answer</span><span>Time the desks take today for an agreed set of routine questions, measured with them.</span><span class="tg">Same questions answered in under a minute</span></div>
-      <div class="mr"><span class="k2">Question coverage</span><span>A set of roughly 50 representative questions from the three desks, written down at gate 1.</span><span class="tg">80% answered with no analyst help</span></div>
-      <div class="mr"><span class="k2">Answer agreement</span><span>Your research team computes the expected answer for a subset by hand.</span><span class="tg">Agreement on 95% of that subset</span></div>
-      <div class="mr"><span class="k2">Analyst hours released</span><span>Hours per week currently spent pulling and cleaning data for others.</span><span class="tg">A measured reduction, reported weekly</span></div>
-      <div class="mr"><span class="k2">Adoption</span><span>No baseline. Counted from the day each desk is given access.</span><span class="tg">Active use across all three desks</span></div>
-      <div class="mr"><span class="k2">Data quality coverage</span><span>Which tables feeding the pilot have no checks at all today.</span><span class="tg">Checks live on every gold table in scope</span></div>
-    </div>
-    <div class="note" style="margin-top:18px"><div class="lbl">Being straight about it</div><p>Two caveats worth saying out loud. Metric scope is capped for a pilot, so we agree a set of definitions at gate 1 rather than modelling your whole business in twelve weeks. And the dates hold only if data access and sign-offs arrive on time, which is why gate 1 exists before any build begins.</p></div>
-
-    <div class="nsteps">
-      <div class="ns"><div class="nn">Next 01</div><h3>Working session</h3><p>Two hours with your research and dealing leads, on your questions rather than our slides.</p></div>
-      <div class="ns"><div class="nn">Next 02</div><h3>Readiness check</h3><p>We list the data sources and access needed, and confirm what a pilot would cover.</p></div>
-      <div class="ns"><div class="nn">Next 03</div><h3>Start the twelve weeks</h3><p>Gate 1 first: requirements, question set and success measures agreed before build.</p></div>
-    </div>
-  </div>
-</section>
-
-</main>
 
 <footer class="foot">
   <div class="wrap foot-in">
-    <div class="l">Industry-native Agentic Intelligence Platform &middot; confidential brief prepared for Almas Equities. All screens are illustrative: tickers, values and account numbers are placeholders, not Almas or market data.</div>
-    <div class="r">Kainovation Technologies (Pvt) Ltd</div>
+    <ul class="l">
+      <li>Confidential brief prepared for Almas Equities.</li>
+      <li>Every screen is illustrative. Tickers, values and account numbers are placeholders, not Almas or market data.</li>
+    </ul>
+    <div class="r">Built by <a href="https://www.kainovation.com" target="_blank" rel="noopener noreferrer"><b>Kainovation Technologies (Pvt) Ltd</b></a></div>
   </div>
 </footer>
 
@@ -1325,7 +1192,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 (function(){
   var links=[].slice.call(document.querySelectorAll('.toc a'));
   var map={};links.forEach(function(a){map[a.dataset.s]=a;});
-  var ids=['bottleneck','platform','desks','beyond','capabilities','security','pilot'];
+  var ids=['bottleneck','platform','desks','beyond','capabilities','security'];
   // the four capability chapters are their own sections but share one nav entry
   var alias={'cap-ask':'capabilities','cap-graph':'capabilities','cap-segments':'capabilities','cap-quality':'capabilities'};
   ids=ids.concat(Object.keys(alias));

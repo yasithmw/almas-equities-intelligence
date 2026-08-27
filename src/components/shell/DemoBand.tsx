@@ -1,13 +1,14 @@
-import styles from './DemoBand.module.css'
-
-// Free surface (design brief): nothing like this exists in the client's
-// document. Reads as product chrome that happens to be honest, not as a
-// warning: aqua ground and ink (Almas's own colour, not a --warn/--down
-// alert colour), no icon, no dismiss affordance. Non-dismissible by
-// construction: there is no state here to close, and no button renders.
+// Free surface: nothing like this exists in the platform, so it is built
+// to read as product chrome that happens to be honest rather than as an
+// alert. Muted ground, no icon, no dismiss affordance, and
+// non-dismissible by construction: there is no state here to close.
 export default function DemoBand() {
   return (
-    <div role="note" className={styles.band}>
+    <div
+      role="note"
+      className="flex h-8 shrink-0 items-center gap-2 border-b border-border bg-muted/40 px-6 text-[11px] font-medium tracking-[0.01em] text-muted-foreground"
+    >
+      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground/45" aria-hidden="true" />
       Demonstration environment. Illustrative data, not Almas Equities data.
     </div>
   )

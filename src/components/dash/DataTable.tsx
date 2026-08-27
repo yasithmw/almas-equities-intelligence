@@ -1,34 +1,31 @@
 import type { TableViz } from '@/lib/types'
-import styles from './DataTable.module.css'
 
-// Figures and tickers read in the mono face throughout the brief (.bn,
-// .bv, .tk, .sv, .dqt .tr .mono); TableViz carries plain strings with no
-// per-column type flag, so a cell that opens on a digit or a sign
-// (including the U+2212 minus used for negative currency) gets that
-// treatment here too.
-const looksNumeric = (cell: string) => /^[+\-−0-9]/.test(cell)
-
+// The platform's own fleet-data-table: uppercase mono-tracked header
+// row, zebra body, hover tint, tabular figures. Cells do not wrap, so
+// an account number stays one token instead of breaking across two
+// lines in a narrow tile; a table too wide for its tile scrolls inside
+// its own container rather than pushing the page sideways.
 export default function DataTable({ viz }: { viz: TableViz }) {
   return (
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          {viz.columns.map((col) => (
-            <th key={col}>{col}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {viz.rows.map((row, i) => (
-          <tr key={i}>
-            {row.map((cell, j) => (
-              <td key={j} className={looksNumeric(cell) ? styles.mono : undefined}>
-                {cell}
-              </td>
+    <div className="overflow-x-auto">
+      <table className="fleet-data-table">
+        <thead>
+          <tr>
+            {viz.columns.map((c) => (
+              <th key={c} scope="col" className="whitespace-nowrap">{c}</th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {viz.rows.map((row, i) => (
+            <tr key={`${row[0]}-${i}`}>
+              {row.map((cell, j) => (
+                <td key={j} className="whitespace-nowrap">{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }

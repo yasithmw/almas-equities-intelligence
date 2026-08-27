@@ -4,7 +4,12 @@ import { fileURLToPath } from 'node:url'
 
 export default defineConfig({
   plugins: [react()],
-  test: { environment: 'jsdom', globals: true, css: true },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    css: true,
+    setupFiles: ['./src/test/setup.ts'],
+  },
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
