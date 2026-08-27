@@ -1,0 +1,58 @@
+/* Mirrors chat's own NoMatchPanel.module.css exactly (same recipe: the
+   bordered-card language every panel in this app already shares --
+   border var(--line), radius 11px, padding 15px 17px, background
+   var(--surface) -- with a serif lead line and a chip row), rather than
+   importing it: that file lives in src/components/chat/, off limits to
+   modify or reuse directly here. */
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 15px 17px;
+  background: var(--surface);
+}
+
+.lead {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 11px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink-2);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: background .15s var(--ease), border-color .15s var(--ease);
+}
+
+.chip:hover {
+  background: var(--panel-2);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.chip:disabled {
+  cursor: default;
+  opacity: .55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    transition: none;
+  }
+}

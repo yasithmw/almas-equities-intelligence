@@ -1,7 +1,7 @@
 import type { Access, DeskId, KpiSpec, PanelBody, Sector, Step } from './types'
 import {
   TICKERS, ACCOUNTS, INDEX_SERIES, REVENUE,
-  sectorPerformance, accountGain, foreignFlowByTicker,
+  sectorPerformance, accountGain, foreignFlowByTicker, dividendYield,
 } from './dataset'
 import {
   dashboardAccess, visibleAccounts, maskHolder, type DashboardId,
@@ -422,12 +422,15 @@ const FIRM: Dashboard = {
 export const DASHBOARDS: Dashboard[] = [MARKET, CLIENTS, FIRM]
 
 // ---------------------------------------------------------------------------
-// Build a dashboard. Exhibit C's own composer placeholder names this exact
-// example ("foreign buying and selling by sector this quarter"), and
-// Foreign Flows was deliberately left out of the pre-built three, so this
-// is the one description this scripted demo composes: every figure below
-// is still derived fresh from TICKERS, the same rule as the pre-built
-// three, never a canned chart.
+// Build a dashboard. Fix round 1: the first version of this section ignored
+// whatever was typed and always returned the same dashboard under whatever
+// title the user's own words seemed to describe, which is worse than a
+// dead end (it looks like it built the wrong thing while quoting the
+// request back). Three canned specs now, matched the same way chat
+// matches a question, through the same composer: recognised text returns
+// a spec and builds it; anything else gets the same honest "here is what
+// I can build" chat already gives for its own six questions, never a
+// wrong dashboard under a right-sounding title.
 // ---------------------------------------------------------------------------
 
 export const BUILD_STEPS: Step[] = [
@@ -504,12 +507,265 @@ function foreignBySectorPanels(): DashPanel[] {
   ]
 }
 
-export function buildDashboard(query: string): Dashboard {
-  return {
-    id: `custom-${Date.now()}`,
+// "Liquidity" is one of Exhibit C's own tab names (its .dtabs strip:
+// Overview / Sectors / Foreign flows / Liquidity / Client book), one of
+// the two the pre-built three do not cover, which is exactly why it
+// belongs among the buildable specs. Derives from turnoverMn only.
+function liquidityPanels(): DashPanel[] {
+  const totalTurnoverMn = TICKERS.reduce((s, t) => s + t.turnoverMn, 0)
+  const avgTurnoverMn = totalTurnoverMn / TICKERS.length
+  const byLiquidity = [...TICKERS].sort((a, b) => b.turnoverMn - a.turnoverMn)
+  const mostLiquid = byLiquidity[0]
+  const leastLiquid = byLiquidity[byLiquidity.length - 1]
+
+  const kpis: KpiSpec[] = [
+    { label: 'Total turnover', value: fmtRsM(totalTurnoverMn) },
+    { label: 'Most liquid', value: mostLiquid.code, delta: fmtRsM(mostLiquid.turnoverMn) },
+    { label: 'Least liquid', value: leastLiquid.code, delta: fmtRsM(leastLiquid.turnoverMn) },
+    { label: 'Avg per counter', value: fmtRsM(avgTurnoverMn) },
+  ]
+
+  const bySector = new Map<Sector, number>()
+  for (const t of TICKERS) bySector.set(t.sector, (bySector.get(t.sector) ?? 0) + t.turnoverMn)
+  const sectorRows = [...bySector.entries()].sort((a, b) => b[1] - a[1])
+
+  // Ranked by turnover and split into equal thirds, not a hardcoded
+  // "over Rs 100M is High" cutoff, so the boundary always reflects this
+  // market's own spread rather than a number picked to fit it.
+  const tierSize = Math.ceil(byLiquidity.length / 3)
+  const tiers = [
+    { name: 'High', members: byLiquidity.slice(0, tierSize) },
+    { name: 'Medium', members: byLiquidity.slice(tierSize, tierSize * 2) },
+    { name: 'Low', members: byLiquidity.slice(tierSize * 2) },
+  ]
+
+  return [
+    { id: 'kpis', span: 4, body: { kind: 'kpis', tiles: kpis } },
+    {
+      id: 'sector-turnover',
+      span: 2,
+      body: {
+        kind: 'bars',
+        title: 'Turnover by sector',
+        rows: sectorRows.map(([sector, value]) => ({ label: sector, value, display: fmtRsM(value) })),
+        source: 'Source: your market data',
+        caption: 'Illustrative values',
+      },
+    },
+    {
+      id: 'most-liquid',
+      span: 1,
+      body: {
+        kind: 'bars',
+        title: 'Most liquid counters',
+        rows: byLiquidity.slice(0, 4).map((t) => ({
+          label: t.code, value: t.turnoverMn, display: fmtRsM(t.turnoverMn),
+        })),
+        source: 'Source: your market data',
+        caption: 'Illustrative values',
+      },
+    },
+    {
+      id: 'liquidity-tiers',
+      span: 1,
+      body: {
+        kind: 'table',
+        title: 'Liquidity tiers',
+        columns: ['Tier', 'Counters', 'Share of turnover'],
+        rows: tiers.map((t) => [
+          t.name,
+          String(t.members.length),
+          fmtPct((t.members.reduce((s, m) => s + m.turnoverMn, 0) / totalTurnoverMn) * 100),
+        ]),
+        source: 'Source: your market data',
+        caption: 'Ranked by turnover, split into equal thirds',
+      },
+    },
+  ]
+}
+
+// "Sectors" is Exhibit C's other uncovered tab name. Derives from pe and
+// dividendYield only, the same two fields q02's chat answer already
+// compares for two stocks; this is the identical comparison rolled up to
+// sector averages instead.
+function sectorValuationPanels(): DashPanel[] {
+  const groups = new Map<Sector, typeof TICKERS>()
+  for (const t of TICKERS) {
+    const list = groups.get(t.sector) ?? []
+    list.push(t)
+    groups.set(t.sector, list)
+  }
+  const sectorStats = [...groups.entries()]
+    .map(([sector, members]) => ({
+      sector,
+      avgPe: members.reduce((s, t) => s + t.pe, 0) / members.length,
+      avgYield: members.reduce((s, t) => s + dividendYield(t), 0) / members.length,
+    }))
+    .sort((a, b) => b.avgPe - a.avgPe)
+
+  const cheapestSector = [...sectorStats].sort((a, b) => a.avgPe - b.avgPe)[0]
+  const richestSector = sectorStats[0]
+  const highestYieldSector = [...sectorStats].sort((a, b) => b.avgYield - a.avgYield)[0]
+  const lowestYieldSector = [...sectorStats].sort((a, b) => a.avgYield - b.avgYield)[0]
+
+  const kpis: KpiSpec[] = [
+    { label: 'Cheapest sector', value: cheapestSector.sector, delta: `${cheapestSector.avgPe.toFixed(1)}x avg P/E` },
+    { label: 'Richest sector', value: richestSector.sector, delta: `${richestSector.avgPe.toFixed(1)}x avg P/E` },
+    { label: 'Highest yield', value: highestYieldSector.sector, delta: `${fmtPct(highestYieldSector.avgYield)} avg yield` },
+    { label: 'Lowest yield', value: lowestYieldSector.sector, delta: `${fmtPct(lowestYieldSector.avgYield)} avg yield` },
+  ]
+
+  const cheapestByPe = [...TICKERS].sort((a, b) => a.pe - b.pe).slice(0, 4)
+  const highestYield = [...TICKERS].sort((a, b) => dividendYield(b) - dividendYield(a)).slice(0, 4)
+
+  return [
+    { id: 'kpis', span: 4, body: { kind: 'kpis', tiles: kpis } },
+    {
+      id: 'sector-valuation',
+      span: 2,
+      body: {
+        kind: 'pairedBars',
+        title: 'P/E against dividend yield, by sector',
+        series: ['P/E (x)', 'Dividend yield'],
+        rows: sectorStats.map((s) => ({
+          label: s.sector,
+          a: s.avgPe,
+          b: s.avgYield,
+          aDisplay: `${s.avgPe.toFixed(1)}x`,
+          bDisplay: fmtPct(s.avgYield),
+        })),
+        source: 'Source: your market data',
+        caption: 'Sector averages, illustrative values',
+      },
+    },
+    {
+      id: 'cheapest-pe',
+      span: 1,
+      body: {
+        kind: 'bars',
+        title: 'Cheapest by P/E',
+        rows: cheapestByPe.map((t) => ({ label: t.code, value: t.pe, display: `${t.pe.toFixed(1)}x` })),
+        source: 'Source: your market data',
+        caption: 'Illustrative values',
+      },
+    },
+    {
+      id: 'highest-yield',
+      span: 1,
+      body: {
+        kind: 'bars',
+        title: 'Highest dividend yield',
+        rows: highestYield.map((t) => ({
+          label: t.code, value: dividendYield(t), display: fmtPct(dividendYield(t)),
+        })),
+        source: 'Source: your market data',
+        caption: 'Illustrative values',
+      },
+    },
+  ]
+}
+
+export interface DashboardSpec {
+  id: string
+  text: string
+  aliases: string[]
+  title: string
+  panels: () => DashPanel[]
+}
+
+// The client document's own printed composer example, kept verbatim as
+// the canonical phrasing (Exhibit C's placeholder: "foreign buying and
+// selling by sector this quarter"). The other two are Exhibit C's own
+// tab names the pre-built three do not cover (Liquidity, Sectors), which
+// is exactly why they are the right things to be buildable on demand.
+export const DASHBOARD_SPECS: DashboardSpec[] = [
+  {
+    id: 'foreign-by-sector',
+    text: 'foreign buying and selling by sector this quarter',
+    aliases: [
+      'foreign buying and selling', 'foreign flow by sector',
+      'foreign flows by sector', 'foreign net by sector',
+    ],
     title: 'Foreign buying and selling by sector',
+    panels: foreignBySectorPanels,
+  },
+  {
+    id: 'liquidity-by-counter',
+    text: 'liquidity and turnover by counter',
+    aliases: [
+      'liquidity by counter', 'turnover by counter',
+      'most liquid counters', 'liquidity dashboard',
+    ],
+    title: 'Liquidity and turnover by counter',
+    panels: liquidityPanels,
+  },
+  {
+    id: 'sector-valuation',
+    text: 'sector valuation, p/e against dividend yield',
+    aliases: [
+      'sector valuation', 'pe against dividend yield',
+      'valuation by sector', 'sector pe and yield',
+    ],
+    title: 'Sector valuation, P/E against dividend yield',
+    panels: sectorValuationPanels,
+  },
+]
+
+// Mirrors src/lib/match.ts's own normalise/exact/alias/fuzzy-score
+// approach (same stop list, same 0.34 threshold) rather than inventing a
+// second one, per the fix-round direction. Duplicated, not imported from
+// there: match.ts sits in src/lib/, off limits to modify except by
+// creating this one file, and mirroring keeps chat's own question
+// matching completely insulated from anything this file does.
+const SPEC_STOP = new Set([
+  'the', 'a', 'an', 'is', 'are', 'do', 'does', 'what', 'which', 'how', 'me',
+  'my', 'our', 'on', 'in', 'at', 'to', 'of', 'and', 'or', 'right', 'now',
+  'show', 'this', 'that', 'for', 'vs', 'against', 'it', 'us', 'we', 'i',
+])
+
+function normaliseSpecText(input: string): string[] {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9/\s]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 1 && !SPEC_STOP.has(w))
+}
+
+const SPEC_MATCH_THRESHOLD = 0.34
+
+export function matchDashboardSpec(input: string): DashboardSpec | null {
+  const words = normaliseSpecText(input)
+  if (words.length === 0) return null
+  const joined = words.join(' ')
+
+  for (const s of DASHBOARD_SPECS) {
+    if (normaliseSpecText(s.text).join(' ') === joined) return s
+  }
+  for (const s of DASHBOARD_SPECS) {
+    if (s.aliases.some((a) => joined.includes(normaliseSpecText(a).join(' ')))) return s
+  }
+
+  let best: { s: DashboardSpec; score: number } | null = null
+  for (const s of DASHBOARD_SPECS) {
+    const target = new Set([...normaliseSpecText(s.text), ...s.aliases.flatMap(normaliseSpecText)])
+    const hits = words.filter((w) => target.has(w)).length
+    const score = hits / words.length
+    if (!best || score > best.score) best = { s, score }
+  }
+
+  return best && best.score >= SPEC_MATCH_THRESHOLD ? best.s : null
+}
+
+// Builds exactly the matched spec, under its own real title: the bug
+// this round fixed was this function ignoring which spec matched (or
+// whether one did at all) and always returning the same dashboard
+// wearing whatever title the request happened to suggest.
+export function buildDashboard(spec: DashboardSpec, query: string): Dashboard {
+  return {
+    id: `custom-${spec.id}-${Date.now()}`,
+    title: spec.title,
     badge: 'Custom',
     description: query,
-    panels: foreignBySectorPanels,
+    panels: spec.panels,
   }
 }

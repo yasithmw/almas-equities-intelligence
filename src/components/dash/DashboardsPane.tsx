@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react'
 import type { KpiSpec } from '@/lib/types'
 import {
-  DASHBOARDS, DEFAULT_FILTERS, accessFor, buildDashboard, BUILD_STEPS,
-  type Dashboard, type Filters,
+  DASHBOARDS, DASHBOARD_SPECS, DEFAULT_FILTERS, accessFor, buildDashboard,
+  matchDashboardSpec, BUILD_STEPS,
+  type Dashboard, type DashboardSpec, type Filters,
 } from '@/lib/dashboards'
 import { DESKS } from '@/lib/desks'
 import { useDemo } from '../shell/DemoContext'
@@ -15,6 +16,7 @@ import KpiTile from './KpiTile'
 import DashboardHeader from './DashboardHeader'
 import DashboardList from './DashboardList'
 import LockedPanel from './LockedPanel'
+import NoMatchPanel from './NoMatchPanel'
 import styles from './DashboardsPane.module.css'
 
 // The KPI row (Panel 0 on every dashboard, span 4) has no owner among the
@@ -55,7 +57,15 @@ export default function DashboardsPane() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
 
   const [buildValue, setBuildValue] = useState('')
-  const [buildQuery, setBuildQuery] = useState<string | null>(null)
+  // Fix round 1: a matched attempt now carries the spec that matched, not
+  // just the raw text, so the dashboard that eventually gets built is the
+  // one that was actually recognised, never a fixed default wearing the
+  // typed words as its description. An unmatched attempt carries no spec
+  // at all and shows the same "here is what I can build" chat gives for
+  // an unmatched question, instead of running the feed toward a wrong
+  // answer.
+  const [buildAttempt, setBuildAttempt] = useState<{ query: string; spec: DashboardSpec } | null>(null)
+  const [buildNoMatch, setBuildNoMatch] = useState(false)
   const [buildTurn, setBuildTurn] = useState(0)
   const [buildCollapsed, setBuildCollapsed] = useState(false)
   const [buildBusy, setBuildBusy] = useState(false)
@@ -70,23 +80,39 @@ export default function DashboardsPane() {
   const openDashboard = allDashboards.find((d) => d.id === openId) ?? allDashboards[0]
   const access = accessFor(desk, openDashboard.id)
 
-  function submitBuild() {
-    const q = buildValue.trim()
+  function submitBuild(rawText?: string) {
+    const q = (rawText ?? buildValue).trim()
     if (!q || buildBusy) return
+    const spec = matchDashboardSpec(q)
     setBuildValue('')
-    setBuildQuery(q)
+    if (!spec) {
+      setBuildNoMatch(true)
+      setBuildAttempt(null)
+      return
+    }
+    setBuildNoMatch(false)
+    setBuildAttempt({ query: q, spec })
     setBuildTurn((n) => n + 1)
     setBuildCollapsed(false)
     setBuildBusy(true)
   }
 
+  // A chip names a spec directly, so submitting its own canonical text
+  // is guaranteed to match it (the exact-text pass in matchDashboardSpec
+  // always wins over alias or fuzzy scoring), the same certainty chat's
+  // suggested questions already have.
+  function pickSpec(spec: DashboardSpec) {
+    if (buildBusy) return
+    submitBuild(spec.text)
+  }
+
   // Fires once ActivityFeed's own step sequence finishes revealing
-  // "Composed 4 widgets": only then does the described request actually
+  // "Composed 4 widgets": only then does the matched spec actually
   // become a fourth dashboard, appended to the list and opened, the same
   // "answer only after the feed lands" rule chat already follows.
   function handleBuildComplete() {
-    if (!buildQuery) return
-    const dashboard = buildDashboard(buildQuery)
+    if (!buildAttempt) return
+    const dashboard = buildDashboard(buildAttempt.spec, buildAttempt.query)
     setCustomDashboards((prev) => [...prev, dashboard])
     setOpenId(dashboard.id)
     setBuildBusy(false)
@@ -159,14 +185,19 @@ export default function DashboardsPane() {
             aria-label="Build dashboard"
             className={styles.buildSend}
             disabled={buildBusy || buildValue.trim().length === 0}
-            onClick={submitBuild}
+            onClick={() => submitBuild()}
           >
             <span aria-hidden="true">&#8593;</span>
           </button>
         </div>
-        {buildQuery && (
+        {buildNoMatch && (
           <div className={styles.buildFeed}>
-            <div className={styles.buildQuery}>&ldquo;{buildQuery}&rdquo;</div>
+            <NoMatchPanel specs={DASHBOARD_SPECS} onPick={pickSpec} disabled={buildBusy} />
+          </div>
+        )}
+        {buildAttempt && (
+          <div className={styles.buildFeed}>
+            <div className={styles.buildQuery}>&ldquo;{buildAttempt.query}&rdquo;</div>
             <ActivityFeed
               key={buildTurn}
               steps={BUILD_STEPS}

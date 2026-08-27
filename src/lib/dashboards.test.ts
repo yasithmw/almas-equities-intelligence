@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { DASHBOARDS, DEFAULT_FILTERS } from './dashboards'
+import {
+  DASHBOARDS, DASHBOARD_SPECS, DEFAULT_FILTERS, buildDashboard, matchDashboardSpec,
+} from './dashboards'
 
 describe('dashboards', () => {
   it('ships exactly three', () => {
@@ -61,6 +63,69 @@ describe('dashboards', () => {
     for (const d of DASHBOARDS) {
       expect(JSON.stringify(d.panels('management', DEFAULT_FILTERS)))
         .not.toContain('—')
+    }
+  })
+})
+
+// Fix round 1: buildDashboard() previously ignored which spec (if any)
+// matched and always returned the same dashboard wearing the typed
+// text as its title, so a request like "hotel sector exposure" got
+// built as "Foreign buying and selling by sector" while quoting the
+// hotel request back underneath. These lock in the fix: a real matcher
+// (mirroring src/lib/match.ts's own approach), three real specs, and a
+// null result for anything else.
+describe('matchDashboardSpec', () => {
+  it('ships exactly three specs', () => {
+    expect(DASHBOARD_SPECS.map((s) => s.id)).toEqual([
+      'foreign-by-sector', 'liquidity-by-counter', 'sector-valuation',
+    ])
+  })
+
+  it('matches the foreign-by-sector spec from a natural phrasing', () => {
+    const spec = matchDashboardSpec('foreign buying and selling by sector')
+    expect(spec?.id).toBe('foreign-by-sector')
+  })
+
+  it('matches the liquidity spec from a natural phrasing', () => {
+    const spec = matchDashboardSpec('show me liquidity by counter')
+    expect(spec?.id).toBe('liquidity-by-counter')
+  })
+
+  it('matches the sector-valuation spec from a natural phrasing', () => {
+    const spec = matchDashboardSpec('sector valuation')
+    expect(spec?.id).toBe('sector-valuation')
+  })
+
+  it('returns null for an unrelated request, the exact case this fix targets', () => {
+    expect(matchDashboardSpec('hotel sector exposure')).toBeNull()
+    expect(matchDashboardSpec('what is the weather in Colombo')).toBeNull()
+  })
+
+  it('builds the dashboard the matched spec actually names, not a fixed default', () => {
+    const liquidity = DASHBOARD_SPECS.find((s) => s.id === 'liquidity-by-counter')!
+    const dashboard = buildDashboard(liquidity, 'liquidity by counter')
+    expect(dashboard.title).toBe('Liquidity and turnover by counter')
+    const panels = dashboard.panels('management', DEFAULT_FILTERS)
+    expect(panels).toHaveLength(4)
+    expect(panels[0].body.kind).toBe('kpis')
+  })
+
+  it('gives each spec a KPI row plus three panels, same shape as the pre-built three', () => {
+    for (const spec of DASHBOARD_SPECS) {
+      const panels = spec.panels()
+      expect(panels).toHaveLength(4)
+      expect(panels[0].body.kind).toBe('kpis')
+      expect(panels[0].span).toBe(4)
+    }
+  })
+
+  it('captions every non-KPI panel and uses no em dash, for every spec', () => {
+    for (const spec of DASHBOARD_SPECS) {
+      const panels = spec.panels()
+      for (const p of panels) {
+        if (p.body.kind !== 'kpis') expect(p.body.caption.length).toBeGreaterThan(0)
+      }
+      expect(JSON.stringify(panels)).not.toContain('—')
     }
   })
 })
