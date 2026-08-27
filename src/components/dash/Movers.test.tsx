@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Movers from './Movers'
 import styles from './Movers.module.css'
-import type { MoversViz } from '@/lib/dashboards'
+import type { MoversViz } from '@/lib/types'
 
 const viz: MoversViz = {
   kind: 'movers',

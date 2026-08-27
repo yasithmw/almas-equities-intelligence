@@ -1,4 +1,4 @@
-import type { MoversViz } from '@/lib/dashboards'
+import type { MoversViz } from '@/lib/types'
 import styles from './Movers.module.css'
 
 // Solves the movers gap (task brief, "a gap carried from Task 4, now

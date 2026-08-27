@@ -83,7 +83,30 @@ export interface TableViz {
   caption: string
 }
 
-export type Viz = BarsViz | PairedBarsViz | SignedBarsViz | LineViz | TableViz
+// Promoted from src/lib/dashboards.ts (fix round 2, the "movers gap":
+// label plus signed coloured value, no bar, exactly Exhibit C's
+// .mv/.tk/.g/.r). It used to live in dashboards.ts alone so as not to
+// touch this file, which forced VizBlock's prop to widen to
+// `Viz | MoversViz` imported from a feature module, a shared primitive
+// depending on that module. Sixth Viz member now, same as any other.
+export interface MoversRow {
+  code: string
+  name?: string
+  nameMuted?: boolean
+  value: number
+  display: string
+}
+
+export interface MoversViz {
+  kind: 'movers'
+  title: string
+  rows: MoversRow[]
+  source: string
+  caption: string
+}
+
+export type Viz =
+  | BarsViz | PairedBarsViz | SignedBarsViz | LineViz | TableViz | MoversViz
 
 export type PanelBody = { kind: 'kpis'; tiles: KpiSpec[] } | Viz
 

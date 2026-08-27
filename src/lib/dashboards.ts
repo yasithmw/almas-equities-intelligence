@@ -1,4 +1,6 @@
-import type { Access, DeskId, KpiSpec, PanelBody, Sector, Step } from './types'
+import type {
+  Access, DeskId, KpiSpec, MoversRow, PanelBody, Sector, Step,
+} from './types'
 import {
   TICKERS, ACCOUNTS, INDEX_SERIES, REVENUE,
   sectorPerformance, accountGain, foreignFlowByTicker, dividendYield,
@@ -22,40 +24,29 @@ export interface Filters {
 export const DEFAULT_FILTERS: Filters = { sector: 'All', period: 'MTD' }
 
 // ---------------------------------------------------------------------------
-// The movers gap (a gap carried from Task 4, ruling 7 in the task brief).
-// No existing primitive renders "label plus signed coloured value, with no
-// bar", which is exactly Exhibit C's .mv / .tk / .g / .r. Rather than add a
-// new member to lib/types.ts's closed Viz union (out of scope: this file is
-// the one permitted change inside src/lib/), MoversViz is defined here and
-// VizBlock.tsx (a components/dash file, which Ruling 7 explicitly says is
-// mine to extend) imports it to widen the one prop it accepts. This keeps
-// the dependency direction the ordinary way round: components import types
-// from lib, lib never imports from components.
+// The movers gap (a gap carried from Task 4, ruling 7 in the task brief):
+// "label plus signed coloured value, with no bar", exactly Exhibit C's
+// .mv / .tk / .g / .r. MoversRow/MoversViz now live in lib/types.ts as
+// the sixth Viz member (fix round 2). They were originally defined here
+// instead, to avoid touching lib/types.ts under Task 8's original
+// constraint, which inverted the usual dependency direction: VizBlock.tsx,
+// a shared primitive, had to import a type from this feature module to
+// widen its own prop to `Viz | MoversViz`. That constraint is lifted for
+// this change; see VizBlock.tsx for the corresponding narrowing back to
+// `Viz`.
 //
-// One row shape serves two panels that are the same underlying idea, "a
-// label plus a signed coloured value, no bar": Market Overview's top
-// movers (label = ticker) and Client Book's unrealised gain and loss
-// (label = account id, with an optional second, maskable line for the
-// holder's name).
+// One row shape still serves two panels that are the same underlying
+// idea, "a label plus a signed coloured value, no bar": Market
+// Overview's top movers (label = ticker) and Client Book's unrealised
+// gain and loss (label = account id, with an optional second, maskable
+// line for the holder's name).
 // ---------------------------------------------------------------------------
 
-export interface MoversRow {
-  code: string
-  name?: string
-  nameMuted?: boolean
-  value: number
-  display: string
-}
-
-export interface MoversViz {
-  kind: 'movers'
-  title: string
-  rows: MoversRow[]
-  source: string
-  caption: string
-}
-
-export type DashPanel = { id: string; span: 1 | 2 | 4; body: PanelBody | MoversViz }
+// PanelBody already includes MoversViz (via Viz, as of fix round 2), so
+// this is now just a local alias for the shape lib/types.ts calls Panel.
+// Kept under its own name rather than switched to Panel everywhere below,
+// to keep this fix confined to the Viz union rather than a rename sweep.
+export type DashPanel = { id: string; span: 1 | 2 | 4; body: PanelBody }
 
 export interface Dashboard {
   id: string

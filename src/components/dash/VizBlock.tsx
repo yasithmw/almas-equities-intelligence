@@ -1,5 +1,4 @@
 import type { Viz } from '@/lib/types'
-import type { MoversViz } from '@/lib/dashboards'
 import BarRow from './BarRow'
 import SignedBars from './SignedBars'
 import PairedBars from './PairedBars'
@@ -9,7 +8,11 @@ import Movers from './Movers'
 import styles from './VizBlock.module.css'
 
 interface Props {
-  viz: Viz | MoversViz
+  // MoversViz is the sixth Viz member (fix round 2: promoted into
+  // lib/types.ts, where it now belongs alongside the other five), so
+  // this no longer needs to widen to a second, feature-module-owned
+  // type the way it did when MoversViz lived in lib/dashboards.ts.
+  viz: Viz
   // Free surface (design brief, "Redacted rows"): "the panel header
   // carries a small mono REDACTED tag". VizBlock already owns the panel
   // header (.title, ported from .pc .pt), so this is the one place that

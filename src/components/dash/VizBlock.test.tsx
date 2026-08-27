@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import VizBlock from './VizBlock'
 import type { Viz } from '@/lib/types'
-import type { MoversViz } from '@/lib/dashboards'
 
 const bars: Viz = {
   kind: 'bars',
@@ -70,7 +69,7 @@ const table: Viz = {
   caption: 'Illustrative values',
 }
 
-const movers: MoversViz = {
+const movers: Viz = {
   kind: 'movers',
   title: 'Top movers',
   rows: [
