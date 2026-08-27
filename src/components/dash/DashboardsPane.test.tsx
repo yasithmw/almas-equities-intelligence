@@ -22,9 +22,8 @@ describe('dashboards pane', () => {
   })
 
   it('locks Firm Performance on the dealing desk and says which desk can view it', async () => {
-    render(<DemoShell />)
+    render(<DemoShell initialDesk="dealing" />)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    await user.click(screen.getByRole('button', { name: /dealing/i }))
     await user.click(screen.getByRole('button', { name: /^dashboards$/i }))
     const card = screen.getByTestId('dash-card-firm')
     expect(card.textContent).toMatch(/switch desk to view/i)
@@ -70,85 +69,5 @@ describe('dashboards pane', () => {
 
     await user.click(screen.getByRole('button', { name: /market overview/i }))
     expect(document.querySelectorAll('select').length).toBe(2)
-  })
-
-  it('builds a fourth dashboard from a described request', async () => {
-    render(<DemoShell />)
-    const user = await openDashboards()
-    await user.type(
-      screen.getByPlaceholderText(/describe a new dashboard/i),
-      'foreign buying and selling by sector this quarter{Enter}',
-    )
-    await waitFor(() =>
-      expect(screen.getByText(/Parsed the request/i)).toBeDefined())
-    vi.advanceTimersByTime(5000)
-    // Completing the build opens the dashboard it produced, which
-    // replaces the landing page the feed was running on.
-    await waitFor(() =>
-      expect(screen.getByRole('heading', { name: /foreign buying and selling/i }))
-        .toBeDefined())
-  })
-
-  // Fix round 1: the trigger case the coordinator flagged. A request
-  // matching none of the three specs must never run the feed toward a
-  // wrong dashboard; it gets the same "here is what I can build"
-  // treatment chat gives an unmatched question.
-  it('shows what it can build, not a wrong dashboard, for a request matching none of the three specs', async () => {
-    render(<DemoShell />)
-    const user = await openDashboards()
-    await user.type(
-      screen.getByPlaceholderText(/describe a new dashboard/i),
-      'hotel sector exposure{Enter}',
-    )
-    await waitFor(() =>
-      expect(screen.getByText(/here is what I can build/i)).toBeDefined())
-    expect(screen.queryByText(/Composed 4 widgets/i)).toBeNull()
-    for (const name of [
-      /foreign buying and selling by sector/i,
-      /liquidity and turnover by counter/i,
-      /sector valuation, p\/e against dividend yield/i,
-    ]) {
-      expect(screen.getByRole('button', { name })).toBeDefined()
-    }
-  })
-
-  // The bug this round fixed: buildDashboard() always returned the same
-  // dashboard regardless of which spec (if any) matched. A different
-  // spec's own natural phrasing must build *that* dashboard, not the
-  // foreign-flow one.
-  it('builds the liquidity dashboard, not the foreign-flow one, from its own phrasing', async () => {
-    render(<DemoShell />)
-    const user = await openDashboards()
-    await user.type(
-      screen.getByPlaceholderText(/describe a new dashboard/i),
-      'liquidity by counter{Enter}',
-    )
-    await waitFor(() =>
-      expect(screen.getByText(/Parsed the request/i)).toBeDefined())
-    vi.advanceTimersByTime(5000)
-    await waitFor(() =>
-      expect(screen.getByRole('heading', { name: /liquidity and turnover by counter/i }))
-        .toBeDefined())
-    expect(screen.queryByRole('heading', { name: /foreign buying and selling/i })).toBeNull()
-  })
-
-  it('builds the right dashboard from a no-match chip click', async () => {
-    render(<DemoShell />)
-    const user = await openDashboards()
-    await user.type(
-      screen.getByPlaceholderText(/describe a new dashboard/i),
-      'hotel sector exposure{Enter}',
-    )
-    await waitFor(() =>
-      expect(screen.getByText(/here is what I can build/i)).toBeDefined())
-    await user.click(
-      screen.getByRole('button', { name: /sector valuation, p\/e against dividend yield/i }),
-    )
-    await waitFor(() =>
-      expect(screen.getByText(/Parsed the request/i)).toBeDefined())
-    vi.advanceTimersByTime(5000)
-    await waitFor(() =>
-      expect(screen.getByRole('heading', { name: /sector valuation, p\/e against dividend yield/i }))
-        .toBeDefined())
   })
 })

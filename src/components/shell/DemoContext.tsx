@@ -26,8 +26,18 @@ interface DemoState {
 
 const Ctx = createContext<DemoState | null>(null)
 
-export function DemoProvider({ children }: { children: React.ReactNode }) {
-  const [desk, setDesk] = useState<DeskId>(DEFAULT_DESK)
+export function DemoProvider({
+  children,
+  initialDesk = DEFAULT_DESK,
+}: {
+  children: React.ReactNode
+  // A test seam, and only that. With the header's desk switcher removed
+  // there is no UI path to another desk, but the scoping rules the
+  // dashboards and answers depend on are still live and still worth
+  // proving from the outside.
+  initialDesk?: DeskId
+}) {
+  const [desk, setDesk] = useState<DeskId>(initialDesk)
   const [mode, setMode] = useState<Mode>('auto')
   const [view, setView] = useState<View>('chat')
   const [history, setHistory] = useState<string[]>([])

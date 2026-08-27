@@ -4,11 +4,16 @@ import userEvent from '@testing-library/user-event'
 import DemoShell from './DemoShell'
 
 describe('shell', () => {
-  it('opens on the management desk', () => {
+  it('shows the tenant mark and the account avatar, and no desk controls', () => {
     render(<DemoShell />)
-    expect(screen.getByRole('button', { name: /management/i })).toHaveProperty(
-      'ariaPressed', 'true',
-    )
+    expect(screen.getByAltText('Almas Equities')).toBeDefined()
+    expect(screen.getByLabelText('Account')).toBeDefined()
+    // The header's desk switcher was removed at the user's request, so the
+    // demo runs on the default desk. The scoping rules behind it are still
+    // live (see desks.ts and the dashboards suite), just not switchable
+    // from the chrome.
+    expect(screen.queryByTestId('active-desk')).toBeNull()
+    expect(screen.queryByText('A. Jayawardena')).toBeNull()
   })
 
   it('shows the demo band, with no way to dismiss it', () => {
@@ -18,24 +23,7 @@ describe('shell', () => {
     expect(band.querySelector('button')).toBeNull()
   })
 
-  // Ruling R1: the brief's own assertion here, `getByText('R. Fernando')`,
-  // passes even without the click, because the dealing desk's own switcher
-  // button renders "R. Fernando" unconditionally (Task brief step 4:
-  // DeskSwitcher shows label and person per desk). It also risks throwing
-  // on multiple matches once the active-desk indicator exists alongside
-  // the switcher. TopBar exposes the active desk via data-testid instead,
-  // so the assertion actually exercises the click.
-  it('switches desk when another is chosen', async () => {
-    const user = userEvent.setup()
-    render(<DemoShell />)
-    await user.click(screen.getByRole('button', { name: /dealing/i }))
-    expect(screen.getByTestId('active-desk').textContent).toContain('Dealing')
-    // The header prints the person beside the switcher, the way the
-    // platform's own header prints the signed-in user.
-    expect(screen.getByText('R. Fernando')).toBeDefined()
-  })
-
-  it('routes between chat and dashboards from the rail', async () => {
+  it('routes between chat and dashboards from the sidebar', async () => {
     const user = userEvent.setup()
     render(<DemoShell />)
     await user.click(screen.getByRole('button', { name: /^dashboards$/i }))
@@ -46,6 +34,6 @@ describe('shell', () => {
 
   it('renders no em dash in its chrome', () => {
     const { container } = render(<DemoShell />)
-    expect(container.textContent).not.toContain('—')
+    expect(container.textContent).not.toContain('\u2014')
   })
 })

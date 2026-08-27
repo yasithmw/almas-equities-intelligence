@@ -3,6 +3,7 @@
 import ChatPane from '@/components/chat/ChatPane'
 import DashboardsPane from '@/components/dash/DashboardsPane'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import type { DeskId } from '@/lib/types'
 import { DemoProvider, useDemo } from './DemoContext'
 import Topbar from './Topbar'
 import DemoBand from './DemoBand'
@@ -32,9 +33,9 @@ function ShellBody() {
   )
 }
 
-export default function DemoShell() {
+export default function DemoShell({ initialDesk }: { initialDesk?: DeskId } = {}) {
   return (
-    <DemoProvider>
+    <DemoProvider initialDesk={initialDesk}>
       <TooltipProvider delayDuration={250}>
         <ShellBody />
       </TooltipProvider>

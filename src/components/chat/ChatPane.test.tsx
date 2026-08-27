@@ -113,9 +113,8 @@ describe('chat', () => {
   // (it passes in 2.66s in isolation), not a regression in the denial
   // path itself. Bumped to match its neighbour above, ASK_TIMEOUT + 4000.
   it('declines the revenue question on the dealing desk', async () => {
-    render(<DemoShell />)
+    render(<DemoShell initialDesk="dealing" />)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    await user.click(screen.getByRole('button', { name: /dealing/i }))
     await user.click(screen.getByRole('button', { name: /brokerage revenue/i }))
     vi.advanceTimersByTime(3000)
     await waitFor(
