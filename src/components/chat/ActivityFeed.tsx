@@ -145,7 +145,7 @@ export default function ActivityFeed({ steps, collapsed, onToggleCollapsed, onCo
   }
 
   return (
-    <div className="agent-feed surface-1">
+    <div className="agent-feed surface-1 w-full">
       <div className="mb-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {done ? (

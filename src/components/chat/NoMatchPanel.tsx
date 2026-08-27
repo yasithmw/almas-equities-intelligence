@@ -10,7 +10,7 @@ export default function NoMatchPanel({
   onPick, disabled,
 }: { onPick: (q: Question) => void; disabled?: boolean }) {
   return (
-    <div className="max-w-[68ch] rounded-2xl border border-border/60 bg-muted/25 px-4 py-3.5">
+    <div className="w-full rounded-2xl border border-border/60 bg-muted/25 px-4 py-3.5">
       <p className="text-[13px] font-medium text-foreground">Here is what I can answer</p>
       <div className="fleet-chips mt-2.5">
         {QUESTIONS.map((q) => (
