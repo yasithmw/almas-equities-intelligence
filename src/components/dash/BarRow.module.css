@@ -4,11 +4,15 @@
    caller to put a real name ("R. Fernando") through this row rather
    than a four-letter ticker, and at 74px it wrapped to two lines while
    "D. Silva" stayed on one, an uneven rhythm down the column. Widened
-   to 92px, which fits the longer name on one line; the ellipsis is a
-   safety net for anything longer still. */
+   to 92px there; fix round 1's own "Turnover by sector" (Liquidity
+   spec) then clipped "Manufacturing" at that width, the same sector
+   name that forced SignedBars' own column to 104px, so this one is
+   widened to match rather than picking a second, narrower number for
+   the identical longest label. The ellipsis stays as a safety net for
+   anything longer still. */
 .row {
   display: grid;
-  grid-template-columns: 92px 1fr 52px;
+  grid-template-columns: 104px 1fr 52px;
   align-items: center;
   gap: 12px;
   margin-bottom: 9px;

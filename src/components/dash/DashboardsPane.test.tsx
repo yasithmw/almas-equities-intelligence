@@ -62,4 +62,67 @@ describe('dashboards pane', () => {
       expect(screen.getByRole('heading', { name: /foreign buying and selling/i }))
         .toBeDefined())
   })
+
+  // Fix round 1: the trigger case the coordinator flagged. A request
+  // matching none of the three specs must never run the feed toward a
+  // wrong dashboard; it gets the same "here is what I can build"
+  // treatment chat gives an unmatched question.
+  it('shows what it can build, not a wrong dashboard, for a request matching none of the three specs', async () => {
+    render(<DemoShell />)
+    const user = await openDashboards()
+    await user.type(
+      screen.getByPlaceholderText(/describe a new dashboard/i),
+      'hotel sector exposure{Enter}',
+    )
+    await waitFor(() =>
+      expect(screen.getByText(/here is what I can build/i)).toBeDefined())
+    expect(screen.queryByText(/Composed 4 widgets/i)).toBeNull()
+    for (const name of [
+      /foreign buying and selling by sector/i,
+      /liquidity and turnover by counter/i,
+      /sector valuation, p\/e against dividend yield/i,
+    ]) {
+      expect(screen.getByRole('button', { name })).toBeDefined()
+    }
+  })
+
+  // The bug this round fixed: buildDashboard() always returned the same
+  // dashboard regardless of which spec (if any) matched. A different
+  // spec's own natural phrasing must build *that* dashboard, not the
+  // foreign-flow one.
+  it('builds the liquidity dashboard, not the foreign-flow one, from its own phrasing', async () => {
+    render(<DemoShell />)
+    const user = await openDashboards()
+    await user.type(
+      screen.getByPlaceholderText(/describe a new dashboard/i),
+      'liquidity by counter{Enter}',
+    )
+    vi.advanceTimersByTime(5000)
+    await waitFor(() =>
+      expect(screen.getByText(/Composed 4 widgets/i)).toBeDefined())
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: /liquidity and turnover by counter/i }))
+        .toBeDefined())
+    expect(screen.queryByRole('heading', { name: /foreign buying and selling/i })).toBeNull()
+  })
+
+  it('builds the right dashboard from a no-match chip click', async () => {
+    render(<DemoShell />)
+    const user = await openDashboards()
+    await user.type(
+      screen.getByPlaceholderText(/describe a new dashboard/i),
+      'hotel sector exposure{Enter}',
+    )
+    await waitFor(() =>
+      expect(screen.getByText(/here is what I can build/i)).toBeDefined())
+    await user.click(
+      screen.getByRole('button', { name: /sector valuation, p\/e against dividend yield/i }),
+    )
+    vi.advanceTimersByTime(5000)
+    await waitFor(() =>
+      expect(screen.getByText(/Composed 4 widgets/i)).toBeDefined())
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { name: /sector valuation, p\/e against dividend yield/i }))
+        .toBeDefined())
+  })
 })
