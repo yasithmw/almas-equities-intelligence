@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import VizBlock from './VizBlock'
 import type { Viz } from '@/lib/types'
+import type { MoversViz } from '@/lib/dashboards'
 
 const bars: Viz = {
   kind: 'bars',
@@ -65,6 +66,17 @@ const table: Viz = {
   title: 'Gain since purchase',
   columns: ['Holding', 'Gain'],
   rows: [['COMB', '+Rs 174,000']],
+  source: 'Source: your market data',
+  caption: 'Illustrative values',
+}
+
+const movers: MoversViz = {
+  kind: 'movers',
+  title: 'Top movers',
+  rows: [
+    { code: 'JKH', value: 6.2, display: '+6.2%' },
+    { code: 'DIAL', value: -3.1, display: '−3.1%' },
+  ],
   source: 'Source: your market data',
   caption: 'Illustrative values',
 }
@@ -140,11 +152,31 @@ describe('VizBlock', () => {
   })
 
   it('always renders the caption, for every kind', () => {
-    for (const viz of [bars, signed, pairedBars, line, table]) {
+    for (const viz of [bars, signed, pairedBars, line, table, movers]) {
       const { unmount } = render(<VizBlock viz={viz} />)
       expect(screen.getByText(viz.caption)).toBeDefined()
       unmount()
     }
+  })
+
+  // Ruling 7 (task-8 brief): the movers gap. Ticker plus signed value,
+  // no bar, routed through VizBlock the same as every other kind.
+  it('renders movers with their ticker and signed value, no bar', () => {
+    const { container } = render(<VizBlock viz={movers} />)
+    expect(screen.getByText('Top movers')).toBeDefined()
+    expect(screen.getByText('JKH')).toBeDefined()
+    expect(screen.getByText('+6.2%')).toBeDefined()
+    expect(container.querySelector('[data-fill]')).toBeNull()
+  })
+
+  it('renders no optional tag by default', () => {
+    render(<VizBlock viz={bars} />)
+    expect(screen.queryByText('Redacted')).toBeNull()
+  })
+
+  it('renders the optional tag next to the title when given one', () => {
+    render(<VizBlock viz={table} tag="Redacted" />)
+    expect(screen.getByText('Redacted')).toBeDefined()
   })
 
   it('renders each viz\'s own source as the left caption, never a hardcoded label', () => {

@@ -254,7 +254,15 @@ const avgCapturePct = REVENUE.reduce((s, r) => s + captureRatePct(r), 0) / REVEN
 const momRevenuePct = ((revLast.revenueMn - revPrev.revenueMn) / revPrev.revenueMn) * 100
 const momTurnoverPct = ((revLast.turnoverBn - revPrev.turnoverBn) / revPrev.turnoverBn) * 100
 
-function revenueVsTurnover(): Viz {
+// Exported (only this one word changed) so Firm Performance's dashboard
+// panel can import the exact same builder q06 uses, per Task 8's Ruling
+// 8: "import it from a shared builder rather than duplicating the
+// construction, so asking q06 in chat and opening that dashboard cannot
+// disagree." This is the one deliberate exception to "do not modify
+// src/lib/ except to create dashboards.ts": no other line in this file
+// changes, and the function's behaviour is identical, so every existing
+// test here keeps passing unchanged.
+export function revenueVsTurnover(): Viz {
   return {
     kind: 'line',
     title: 'Revenue against turnover',

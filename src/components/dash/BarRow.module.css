@@ -1,8 +1,14 @@
 /* Ported from the client brief's .brow / .bn / .bt / .bv (Exhibit B, the
    dividend-yield bars in the chat card). */
+/* Screenshot review: Firm Performance's "Revenue by desk" is the first
+   caller to put a real name ("R. Fernando") through this row rather
+   than a four-letter ticker, and at 74px it wrapped to two lines while
+   "D. Silva" stayed on one, an uneven rhythm down the column. Widened
+   to 92px, which fits the longer name on one line; the ellipsis is a
+   safety net for anything longer still. */
 .row {
   display: grid;
-  grid-template-columns: 74px 1fr 52px;
+  grid-template-columns: 92px 1fr 52px;
   align-items: center;
   gap: 12px;
   margin-bottom: 9px;
@@ -12,6 +18,9 @@
   font-size: 12px;
   color: var(--ink-2);
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .track {
   height: 10px;

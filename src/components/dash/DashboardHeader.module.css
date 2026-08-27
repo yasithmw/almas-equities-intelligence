@@ -1,0 +1,27 @@
+/* Ported from the client brief's .dhead / .dhead .dt (grep-verified). */
+.dhead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px 0;
+  flex-wrap: wrap;
+}
+
+.dt {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--ink);
+}
+
+.filters {
+  margin-left: auto;
+}
+
+@media (max-width: 560px) {
+  .filters {
+    margin-left: 0;
+    width: 100%;
+  }
+}

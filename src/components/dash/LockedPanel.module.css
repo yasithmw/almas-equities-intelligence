@@ -1,0 +1,21 @@
+/* Free surface: no mockup covers this state. Reuses the same aqua-tint
+   plate already established for chat's own access boundary (Task 7's
+   AnswerBlock.module.css .denied, "Free surface: chat's own analogue of
+   the design brief's 'Locked panel'") so the two access boundaries in
+   this app, a denied chat answer and a locked dashboard, read as one
+   consistent idea rather than two different looks. */
+.plate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--aqua-tint);
+  border-radius: 9px;
+  padding: 12px 14px;
+  color: var(--aqua-ink);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.plate svg {
+  flex: none;
+}

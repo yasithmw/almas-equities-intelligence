@@ -1,0 +1,85 @@
+/* Free surface (the task brief's own replacement for Exhibit C's tab
+   strip: "a Dashboards list you open one from"). Reuses the bordered-
+   card recipe every other panel in this app already carries (border
+   var(--line), radius 11px, background var(--surface)) rather than a
+   new card language, and .pt's own serif-title treatment for each
+   card's name. */
+.list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 13px;
+  padding: 20px 24px 0;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color .15s var(--ease);
+}
+
+.open:hover {
+  color: var(--ink-2);
+}
+
+.open:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.open[aria-pressed='true'] {
+  color: var(--navy);
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .open {
+    transition: none;
+  }
+}

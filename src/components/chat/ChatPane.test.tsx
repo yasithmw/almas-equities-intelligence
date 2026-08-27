@@ -106,6 +106,12 @@ describe('chat', () => {
     )
   }, ASK_TIMEOUT + 4000)
 
+  // Fix (Task 8 stabilisation): this carried ASK_TIMEOUT + 2000 (8000ms)
+  // until the build-a-dashboard flow gave the suite a second consumer of
+  // real timers alongside this one; under the full suite's resulting
+  // parallel load that budget occasionally was not enough, an infra flake
+  // (it passes in 2.66s in isolation), not a regression in the denial
+  // path itself. Bumped to match its neighbour above, ASK_TIMEOUT + 4000.
   it('declines the revenue question on the dealing desk', async () => {
     render(<DemoShell />)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
@@ -116,7 +122,7 @@ describe('chat', () => {
       () => expect(screen.getByText(/switch desk to view it/i)).toBeDefined(),
       { timeout: ASK_TIMEOUT },
     )
-  }, ASK_TIMEOUT + 2000)
+  }, ASK_TIMEOUT + 4000)
 
   it('offers the six as chips when a typed question does not match', async () => {
     render(<DemoShell />)

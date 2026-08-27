@@ -1,0 +1,75 @@
+/* Ported verbatim from the client brief's .mv / .tk / .g / .r (grep-
+   verified: exec summary, the "Top movers" panel inside Exhibit C's
+   .dash). display:flex, justify-content:space-between, gap 10px,
+   font-size 13.5px, margin-bottom 8px for the row; .tk mono 12.5px
+   var(--ink-2); .g mono 500 12.5px var(--up); .r the same weight and
+   size in var(--down). */
+.mv {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  margin-bottom: 8px;
+}
+
+.mv:last-child {
+  margin-bottom: 0;
+}
+
+/* Screenshot review: stacked, not side by side. A real holder name
+   ("K. Wijesinghe") or "Name withheld" sits right next to the ticker
+   column in a row layout, and in a span-1 panel that combination does
+   not fit beside the value too, so it silently ellipsised, including
+   "Name withheld" itself, which reads as censored rather than honest.
+   Stacking the optional name under the code halves the width the row
+   needs (the wider of the two lines, not their sum), which is enough
+   room for a full name to actually render. */
+.label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-width: 0;
+}
+
+.tk {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  flex: none;
+}
+
+/* Free addition: no mover row in the client brief carries a second
+   line, since none of its examples need to mask an identity. Client
+   Book's unrealised gain and loss reuses this same row for exactly
+   that, so the account holder's name (or, on Research, "Name
+   withheld") gets a line of its own rather than a class that does not
+   exist in the source document. */
+.name {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--faint);
+}
+
+.g {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--up);
+  flex: none;
+}
+
+.r {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--down);
+  flex: none;
+}

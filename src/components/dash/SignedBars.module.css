@@ -6,9 +6,15 @@
    from the mover row, .mv .tk / .mv .g / .mv .r. The value column is
    widened past .sbar's 36px because signed currency ("+Rs 96M") runs
    longer than a sector's percentage. */
+/* Screenshot review: at .sbar's own 66px, "Manufacturing" and
+   "Diversified" (two of this app's six real sector names, neither of
+   which the client's document ever had to lay out beside a bar) were
+   clipped by the row's own overflow rather than by an ellipsis, so the
+   label ran straight into the track. Widened to 104px, which is enough
+   for the longest of the six ("Manufacturing") to sit on one line. */
 .row {
   display: grid;
-  grid-template-columns: 66px 1fr 60px;
+  grid-template-columns: 104px 1fr 60px;
   align-items: center;
   gap: 9px;
   margin-bottom: 8px;
@@ -17,6 +23,9 @@
   font-family: var(--mono);
   font-size: 12.5px;
   color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .track {
   position: relative;
