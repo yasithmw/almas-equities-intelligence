@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Almas Equities, demonstration environment',
+  title: 'Almas Intelligence | Concept Preview',
   robots: { index: false, follow: false },
 }
 

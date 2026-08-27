@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   DASHBOARDS, DASHBOARD_SPECS, DEFAULT_FILTERS, buildDashboard, matchDashboardSpec,
+  widgetCount, type DashSection,
 } from './dashboards'
 import { dashboardAccess } from './desks'
 
@@ -37,9 +38,74 @@ describe('dashboards', () => {
     }
   })
 
-  it('gives each dashboard a KPI row plus three panels', () => {
+  // The flat four-panel dashboard is gone: panels arrive grouped into
+  // sections so a twelve-widget page still reads as an argument rather
+  // than a wall. What has to hold is the grouping, not a fixed count.
+  it('groups every dashboard into at least three titled sections', () => {
     for (const d of DASHBOARDS) {
-      expect(d.panels('management', DEFAULT_FILTERS)).toHaveLength(4)
+      const sections = d.sections('management', DEFAULT_FILTERS)
+      expect(sections.length).toBeGreaterThanOrEqual(3)
+      for (const s of sections) {
+        expect(s.title.length).toBeGreaterThan(0)
+        expect(s.subtitle.length).toBeGreaterThan(0)
+        expect(s.panels.length).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  it('gives every section a unique id, and every panel within it one too', () => {
+    for (const d of DASHBOARDS) {
+      const sections = d.sections('management', DEFAULT_FILTERS)
+      expect(new Set(sections.map((s) => s.id)).size).toBe(sections.length)
+      for (const s of sections) {
+        expect(new Set(s.panels.map((p) => p.id)).size).toBe(s.panels.length)
+      }
+    }
+  })
+
+  // panels() is derived from sections(), never written alongside it: two
+  // hand-maintained lists is exactly how a section gains a tile the flat
+  // list never hears about.
+  it('derives the flat panel list from the sections, losing nothing', () => {
+    for (const d of DASHBOARDS) {
+      const flat = d.panels('management', DEFAULT_FILTERS)
+      const grouped = d.sections('management', DEFAULT_FILTERS).flatMap((s) => s.panels)
+      expect(flat).toEqual(grouped)
+    }
+  })
+
+  it('carries at least ten figures on every dashboard, for every desk that can open it', () => {
+    for (const d of DASHBOARDS) {
+      for (const desk of ['management', 'dealing', 'research'] as const) {
+        expect(widgetCount(d, desk, DEFAULT_FILTERS)).toBeGreaterThanOrEqual(10)
+      }
+    }
+  })
+
+  // A KPI row is one panel holding three or four figures. A reader
+  // counting tiles counts the figures, so the card's "N widgets" has to
+  // as well, or it under-reports every dashboard by three.
+  it('counts each KPI tile as a widget, not the row that holds them', () => {
+    for (const d of DASHBOARDS) {
+      const panels = d.panels('management', DEFAULT_FILTERS)
+      const kpiTiles = panels
+        .filter((p) => p.body.kind === 'kpis')
+        .reduce((n, p) => n + (p.body.kind === 'kpis' ? p.body.tiles.length : 0), 0)
+      const figures = panels.filter((p) => p.body.kind !== 'kpis').length
+      expect(widgetCount(d, 'management', DEFAULT_FILTERS)).toBe(kpiTiles + figures)
+    }
+  })
+
+  // A span wider than the grid has nowhere to go, and a donut whose parts
+  // do not sum to anything is a decorative pie. Both are the kind of
+  // thing a new panel gets wrong quietly.
+  it('keeps every panel inside the four-column grid', () => {
+    for (const d of DASHBOARDS) {
+      for (const desk of ['management', 'dealing', 'research'] as const) {
+        for (const p of d.panels(desk, DEFAULT_FILTERS)) {
+          expect([1, 2, 3, 4]).toContain(p.span)
+        }
+      }
     }
   })
 
@@ -138,7 +204,7 @@ describe('matchDashboardSpec', () => {
     const dashboard = buildDashboard(liquidity, 'liquidity by counter')
     expect(dashboard.title).toBe('Liquidity and turnover by counter')
     const panels = dashboard.panels('management', DEFAULT_FILTERS)
-    expect(panels).toHaveLength(4)
+    expect(panels.length).toBeGreaterThan(4)
     expect(panels[0].body.kind).toBe('kpis')
   })
 
@@ -153,18 +219,22 @@ describe('matchDashboardSpec', () => {
     }
   })
 
-  it('gives each spec a KPI row plus three panels, same shape as the pre-built three', () => {
+  it('gives each spec sections opening on a KPI row, same shape as the pre-built three', () => {
     for (const spec of DASHBOARD_SPECS) {
-      const panels = spec.panels()
-      expect(panels).toHaveLength(4)
-      expect(panels[0].body.kind).toBe('kpis')
-      expect(panels[0].span).toBe(4)
+      const sections: DashSection[] = spec.sections()
+      expect(sections.length).toBeGreaterThanOrEqual(2)
+      expect(sections[0].panels[0].body.kind).toBe('kpis')
+      expect(sections[0].panels[0].span).toBe(4)
+      for (const s of sections) {
+        expect(s.title.length).toBeGreaterThan(0)
+        expect(s.subtitle.length).toBeGreaterThan(0)
+      }
     }
   })
 
   it('captions every non-KPI panel and uses no em dash, for every spec', () => {
     for (const spec of DASHBOARD_SPECS) {
-      const panels = spec.panels()
+      const panels = spec.sections().flatMap((s) => s.panels)
       for (const p of panels) {
         if (p.body.kind !== 'kpis') expect(p.body.caption.length).toBeGreaterThan(0)
       }

@@ -74,6 +74,12 @@ export default function LineChart({ viz }: { viz: LineViz }) {
               dataKey={s.name}
               stroke={INKS[i % INKS.length]}
               strokeWidth={2.25}
+              // Two series on two axes can trace nearly the same shape
+              // (revenue and the turnover it was earned on do exactly
+              // that), and where they overlap the one drawn second hides
+              // the first entirely. A dashed second stroke keeps both
+              // readable through the overlap without a third colour.
+              strokeDasharray={i === 0 ? undefined : '5 4'}
               dot={false}
               activeDot={{ r: 3.5, strokeWidth: 0 }}
             />

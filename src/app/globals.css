@@ -11,27 +11,60 @@
 
 @layer base {
   :root {
-    /* Fleet ink-on-paper defaults. ThemeProvider re-applies these from
-       useThemeStore at hydration, so SSR/CSR match without flash. */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 4%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 4%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 4%;
-    --primary: 0 0% 4%;
+    /* ==============================================================
+       ALMAS PALETTE.
+       Values only. Not one component, class or layout rule changes
+       with them, which is the whole point of the shadcn token layer
+       and is how the product itself restyles for a customer: see
+       gf-app-dashboard/src/lib/brand-theme.ts, whose `BrandVars` is a
+       map of these same token names onto a client's own colours,
+       "applied as `--<name>: <value>`" and nothing else.
+
+       Sources are the client's own tokens in "Almas Equities -
+       Executive Summary.html", converted OKLCH -> sRGB -> HSL so the
+       demo and the document are the same colours rather than similar
+       ones. The Almas name for each is in the comment beside it.
+
+       The rule the document sets and this keeps: NAVY IS THE
+       PLATFORM, AQUA IS ALMAS'S OWN SIDE. Navy carries chrome, the
+       send button, the user's question bubble, focus. Aqua and blue
+       carry data marks. Neither is used decoratively.
+
+       Restraint is deliberate. Black became navy-black and the greys
+       picked up the document's cool cast; nothing became brighter,
+       and no ground gained more than a suggestion of hue. Read
+       side by side with the old palette the difference is a warmth
+       shift, not a repaint.
+       ============================================================== */
+    --background: 218 54% 98%;      /* --paper */
+    --foreground: 220 30% 13%;      /* --ink, in place of 4% black */
+    --card: 0 0% 100%;              /* --surface */
+    --card-foreground: 220 30% 13%; /* --ink */
+    --popover: 0 0% 100%;           /* --surface */
+    --popover-foreground: 220 30% 13%;
+    --primary: 223 77% 25%;         /* --navy */
     --primary-foreground: 0 0% 100%;
-    --secondary: 225 11% 95%;
-    --secondary-foreground: 225 22% 15%;
-    --muted: 225 11% 95%;
-    --muted-foreground: 220 7% 57%;
-    --accent: 225 11% 95%;
-    --accent-foreground: 225 22% 15%;
-    --destructive: 0 73% 41%;
+    --secondary: 218 28% 96%;       /* --panel */
+    --secondary-foreground: 220 30% 13%;
+    --muted: 218 28% 96%;           /* --panel */
+    /* Almas --faint is 220 9% 54%, which matches the grey this
+       replaces almost exactly and, like it, sits at 3.1:1 on the
+       page. Secondary text carries captions, axis ticks and the
+       source line, so it takes the document's --ink hue at the
+       lightness that clears 4.5:1 instead. Darker than before by a
+       step you have to look for. */
+    --muted-foreground: 220 11% 46%;
+    --accent: 218 28% 96%;          /* --panel */
+    --accent-foreground: 220 30% 13%;
+    /* --down, held darker than the document's own 51% so white text
+       on a filled control and the danger ink on a mover row both
+       still clear 4.5:1. Saturation drops 73 -> 55, which is the part
+       that reads calmer. */
+    --destructive: 1 55% 44%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 0 0% 4%;
+    --border: 218 15% 88%;          /* --line */
+    --input: 218 15% 88%;           /* --line */
+    --ring: 223 77% 25%;            /* --navy */
     --radius: 0.75rem; /* 12px — base token used by all UI elements */
 
     /* Typography — one UI face across the dashboard shell. */
@@ -40,49 +73,108 @@
     --font-serif: var(--font-sans);
     --font-mono: "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
 
-    --sidebar: 0 0% 100%;
-    --user-bubble: 0 0% 4%;
-    --assistant-bubble: 225 11% 95%;
+    --sidebar: 0 0% 100%;           /* --surface */
+    --user-bubble: 223 77% 25%;     /* --navy: the document puts the
+                                       user's own question in navy */
+    --assistant-bubble: 218 28% 96%; /* --panel */
     /* The platform sets this at runtime from the theme store
        (theme-provider.tsx pickForeground). The demo has no theme store,
        so it is pinned here to the value that store would compute for a
-       4%-lightness bubble: white. */
+       25%-lightness navy bubble: white, at 13.3:1. */
     --user-bubble-foreground: 0 0% 100%;
 
     --surface-elevated: 0 0% 100%;
-    --surface-overlay: 225 11% 95%;
+    --surface-overlay: 218 28% 96%; /* --panel */
 
-    /* Existing rotating multi-color halo — kept for chat input/legacy
-       AI surfaces. Distinct from the editorial fleet-ask-glow below. */
-    --ai-glow-1: 265 80% 60%;
-    --ai-glow-2: 217 91% 56%;
-    --ai-glow-3: 330 70% 58%;
-    --ai-glow-4: 25 90% 58%;
+    /* The rotating halo on the composer. It was a four-hue aurora,
+       purple to blue to pink to orange, which is the one thing on the
+       screen that could not be mistaken for this client's. Now it
+       sweeps the document's own navy-to-aqua axis: same motion, same
+       component, no rainbow. */
+    --ai-glow-1: 223 77% 25%;       /* --navy */
+    --ai-glow-2: 214 62% 48%;       /* --blue */
+    --ai-glow-3: 185 80% 44%;       /* --aqua */
+    --ai-glow-4: 189 100% 26%;      /* --aqua-ink */
 
     /* Fleet design-system AI halo: a single sky-blue ambient glow used
        only on "ask the agent" entry points. Stored as rgba() raw —
        these are never theme-shifted. */
-    --color-ai-halo-a: rgba(147,197,253,0.18);
-    --color-ai-halo-b: rgba(96,165,250,0.20);
-    --color-ai-halo-a-strong: rgba(147,197,253,0.32);
-    --color-ai-halo-b-strong: rgba(96,165,250,0.30);
+    --color-ai-halo-a: rgba(46,114,200,0.16);        /* --blue */
+    --color-ai-halo-b: rgba(23,186,200,0.18);        /* --aqua */
+    --color-ai-halo-a-strong: rgba(46,114,200,0.28);
+    --color-ai-halo-b-strong: rgba(23,186,200,0.28);
 
-    --chart-1: 0 0% 4%;
+    /* chart-6 and chart-4 are INK_PRIMARY and INK_SECONDARY, so these
+       two are every line, bar and area in the demo.
+
+       chart-6 takes the document's own --blue, replacing a brighter,
+       more generic one.
+
+       chart-4 STAYS WARM, and this is the one place the brand cannot
+       have its way. Two series that overlap are told apart by hue, and
+       every colour Almas owns is cool: --aqua sits 27 degrees from
+       --blue, and at any lightness that keeps a 2px line visible on
+       white it lands on a teal that reads as the same line. Measured
+       against the old pairing, blue against orange was 187 degrees
+       apart; blue against aqua is 27. So the counterpoint is kept and
+       calmed instead: the old 89%-saturated orange becomes a bronze at
+       62%, which is the Almas register without pretending to be an
+       Almas hue. --aqua-ink still earns its place, in --cat-2 below,
+       where six hues are spread across a legend and 27 degrees between
+       two labelled sectors is a difference you can see.
+
+       chart-3 and chart-5 follow --success and --danger, which the
+       product intends them to match. chart-1 was pure black. */
+    --chart-1: 220 30% 13%;         /* --ink */
     --chart-2: 220 9% 46%;
-    --chart-3: 158 94% 24%;
-    --chart-4: 27 89% 37%;
-    --chart-5: 0 73% 41%;
-    --chart-6: 217 91% 60%;
+    --chart-3: 146 52% 30%;         /* matches --success */
+    --chart-4: 32 62% 45%;          /* bronze, INK_SECONDARY */
+    --chart-5: 1 55% 44%;           /* matches --danger */
+    --chart-6: 214 62% 48%;         /* --blue, INK_PRIMARY */
     --chart-7: 220 7% 57%;
-    --chart-8: 225 22% 15%;
+    --chart-8: 220 19% 23%;         /* --ink-2 */
     --chart-9: 152 69% 41%;
     --chart-10: 199 89% 48%;
 
-    --success: 158 94% 24%;
+    /* --------------------------------------------------------------
+       Categorical palette. ADDED FOR THIS DEMO, not part of the ported
+       product stylesheet.
+
+       CHART_COLORS runs black, slate, success green, warning orange,
+       danger red, blue... which is fine where a series is one of two,
+       and wrong where six sectors sit in one legend: the sector that
+       lands on --danger reads as the sector in trouble, on a surface
+       where red genuinely means "down". These six are a palette rather
+       than a set of signals, so no single member carries a verdict.
+
+       Pulled into the Almas register: the first two ARE the document's
+       blue and aqua-ink, and the other four keep their hues (a six-way
+       legend has to be told apart by hue) at the lightness and
+       saturation those two set. The amber was 92% saturated at 50%
+       lightness and the rose 68% at 58%, which put the two loudest
+       colours in the app inside a legend that is meant to carry no
+       verdict at all.
+       -------------------------------------------------------------- */
+    --cat-1: 214 62% 48%;   /* --blue */
+    --cat-2: 189 100% 26%;  /* --aqua-ink */
+    --cat-3: 258 38% 52%;   /* violet, calmed */
+    --cat-4: 32 62% 45%;    /* bronze, was bright amber */
+    --cat-5: 220 20% 36%;   /* slate navy, on the --ink hue */
+    --cat-6: 340 42% 50%;   /* rose, calmed */
+
+    /* --up and --down, both held at the lightness the greens and reds
+       they replace already had, because these two are TEXT on a mover
+       row at 12.5px. The document's own --up is 146 46% 38%, which is
+       3.9:1 on the page and would have made every gain harder to read
+       than the number beside it. Hue and calmer saturation are the
+       part that carries the brand; lightness is the part that carries
+       the reading. --warning is untouched: Almas has no such token,
+       and inventing one is not a colour match. */
+    --success: 146 52% 30%;         /* --up hue, contrast preserved */
     --success-foreground: 0 0% 100%;
     --warning: 27 89% 37%;
     --warning-foreground: 0 0% 100%;
-    --danger: 0 73% 41%;
+    --danger: 1 55% 44%;            /* --down hue, contrast preserved */
     --danger-foreground: 0 0% 100%;
   }
 

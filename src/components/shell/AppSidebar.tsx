@@ -136,7 +136,7 @@ export default function AppSidebar() {
       </div>
 
       <div className="shrink-0 border-t border-border/60 px-4 py-2.5 text-center text-[10.5px] tracking-[0.06em] text-muted-foreground/55 uppercase">
-        Graffs platform
+        Analytics platform
       </div>
     </aside>
   )

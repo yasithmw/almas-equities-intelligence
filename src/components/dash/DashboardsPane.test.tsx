@@ -70,4 +70,71 @@ describe('dashboards pane', () => {
     await user.click(screen.getByRole('button', { name: /market overview/i }))
     expect(document.querySelectorAll('select').length).toBe(2)
   })
+
+  // ---- The library, and the sectioned detail page ---------------------
+
+  // The platform's library opens on a three-way segmented control. This
+  // demo only carries the first, so the other two render with their real
+  // zero counts and are disabled: the shape of the library is worth
+  // showing, and a live tab that opens on nothing is the dead control
+  // this codebase already removed once from the filter bar.
+  it('shows the library tabs, with only the pre-built one selectable', async () => {
+    render(<DemoShell />)
+    await openDashboards()
+    const prebuilt = screen.getByRole('tab', { name: /^system/i })
+    expect(prebuilt.getAttribute('aria-selected')).toBe('true')
+    expect((prebuilt as HTMLButtonElement).disabled).toBe(false)
+    for (const name of [/my dashboards/i, /shared with me/i]) {
+      const tab = screen.getByRole('tab', { name })
+      expect((tab as HTMLButtonElement).disabled).toBe(true)
+      // A disabled control has to say why, or it is just a broken one.
+      expect(tab.getAttribute('title')).toMatch(/demonstration environment/i)
+    }
+  })
+
+  it('states on each card how many widgets and sections are behind it', async () => {
+    render(<DemoShell />)
+    await openDashboards()
+    const card = screen.getByTestId('dash-card-market')
+    expect(card.textContent).toMatch(/\d+ widgets/)
+    expect(card.textContent).toMatch(/\d+ sections/)
+  })
+
+  // A dealer's Client Book really does carry fewer figures than
+  // management's, so a card promising management's count would be the
+  // first thing they noticed.
+  it('counts a card\'s widgets for the desk looking at it', async () => {
+    const { unmount } = render(<DemoShell />)
+    await openDashboards()
+    const asManagement = screen.getByTestId('dash-card-clients').textContent
+    unmount()
+
+    render(<DemoShell initialDesk="dealing" />)
+    await openDashboards()
+    const asDealer = screen.getByTestId('dash-card-clients').textContent
+    expect(asDealer).not.toBe(asManagement)
+  })
+
+  it('opens a dashboard into titled, numbered sections rather than one flat grid', async () => {
+    render(<DemoShell />)
+    const user = await openDashboards()
+    await user.click(screen.getByRole('button', { name: /market overview/i }))
+    await waitFor(() => expect(screen.getByRole('region', { name: /where the market stands/i })).toBeDefined())
+    expect(screen.getByRole('region', { name: /what moved/i })).toBeDefined()
+    expect(screen.getByRole('region', { name: /what it is worth/i })).toBeDefined()
+  })
+
+  it('collapses a section, hiding its panels and leaving the rest standing', async () => {
+    render(<DemoShell />)
+    const user = await openDashboards()
+    await user.click(screen.getByRole('button', { name: /market overview/i }))
+    await waitFor(() => expect(screen.getByTestId('panel-movers')).toBeDefined())
+
+    await user.click(screen.getByRole('button', { name: /collapse what moved/i }))
+    await waitFor(() => expect(screen.queryByTestId('panel-movers')).toBeNull())
+    expect(screen.getByTestId('panel-breadth')).toBeDefined()
+
+    await user.click(screen.getByRole('button', { name: /expand what moved/i }))
+    await waitFor(() => expect(screen.getByTestId('panel-movers')).toBeDefined())
+  })
 })

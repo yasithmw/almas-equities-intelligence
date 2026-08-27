@@ -68,7 +68,7 @@ export default function AnswerBlock({
 
           {resolved.variant.viz && (
             <div className="w-full">
-              <VizBlock viz={resolved.variant.viz} />
+              <VizBlock viz={resolved.variant.viz} controls />
             </div>
           )}
         </div>
