@@ -74,12 +74,13 @@ interface Props {
 }
 
 // The signature: a live instrument, not a finished list beside a static
-// "1.8 s". Built on the platform's real agent-feed CSS (agent-timeline,
+// elapsed time. Built on the platform's real agent-feed CSS (agent-timeline,
 // agent-step-node, agent-timer, agent-collapsed-pill), so the thing the
 // client watches think is the same component shape the product ships.
 //
-// Steps land one at a time on their own ms from STEPS[mode]; the header
-// timer ticks in mono every 100ms and reaches totalMs(mode); and the
+// Steps land one at a time on their own ms from STEPS[mode], which pace an
+// answer at about ten and a half seconds in Auto; the header timer ticks in
+// mono every 100ms and reaches totalMs(mode); and the
 // deep-mode review loop (challenged -> sent back -> re-queried ->
 // confirmed) is marked with a left rule in the destructive tint so the
 // argument against ordinary BI is visible as structure rather than as

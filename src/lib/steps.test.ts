@@ -2,11 +2,20 @@ import { describe, it, expect } from 'vitest'
 import { STEPS, totalMs } from './steps'
 
 describe('STEPS', () => {
-  it("rounds auto's total to 1.8s, the elapsed time Exhibit B prints on that exact answer", () => {
-    // Document-fidelity claim: the client's own Exhibit B badges this answer
-    // "1.8 s". If a future edit retunes a step's ms and this drifts, the
-    // demo's own timer would contradict the client's document on screen.
-    expect((totalMs('auto') / 1000).toFixed(1)).toBe('1.8')
+  it('answers in Auto in the ten to eleven second band the demo is paced to', () => {
+    // The pace is a demo claim, not an implementation detail: an answer that
+    // resolves in under two seconds reads as a canned screen, and the
+    // reasoning trail needs long enough for a client to read the statement
+    // each step expands. Ruling R27 retired the earlier "must round to 1.8s"
+    // assertion, which pinned this to a figure printed in the executive
+    // summary's exhibit; the exhibits are no longer the authority.
+    expect(totalMs('auto')).toBeGreaterThanOrEqual(10_000)
+    expect(totalMs('auto')).toBeLessThanOrEqual(11_000)
+  })
+
+  it('keeps the mode ladder ordered, since the ladder is what the modes argue', () => {
+    expect(totalMs('quick')).toBeLessThan(totalMs('auto'))
+    expect(totalMs('auto')).toBeLessThan(totalMs('deep'))
   })
 
   it('gives quick 2 steps, auto 4, and deep 8, with deep doing more steps than auto', () => {

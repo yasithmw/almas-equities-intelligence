@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { totalMs } from '@/lib/steps'
 import DemoShell from '../shell/DemoShell'
 
 beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }))
@@ -12,18 +13,24 @@ async function ask(label: RegExp) {
   return user
 }
 
-// `shouldAdvanceTime: true` ties the fake clock to real elapsed wall
-// time, which is what actually lets a suggested question's typewriter
-// effect (18ms per character, from useTypewriter) and the feed's own
-// timers land: `vi.advanceTimersByTime` alone does not reliably fast
-// forward through timers a still-running callback schedules next (the
-// composer's typed-out text, then the feed's own step timeouts), so
-// every wait below gets a budget sized to the real time the sequence
-// underneath it actually needs, not the testing-library default of
-// 1000ms. q01's question is 67 characters (1206ms to type) plus this
-// 300ms send pause plus Auto's 1780ms feed is 3286ms; a wide, uniform
-// margin is simpler and more robust than trimming each one to the wire.
-const ASK_TIMEOUT = 6000
+// `shouldAdvanceTime: true` ties the fake clock to real elapsed wall time,
+// which is what actually lets a suggested question's typewriter effect
+// (18ms per character, from useTypewriter) and the feed's own timers land:
+// `vi.advanceTimersByTime` alone does not reliably fast forward through
+// timers a still-running callback schedules next. So every wait below needs
+// a budget sized to the REAL time the sequence underneath it takes.
+//
+// Those budgets are derived from totalMs rather than typed as literals. The
+// step durations were retuned once already (an answer in Auto now takes
+// about ten and a half seconds, which is the pace the demo is meant to run
+// at), and hand-written budgets silently became too small the moment that
+// happened. Derived ones cannot.
+//
+// The longest sequence is: type the 67-character question (1206ms), pause
+// 300ms before sending, then run the feed. Deep is the slowest feed, so
+// that plus a wide margin bounds every wait in this file.
+const TYPE_AND_SEND_MS = 2000
+const ASK_TIMEOUT = totalMs('deep') + TYPE_AND_SEND_MS + 4000
 
 describe('chat', () => {
   it('offers exactly six suggested questions on the empty state', () => {
@@ -53,7 +60,7 @@ describe('chat', () => {
       { timeout: ASK_TIMEOUT },
     )
     expect(screen.queryByText('Composed chart')).toBeNull()
-    vi.advanceTimersByTime(3000)
+    vi.advanceTimersByTime(totalMs('deep'))
     await waitFor(
       () => expect(screen.getByText('Composed chart')).toBeDefined(),
       { timeout: ASK_TIMEOUT },
@@ -63,7 +70,7 @@ describe('chat', () => {
   it('shows a chart in auto mode and none in quick', async () => {
     const { unmount } = render(<DemoShell />)
     await ask(/highest dividend yield/i)
-    vi.advanceTimersByTime(3000)
+    vi.advanceTimersByTime(totalMs('deep'))
     await waitFor(
       () => expect(screen.getByText('Dividend yield, listed banks')).toBeDefined(),
       { timeout: ASK_TIMEOUT },
@@ -74,10 +81,10 @@ describe('chat', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     await user.click(screen.getByRole('radio', { name: /^quick$/i }))
     await user.click(screen.getByRole('button', { name: /highest dividend yield/i }))
-    vi.advanceTimersByTime(3000)
+    vi.advanceTimersByTime(totalMs('deep'))
     await waitFor(() =>
       expect(screen.queryByText('Dividend yield, listed banks')).toBeNull())
-  }, ASK_TIMEOUT + 2000)
+  }, ASK_TIMEOUT + 4000)
 
   // Ruling R5: the brief's own test asserted
   // /Reviewer challenged the sector mapping/i, a label that no longer
@@ -87,15 +94,15 @@ describe('chat', () => {
   // say, the revenue question. The question-specific detail lives in
   // q01's own deep.correction, rendered by AnswerBlock, so this checks
   // both: the generic step label, and that correction text. Deep's own
-  // total (4100ms) plus the 1206ms typed question and the 300ms send
-  // pause is 5606ms of real time, over vitest's 5000ms default test
-  // timeout, so this test is given an explicit, longer one.
+  // Deep's own total plus the typed question and the send pause is well
+  // over vitest's 5000ms default test timeout, so this test, like its
+  // neighbours, is given the derived one.
   it('deep mode runs more steps and returns a different answer than auto', async () => {
     render(<DemoShell />)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     await user.click(screen.getByRole('radio', { name: /^deep$/i }))
     await user.click(screen.getByRole('button', { name: /highest dividend yield/i }))
-    vi.advanceTimersByTime(6000)
+    vi.advanceTimersByTime(totalMs('deep'))
     await waitFor(
       () => expect(screen.getByText(/Reviewer challenged the result/i)).toBeDefined(),
       { timeout: ASK_TIMEOUT },
@@ -116,7 +123,7 @@ describe('chat', () => {
     render(<DemoShell initialDesk="dealing" />)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     await user.click(screen.getByRole('button', { name: /brokerage revenue/i }))
-    vi.advanceTimersByTime(3000)
+    vi.advanceTimersByTime(totalMs('deep'))
     await waitFor(
       () => expect(screen.getByText(/switch desk to view it/i)).toBeDefined(),
       { timeout: ASK_TIMEOUT },
@@ -130,7 +137,7 @@ describe('chat', () => {
       screen.getByPlaceholderText(/ask about any stock/i),
       'what is the weather in Colombo{Enter}',
     )
-    vi.advanceTimersByTime(1500)
+    vi.advanceTimersByTime(2000)
     await waitFor(() =>
       expect(screen.getByText(/here is what I can answer/i)).toBeDefined())
   })
@@ -138,24 +145,24 @@ describe('chat', () => {
   it('adds the asked question to the rail history', async () => {
     render(<DemoShell />)
     await ask(/highest dividend yield/i)
-    vi.advanceTimersByTime(3000)
+    vi.advanceTimersByTime(totalMs('deep'))
     await waitFor(
       () =>
         expect(screen.getByTestId('rail-history').textContent)
           .toMatch(/dividend yield/i),
       { timeout: ASK_TIMEOUT },
     )
-  }, ASK_TIMEOUT + 2000)
+  }, ASK_TIMEOUT + 4000)
 
   it('renders no em dash', async () => {
     const { container } = render(<DemoShell />)
     await ask(/highest dividend yield/i)
-    vi.advanceTimersByTime(3000)
+    vi.advanceTimersByTime(totalMs('deep'))
     await waitFor(
       () => expect(container.textContent).not.toContain('—'),
       { timeout: ASK_TIMEOUT },
     )
-  }, ASK_TIMEOUT + 2000)
+  }, ASK_TIMEOUT + 4000)
 
   // Ruling R20: "New chat" has to actually start a new chat, not just
   // switch to a view that may already hold a thread. Asks a question,
@@ -165,7 +172,7 @@ describe('chat', () => {
   it('New chat clears the thread back to the six-question empty state', async () => {
     render(<DemoShell />)
     await ask(/highest dividend yield/i)
-    vi.advanceTimersByTime(3000)
+    vi.advanceTimersByTime(totalMs('deep'))
     await waitFor(
       () => expect(screen.getByText('Dividend yield, listed banks')).toBeDefined(),
       { timeout: ASK_TIMEOUT },
@@ -176,7 +183,7 @@ describe('chat', () => {
 
     expect(screen.queryByText('Dividend yield, listed banks')).toBeNull()
     expect(screen.getAllByTestId('suggested')).toHaveLength(6)
-  }, ASK_TIMEOUT + 2000)
+  }, ASK_TIMEOUT + 4000)
 
   // Review round 1, Important 1: ActivityFeed's elapsed-time interval
   // was only cleared on unmount, not on completion. A resolved,
@@ -192,7 +199,7 @@ describe('chat', () => {
       { timeout: ASK_TIMEOUT },
     )
     expect(vi.getTimerCount()).toBe(0)
-  }, ASK_TIMEOUT + 2000)
+  }, ASK_TIMEOUT + 4000)
 
   // Review round 1, Important 2: the composer's <input> had
   // outline:none with no :focus-visible replacement, so a keyboard
