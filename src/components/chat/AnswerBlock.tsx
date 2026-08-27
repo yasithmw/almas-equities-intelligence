@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, Lock } from 'lucide-react'
+import { AlertTriangle, Lock } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import type { Resolved } from '@/lib/answers'
 import type { Step } from '@/lib/types'
@@ -41,14 +41,16 @@ export default function AnswerBlock({
 
       {resolved && (resolved.state === 'answered' || resolved.state === 'redacted') && (
         <div className="flex w-full flex-col items-start gap-2.5">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Badge variant="success">
-              <Check className="h-3 w-3" strokeWidth={3} />
-              Checked
-            </Badge>
-            <Badge variant="secondary">Your access only</Badge>
-            {resolved.state === 'redacted' && <Badge variant="outline">Redacted</Badge>}
-          </div>
+          {/* The Checked and "Your access only" badges are gone: they said
+              the same thing on every single answer, which is the definition
+              of a badge that carries no information. Redacted stays,
+              because it appears only when names actually are withheld and
+              it is the one thing in the turn that says so. */}
+          {resolved.state === 'redacted' && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Badge variant="outline">Redacted</Badge>
+            </div>
+          )}
 
           <div className="surface-1 w-full rounded-2xl rounded-tl-lg px-4 py-3 text-sm leading-relaxed text-foreground">
             {resolved.variant.text}
