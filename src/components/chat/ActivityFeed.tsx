@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   AlertTriangle,
   BarChart3,
@@ -16,6 +17,7 @@ import {
   ShieldCheck,
   type LucideIcon,
 } from 'lucide-react'
+import { formatSqlBlock } from '@/lib/format-sql'
 import type { Step } from '@/lib/types'
 import { cn } from '@/lib/utils'
 
@@ -32,25 +34,36 @@ const CONFIRM_LABEL = 'Reviewer confirmed'
 // tinted rounded square carrying a 12px lucide icon. The real feed keys
 // these off agent/tool names; a scripted feed keys them off the step
 // label, which is the only identity a step here has.
-const STEP_META: ReadonlyArray<{ match: string; icon: LucideIcon; color: string; bg: string }> = [
-  { match: 'Planned', icon: ListChecks, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-  { match: 'Re-queried', icon: RefreshCw, color: 'text-violet-500', bg: 'bg-violet-500/10' },
-  { match: 'Queried', icon: Database, color: 'text-violet-500', bg: 'bg-violet-500/10' },
-  { match: 'Validated', icon: ShieldCheck, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-  { match: 'Composed', icon: BarChart3, color: 'text-sky-500', bg: 'bg-sky-500/10' },
-  { match: 'challenged', icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-500/10' },
-  { match: 'Sent back', icon: CornerUpLeft, color: 'text-amber-600', bg: 'bg-amber-500/10' },
-  { match: 'confirmed', icon: CheckCheck, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+interface StepMeta {
+  match: string
+  icon: LucideIcon
+  color: string
+  bg: string
+  // The 3px left rule on this step's expanded detail, matching the
+  // platform's own lane meta (agent-activity-feed.tsx `detailBorder`).
+  detailBorder: string
+}
+
+const STEP_META: ReadonlyArray<StepMeta> = [
+  { match: 'Planned', icon: ListChecks, color: 'text-blue-500', bg: 'bg-blue-500/10', detailBorder: 'border-l-blue-400/50' },
+  { match: 'Re-queried', icon: RefreshCw, color: 'text-sky-500', bg: 'bg-sky-500/10', detailBorder: 'border-l-sky-400/50' },
+  { match: 'Queried', icon: Database, color: 'text-violet-500', bg: 'bg-violet-500/10', detailBorder: 'border-l-violet-400/50' },
+  { match: 'Validated', icon: ShieldCheck, color: 'text-emerald-500', bg: 'bg-emerald-500/10', detailBorder: 'border-l-emerald-400/50' },
+  { match: 'Composed', icon: BarChart3, color: 'text-sky-500', bg: 'bg-sky-500/10', detailBorder: 'border-l-sky-400/50' },
+  { match: 'challenged', icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-500/10', detailBorder: 'border-l-amber-400/50' },
+  { match: 'Sent back', icon: CornerUpLeft, color: 'text-amber-600', bg: 'bg-amber-500/10', detailBorder: 'border-l-amber-400/50' },
+  { match: 'confirmed', icon: CheckCheck, color: 'text-emerald-500', bg: 'bg-emerald-500/10', detailBorder: 'border-l-emerald-400/50' },
 ]
 
-function metaFor(label: string) {
-  return (
-    STEP_META.find((m) => label.includes(m.match)) ?? {
-      icon: ListChecks,
-      color: 'text-muted-foreground',
-      bg: 'bg-foreground/[0.06]',
-    }
-  )
+const FALLBACK_META: Omit<StepMeta, 'match'> = {
+  icon: ListChecks,
+  color: 'text-muted-foreground',
+  bg: 'bg-foreground/[0.06]',
+  detailBorder: 'border-l-border',
+}
+
+function metaFor(label: string): Omit<StepMeta, 'match'> {
+  return STEP_META.find((m) => label.includes(m.match)) ?? FALLBACK_META
 }
 
 interface Props {
@@ -118,6 +131,16 @@ export default function ActivityFeed({ steps, collapsed, onToggleCollapsed, onCo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Which step details are expanded. A step's detail opens by itself while
+  // that step is the one running, which is how the platform behaves: the
+  // generated statement is visible the moment it arrives rather than behind
+  // a click. Once the next step lands it folds away, so a finished turn is a
+  // tidy trail rather than four screens of SQL, and any row can be reopened.
+  // An entry here is a deliberate override of that default, either way.
+  const [openOverride, setOpenOverride] = useState<Record<string, boolean>>({})
+  const toggleDetail = (label: string, currentlyOpen: boolean) =>
+    setOpenOverride((o) => ({ ...o, [label]: !currentlyOpen }))
+
   const done = revealed >= steps.length
   const challengeIdx = steps.findIndex((s) => s.label === CHALLENGE_LABEL)
   const confirmIdx = steps.findIndex((s) => s.label === CONFIRM_LABEL)
@@ -180,6 +203,10 @@ export default function ActivityFeed({ steps, collapsed, onToggleCollapsed, onCo
           const landed = done || i < revealed - 1
           const meta = metaFor(step.label)
           const Icon = meta.icon
+          const body = step.sql ?? step.detail
+          const isSql = Boolean(step.sql)
+          const open = openOverride[step.label] ?? (!done && !landed)
+
           return (
             <div key={step.label} className="agent-step animate-in fade-in slide-in-from-bottom-1 duration-200">
               <span className="agent-step-node" aria-hidden="true">
@@ -191,21 +218,88 @@ export default function ActivityFeed({ steps, collapsed, onToggleCollapsed, onCo
                   <span className="agent-step-node-active" />
                 )}
               </span>
-              <div
-                className={cn(
-                  'agent-step-body',
-                  !landed && 'agent-step-body--active',
-                  inset && 'rounded-l-none border-l-2 border-destructive/30 bg-destructive/[0.03] pl-3',
-                )}
-              >
-                <div className={cn('agent-step-icon', meta.bg)}>
-                  <Icon className={cn('h-3 w-3', meta.color)} strokeWidth={2} />
+
+              {/* A step with something under it is a real button, so the trail
+                  is reachable by keyboard. A step with nothing under it stays
+                  a div rather than becoming a control that does nothing. */}
+              {body ? (
+                <button
+                  type="button"
+                  onClick={() => toggleDetail(step.label, open)}
+                  aria-expanded={open}
+                  className={cn(
+                    'agent-step-body w-full text-left',
+                    !landed && 'agent-step-body--active',
+                    inset && 'rounded-l-none border-l-2 border-destructive/30 bg-destructive/[0.03] pl-3',
+                  )}
+                >
+                  <div className={cn('agent-step-icon', meta.bg)}>
+                    <Icon className={cn('h-3 w-3', meta.color)} strokeWidth={2} />
+                  </div>
+                  <span className="min-w-0 flex-1 text-[12.5px] leading-relaxed text-foreground/85">
+                    {step.label}
+                    {isSql && (
+                      <span className="ml-2 align-middle font-mono text-[9.5px] uppercase tracking-[0.12em] text-muted-foreground/50">
+                        sql
+                      </span>
+                    )}
+                  </span>
+                  <ChevronRight
+                    className={cn(
+                      'mt-0.5 h-3 w-3 shrink-0 text-muted-foreground/40 transition-transform duration-150',
+                      open && 'rotate-90',
+                    )}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
+                  <span className="agent-step-duration">{step.ms}ms</span>
+                </button>
+              ) : (
+                <div
+                  className={cn(
+                    'agent-step-body',
+                    !landed && 'agent-step-body--active',
+                    inset && 'rounded-l-none border-l-2 border-destructive/30 bg-destructive/[0.03] pl-3',
+                  )}
+                >
+                  <div className={cn('agent-step-icon', meta.bg)}>
+                    <Icon className={cn('h-3 w-3', meta.color)} strokeWidth={2} />
+                  </div>
+                  <span className="min-w-0 flex-1 text-[12.5px] leading-relaxed text-foreground/85">
+                    {step.label}
+                  </span>
+                  <span className="agent-step-duration">{step.ms}ms</span>
                 </div>
-                <span className="min-w-0 flex-1 text-[12.5px] leading-relaxed text-foreground/85">
-                  {step.label}
-                </span>
-                <span className="agent-step-duration">{step.ms}ms</span>
-              </div>
+              )}
+
+              <AnimatePresence initial={false}>
+                {body && open && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="overflow-hidden"
+                  >
+                    {isSql ? (
+                      <pre
+                        className={cn('agent-step-detail agent-step-detail--sql', meta.detailBorder)}
+                        // The platform's own rule is `white-space: pre`, so a
+                        // long line scrolls sideways. In a room, a scrollbar
+                        // hiding the end of a SELECT list is a line the client
+                        // never reads, so it wraps here instead. Leading
+                        // whitespace survives pre-wrap, so the formatter's
+                        // indentation is untouched; only the overflow changes.
+                        style={{ whiteSpace: 'pre-wrap' }}
+                      >
+                        {formatSqlBlock(body)}
+                      </pre>
+                    ) : (
+                      <div className={cn('agent-thinking-block', meta.detailBorder)}>{body}</div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )
         })}

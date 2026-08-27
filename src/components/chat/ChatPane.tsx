@@ -5,6 +5,7 @@ import { QUESTIONS } from '@/lib/questions'
 import { matchQuestion } from '@/lib/match'
 import { resolveAnswer, type Question, type Resolved } from '@/lib/answers'
 import { STEPS } from '@/lib/steps'
+import { withTrail } from '@/lib/trails'
 import type { DeskId, Mode, Step } from '@/lib/types'
 import { useTypewriter } from '@/lib/useTypewriter'
 import { useDemo } from '../shell/DemoContext'
@@ -95,7 +96,9 @@ export default function ChatPane() {
       mode,
       desk,
       questionId: question.id,
-      steps: STEPS[mode],
+      // The step list is shared by every question; the reasoning hung off
+      // those steps is the asked question's own.
+      steps: withTrail(STEPS[mode], question.id),
       resolved: null,
     }
     setThread((t) => [...t, turn])

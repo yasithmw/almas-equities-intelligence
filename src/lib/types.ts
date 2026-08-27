@@ -30,7 +30,17 @@ export interface Account {
 
 export interface RevenueMonth { month: string; revenueMn: number; turnoverBn: number }
 
-export interface Step { label: string; ms: number }
+export interface Step {
+  label: string
+  ms: number
+  // What the agent emitted under this step, expandable in the feed. Prose
+  // in `detail`, a generated statement in `sql`. The platform's own feed
+  // distinguishes the two the same way and renders a statement through
+  // formatSqlBlock in a monospace pre; see lib/trails.ts for where these
+  // come from and components/chat/ActivityFeed.tsx for how they render.
+  detail?: string
+  sql?: string
+}
 
 export interface KpiSpec {
   label: string
