@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Almas Equities Intelligence
 
-## Getting Started
+One deployment carrying two things:
 
-First, run the development server:
+| Route | What it serves |
+| --- | --- |
+| `/` and `/brief` | The executive summary, a static page rewritten from `public/brief.html` |
+| `/demo` | The concept preview: an interactive dashboard and chat surface built on illustrative data |
+
+The `Preview concept` button in the summary's nav links to `/demo`, so a reader
+moves from the written case to the working surface without leaving the link.
+
+## The brief is generated, not authored here
+
+`public/brief.html` is a copy. Its source is
+`Almas Equities - Executive Summary.html`, which lives two directories up in the
+design folder and is not part of this repo. `scripts/sync-brief.mjs` copies it in
+on every `prebuild` and `predev`.
+
+On Vercel only this directory is checked out, so the canonical file is missing and
+the script warns and uses the committed copy as-is. That is deliberate: see ruling
+R9 in the script's own comment. **Editing the summary therefore takes three steps:**
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 1. edit the canonical file in the design folder, then
+npm run sync:brief   # 2. refresh public/brief.html
+git commit -am "..." # 3. commit the refreshed copy
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Skipping step 2 means the deployed summary silently stays on the previous version.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev     # http://localhost:3000
+npm test        # vitest, jsdom
+npm run build   # production build, runs sync:brief first
+```
 
-## Learn More
+Recharts draws nothing measurable under jsdom, so every visualisation also renders
+an off-screen `SrTable`. Tests assert against that table, not the SVG.
 
-To learn more about Next.js, take a look at the following resources:
+## Data
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Every figure comes from `src/lib/dataset.ts`, an illustrative CSE-shaped dataset.
+No client data, no live market feed, no backend. Nothing here is a real position
+or a real revenue number.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vercel, Next.js auto-detected, root directory is this folder, no environment
+variables. The whole deployment is `noindex` (a header in `next.config.ts` plus
+`public/robots.txt`), but the URL is publicly reachable by anyone holding it.
