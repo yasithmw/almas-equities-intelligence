@@ -281,7 +281,13 @@ function clientsPanels(desk: DeskId, _filters: Filters): DashPanel[] {
     return {
       code: a.id,
       name: maskHolder(desk, a),
-      nameMuted: desk === 'research',
+      // Fix round 2: this used to hardcode `desk === 'research'`, a
+      // second source of truth for the same fact DashboardsPane already
+      // derives correctly as `accessFor(desk, 'clients') === 'redacted'`
+      // to drive the REDACTED tag. Reading the access matrix directly
+      // here means the tag and the masking can never disagree, even if
+      // the matrix ever assigned 'redacted' to a different desk.
+      nameMuted: dashboardAccess(desk, 'clients') === 'redacted',
       value: totalGain,
       display: fmtSignedRsFull(totalGain),
     }

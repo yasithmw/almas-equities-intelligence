@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   DASHBOARDS, DASHBOARD_SPECS, DEFAULT_FILTERS, buildDashboard, matchDashboardSpec,
 } from './dashboards'
+import { dashboardAccess } from './desks'
 
 describe('dashboards', () => {
   it('ships exactly three', () => {
@@ -47,6 +48,23 @@ describe('dashboards', () => {
     const research = JSON.stringify(clients.panels('research', DEFAULT_FILTERS))
     expect(research).toContain('Name withheld')
     expect(research).not.toContain('K. Wijesinghe')
+  })
+
+  // Fix round 2: nameMuted used to hardcode `desk === 'research'`, a
+  // second source of truth for the same fact DashboardsPane's own
+  // REDACTED tag already derives correctly from the access matrix
+  // (accessFor(desk, 'clients') === 'redacted'). Every desk's mute flag
+  // must come from that same matrix now, never a literal desk id, so
+  // this checks all three desks, not only the one where the two
+  // formulations happen to agree today.
+  it('derives nameMuted from the access matrix, not a hardcoded desk id', () => {
+    const clients = DASHBOARDS.find((d) => d.id === 'clients')!
+    for (const desk of ['management', 'dealing', 'research'] as const) {
+      const panel = clients.panels(desk, DEFAULT_FILTERS).find((p) => p.id === 'gainloss')!
+      if (panel.body.kind !== 'movers') throw new Error('expected a movers panel')
+      const expectMuted = dashboardAccess(desk, 'clients') === 'redacted'
+      for (const row of panel.body.rows) expect(row.nameMuted).toBe(expectMuted)
+    }
   })
 
   it('captions every chart on every dashboard, for every desk', () => {
