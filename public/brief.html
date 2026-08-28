@@ -114,13 +114,15 @@ h1,h2,h3,h4,p{margin:0;}
 .mast-top{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
 .cover-mid{margin-top:auto;padding:56px 0;}
 .cover-bottom{margin-top:auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;}
-.cover-bottom .arrow{grid-column:2;display:flex;justify-content:center;color:oklch(0.80 0.05 205 / .75);}
-.cover-bottom .arrow svg{width:30px;height:30px;animation:cue 2s var(--ease) infinite;}
+.cover-bottom .arrow{grid-column:2;display:flex;justify-content:center;color:oklch(0.80 0.05 205 / .75);cursor:pointer;transition:color .25s var(--ease);}
+.cover-bottom .arrow:hover{color:var(--aqua);}
+.cover-bottom .arrow:focus-visible{outline:2px solid var(--aqua);outline-offset:6px;border-radius:50%;}
+.cover-bottom .arrow svg{width:36px;height:36px;animation:cue 2s var(--ease) infinite;}
 @keyframes cue{0%,100%{transform:translateY(-2px);opacity:.55;}50%{transform:translateY(6px);opacity:1;}}
 .cover-bottom .credit{grid-column:3;justify-self:end;text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:oklch(0.78 0.04 262 / .62);white-space:nowrap;}
 .cover-bottom .credit .cl{display:block;font-size:9px;letter-spacing:.22em;color:oklch(0.78 0.04 262 / .5);margin-bottom:6px;}
-.cover-bottom .credit a{display:block;color:oklch(0.92 0.02 262 / .85);text-decoration:none;transition:color .22s var(--ease);}
-.cover-bottom .credit a:hover{color:var(--aqua);}
+.cover-bottom .credit a{display:inline-block;color:oklch(0.92 0.02 262 / .85);text-decoration:underline dotted;text-decoration-thickness:1px;text-underline-offset:5px;text-decoration-color:oklch(0.92 0.02 262 / .45);transition:color .22s var(--ease),text-decoration-color .22s var(--ease);}
+.cover-bottom .credit a:hover{color:var(--aqua);text-decoration-color:var(--aqua);}
 @media(max-width:900px){.cover-bottom{grid-template-columns:auto 1fr;}.cover-bottom .arrow{grid-column:1;justify-content:flex-start;}.cover-bottom .credit{grid-column:2;justify-self:end;min-width:0;white-space:normal;text-align:left;}}
 .lock{display:flex;align-items:center;gap:14px;}
 .lock .mark{height:32px;width:auto;display:block;}
@@ -481,8 +483,8 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 .foot .l li{display:flex;gap:9px;line-height:1.5;}
 .foot .l li::before{content:"";flex:none;width:4px;height:4px;border-radius:50%;background:var(--line);margin-top:8px;}
 .foot .r{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.05em;}
-.foot .r a{color:var(--navy);text-decoration:none;border-bottom:1px solid oklch(0.315 0.125 264 / .3);padding-bottom:1px;transition:border-color .2s var(--ease);}
-.foot .r a:hover{border-bottom-color:var(--navy);}
+.foot .r a{color:var(--navy);text-decoration:underline dotted;text-decoration-thickness:1px;text-underline-offset:5px;text-decoration-color:oklch(0.315 0.125 264 / .45);transition:text-decoration-color .2s var(--ease);}
+.foot .r a:hover{text-decoration-color:var(--navy);}
 .foot .r a b{font-weight:600;}
 
 /* ---- node-type palette, harmonised from the admin portal's TYPE_COLORS ---- */
@@ -598,7 +600,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
     </div>
 
     <div class="cover-bottom an an-5">
-      <div class="arrow" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="14" stroke-width="1.3" opacity=".55"/><path d="M16 9.5v12M10.5 16.5l5.5 5.5 5.5-5.5" stroke-width="2.2"/></svg></div>
+      <a class="arrow" href="#bottleneck" aria-label="Skip to the first section"><svg aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="14" stroke-width="1.3" opacity=".55"/><path d="M16 9.5v12M10.5 16.5l5.5 5.5 5.5-5.5" stroke-width="2.2"/></svg></a>
       <div class="credit"><span class="cl">Proposed by</span><a href="https://www.kainovation.com" target="_blank" rel="noopener noreferrer">Kainovation Technologies Ltd</a></div>
     </div>
   </div>
@@ -932,7 +934,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
           <div class="modes"><span class="mode">Dashboard mode</span><span class="mode on">Build and verify</span></div>
         </div>
       </div>
-      <div class="capn"><span>Layout reflects the real product</span><span>Tickers and values are illustrative, not market data</span></div>
+      <div class="capn"><span>Tickers and values are illustrative, not market data</span></div>
     </div>
   </div>
 </section>
@@ -1022,7 +1024,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
           </div>
         </div>
       </div>
-      <div class="capn"><span>Layout, lenses and controls reflect the real admin portal</span><span>Node labels and counts are illustrative</span></div>
+      <div class="capn"><span>Node labels and counts are illustrative</span></div>
     </div>
 
     <div class="dochead">
@@ -1139,7 +1141,7 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
         <div class="qsub"><em>declared</em> is empty on 12 rows <s>&middot; corrected, goes through on the next run</s></div>
       </div>
     </div>
-    <div class="capn" style="padding:0 2px"><span>Checks run on a schedule against your own tables</span><span>Illustrative</span></div>
+    <div class="capn" style="padding:0 2px"><span>Illustrative</span></div>
     </div>
   </div>
 </section>
@@ -1185,6 +1187,25 @@ h2{font-family:var(--serif);font-optical-sizing:auto;font-variation-settings:"SO
 
 <script>
 (function(){
+  // A reload on the cover must stay on the cover. Two things move it otherwise:
+  // the browser restoring the previous scroll position, and a stale #hash left
+  // in the address bar by an earlier nav click.
+  try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
+  if(!location.hash){
+    scrollTo(0,0);
+    addEventListener('load',function(){scrollTo(0,0);});
+  }
+  var mast=document.getElementById('top');
+  if(mast&&'IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting&&location.hash){
+          try{history.replaceState(null,'',location.href.split('#')[0]);}catch(err){}
+        }
+      });
+    },{threshold:.55}).observe(mast);
+  }
+
   var links=[].slice.call(document.querySelectorAll('.toc a'));
   var map={};links.forEach(function(a){map[a.dataset.s]=a;});
   var ids=['bottleneck','platform','desks','beyond','capabilities','security'];
